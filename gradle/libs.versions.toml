@@ -1,0 +1,121 @@
+[versions]
+kotlin = "2.0.21"
+ksp = "2.0.21-1.0.28"
+kotlinx-serialization = "1.7.1"
+openrewrite = "8.71.0"
+openrewrite-spring = "6.22.1"
+openrewrite-static-analysis = "2.25.0"
+test-logger = "4.0.0"
+slf4j = { strictly = "2.0.17" }
+logback = "1.5.18"
+koin = "4.0.0"
+koin-annotations = "2.0.0"
+clikt = "5.0.1"
+kotest = "5.9.1"
+kotest-extensions-koin = "1.3.0"
+kotlin-logging = "6.0.9"
+mockk = "1.13.10"
+axion-release = "1.21.1"
+assertj = "3.26.0"
+pgpainless = "1.7.6"
+ktor = "2.3.12"
+jreleaser = "1.13.1"
+semver = "0.10.2"
+markout = "0.0.11"
+kotlinx-datetime = "0.6.0"
+nexus-publish = "2.0.0"
+
+[libraries]
+# Kotlin
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
+# OpenRewrite
+rewrite-bom = { group = "org.openrewrite", name = "rewrite-bom", version.ref = "openrewrite" }
+rewrite-core = { group = "org.openrewrite", name = "rewrite-core" }
+rewrite-kotlin = { group = "org.openrewrite", name = "rewrite-kotlin" }
+rewrite-java = { group = "org.openrewrite", name = "rewrite-java" }
+rewrite-java11 = { group = "org.openrewrite", name = "rewrite-java-11" }
+rewrite-java17 = { group = "org.openrewrite", name = "rewrite-java-17" }
+rewrite-java21 = { group = "org.openrewrite", name = "rewrite-java-21" }
+rewrite-yaml = { group = "org.openrewrite", name = "rewrite-yaml" }
+rewrite-toml = { group = "org.openrewrite", name = "rewrite-toml" }
+rewrite-properties = { group = "org.openrewrite", name = "rewrite-properties" }
+rewrite-test = { group = "org.openrewrite", name = "rewrite-test" }
+rewrite-gradle = { group = "org.openrewrite", name = "rewrite-gradle" }
+rewrite-groovy = { group = "org.openrewrite", name = "rewrite-groovy" }
+rewrite-gradle-model = { group = "org.openrewrite.gradle.tooling", name = "model", version.ref="openrewrite" }
+rewrite-spring = { group = "org.openrewrite.recipe", name = "rewrite-spring", version.ref = "openrewrite-spring" }
+rewrite-static-analysis = { group = "org.openrewrite.recipe", name = "rewrite-static-analysis", version.ref = "openrewrite-static-analysis" }
+
+# Koin
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core" }
+koin-test = { group = "io.insert-koin", name = "koin-test" }
+koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotations" }
+koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-annotations" }
+
+# Command line interface
+clikt = { group = "com.github.ajalt.clikt", name = "clikt", version.ref = "clikt" }
+clikt-markdown = { group = "com.github.ajalt.clikt", name = "clikt-markdown", version.ref = "clikt" }
+markout = { group = "io.koalaql", name = "markout", version.ref="markout" }
+markout-markdown = { group = "io.koalaql", name = "markout-markdown", version.ref="markout" }
+
+# Logging
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "kotlin-logging" }
+
+# github
+github-client = { group = "com.spotify", name = "github-client", version = "0.4.8" }
+
+# Other
+semver = { group = "com.github.zafarkhaja", name = "java-semver", version.ref = "semver" }
+snakeyaml = { group = "org.yaml", name = "snakeyaml", version = "2.4" }
+kotlinpoet = { group = "com.squareup", name = "kotlinpoet-jvm", version = "1.18.1" }
+mustache = { group = "com.github.spullara.mustache.java", name = "compiler", version = "0.9.14" }
+autoservice = { group = "com.google.auto.service", name = "auto-service", version = "1.1.1" }
+jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.20.0" }
+
+# JUnit
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine" }
+
+# Kotest
+kotest-runner-junit5 = { group = "io.kotest", name = "kotest-runner-junit5-jvm", version.ref = "kotest" }
+kotest-assertions = { group = "io.kotest", name = "kotest-assertions-core-jvm", version.ref = "kotest" }
+kotest-framework-datatest = { group = "io.kotest", name = "kotest-framework-datatest", version.ref = "kotest" }
+kotest-extensions-koin = { group = "io.kotest.extensions", name = "kotest-extensions-koin", version.ref = "kotest-extensions-koin" }
+
+# AssertJ
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
+
+# Mockk
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+
+# build src dependencies
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+apache-commons-compress = "org.apache.commons:commons-compress:1.26.2"
+pgpainless-core = { group = "org.pgpainless", name = "pgpainless-core", version.ref = "pgpainless" }
+pgpainless-sop = { group = "org.pgpainless", name = "pgpainless-sop", version.ref = "pgpainless" }
+
+# Apache Commons
+apache-commons-lang3 = "org.apache.commons:commons-lang3:3.17.0"
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+test-logger = { id = "com.adarshr.test-logger", version.ref = "test-logger" }
+axion-release = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion-release" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+jreleaser = { id = "org.jreleaser", version.ref = "jreleaser" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish" }
+
+[bundles]
+ktor = [ "ktor-client-core", "ktor-client-cio", "ktor-client-content-negotiation", "ktor-serialization-kotlinx-json" ]
+pgpainless = [ "pgpainless-core", "pgpainless-sop" ]
