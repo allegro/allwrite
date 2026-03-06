@@ -1,0 +1,9 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: pl.allegro.tech.allwrite.recipes.YamlInternalRecipe
+displayName: Internal YAML recipe
+tags:
+  - visibility:internal
+description: Internal YAML recipe description.
+recipeList:
+  - pl.allegro.tech.allwrite.recipes.KotlinRecipe
+  - pl.allegro.tech.allwrite.recipes.JavaRecipe

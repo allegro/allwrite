@@ -1,0 +1,13 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: pl.allegro.tech.allwrite.recipes.SpringBoot4
+displayName: Migration to Spring Boot 4
+tags:
+  - visibility:public
+  - group:springBoot
+  - recipe:upgrade
+  - from:3
+  - to:4
+description: Automatic migration from Spring Boot 3 to Spring Boot 4
+recipeList:
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+

@@ -1,0 +1,15 @@
+COMPREPLY=()
+[ ${#COMP_WORDS[@]} -lt 3 ] && return
+
+current_index=$(( ${#COMP_WORDS[@]} - 1 ))
+recipe_group_index=$(( ${#COMP_WORDS[@]} - 2 ))
+current=${COMP_WORDS[$current_index]}
+recipe_group=${COMP_WORDS[$recipe_group_index]}
+
+case "$recipe_group" in
+{{#entrySet}}
+  {{key}})
+    COMPREPLY=($(compgen -W '{{#value}}{{.}}{{^-last}} {{/-last}}{{/value}}' -- "${current}"))
+    ;;
+{{/entrySet}}
+esac

@@ -1,0 +1,6 @@
+{
+  "recipes": [
+    "pl.allegro.tech.allwrite.recipes.spring-boot-3",
+    "pl.allegro.tech.allwrite.recipes.spring-boot-4"
+  ]
+}
