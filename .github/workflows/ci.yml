@@ -29,7 +29,7 @@ jobs:
       - run: ./gradlew test
 
       - name: Junit report
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v6
         if: success() || failure()
         with:
           report_paths: '**/test-results/*/*.xml'
