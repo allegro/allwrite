@@ -3,7 +3,7 @@ kotlin = "2.0.21"
 ksp = "2.0.21-1.0.28"
 kotlinx-serialization = "1.7.1"
 openrewrite = "8.71.0"
-openrewrite-spring = "6.22.1"
+openrewrite-spring = "6.27.1"
 openrewrite-static-analysis = "2.25.0"
 test-logger = "4.0.0"
 slf4j = { strictly = "2.0.17" }
