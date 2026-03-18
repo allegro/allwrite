@@ -8,27 +8,27 @@ plugins {
 
 recipeClasspaths {
     register("spring-framework") {
-        classpath("org.springframework:spring-context:6.2.17")
-        classpath("org.springframework:spring-core:6.2.17")
-        classpath("org.springframework:spring-beans:6.2.17")
-        classpath("org.springframework:spring-web:6.2.17")
+        classpath("org.springframework:spring-context:7.0.6")
+        classpath("org.springframework:spring-core:7.0.6")
+        classpath("org.springframework:spring-beans:7.0.6")
+        classpath("org.springframework:spring-web:7.0.6")
         classpath("jakarta.annotation:jakarta.annotation-api:2.1.1")
         classpath("jakarta.inject:jakarta.inject-api:2.0.1")
     }
 
     register("pl.allegro.tech.allwrite.recipes.spring.DeleteSpringPropertyFromSpringAnnotations") {
         classpath("org.springframework.boot:spring-boot-test:3.3.0")
-        classpath("org.springframework:spring-test:6.2.17")
-        classpath("org.springframework:spring-core:6.2.17")
-        classpath("org.springframework:spring-context:6.2.17")
+        classpath("org.springframework:spring-test:7.0.6")
+        classpath("org.springframework:spring-core:7.0.6")
+        classpath("org.springframework:spring-context:7.0.6")
     }
 
     register("pl.allegro.tech.allwrite.recipes.spring.QualifyVariable") {
-        classpath("org.springframework:spring-beans:6.2.17")
+        classpath("org.springframework:spring-beans:7.0.6")
     }
 
     register("pl.allegro.tech.allwrite.recipes.SpringBoot4") {
-        classpath("org.springframework:spring-core:6.2.17")
+        classpath("org.springframework:spring-core:7.0.6")
     }
 }
 
