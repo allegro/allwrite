@@ -6,6 +6,7 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
+import io.kotest.matchers.string.shouldContain
 import org.koin.ksp.generated.module
 import org.koin.test.get
 import pl.allegro.tech.allwrite.base.BaseRunnerSpec
@@ -33,9 +34,7 @@ class RunCommandSpec : BaseRunnerSpec() {
 
             result.statusCode shouldBe 1
             result.output.trim() shouldBeEqual """
-            Usage: run [<options>] <recipe> [<from-version>] [<to-version>]
-            
-            Error: missing argument <recipe>
+            Must provide positional argument, --recipe, or --file option
             """.trimIndent()
         }
 
@@ -95,11 +94,47 @@ class RunCommandSpec : BaseRunnerSpec() {
 
             result.statusCode shouldBe 1
             result.output.trim() shouldBeEqual """
-            Usage: run [<options>] <recipe> [<from-version>] [<to-version>]
-            
+            Usage: run [<options>] [<recipe>] [<from-version>] [<to-version>]
+
             Error: got unexpected extra arguments (a b c)
             """.trimIndent()
         }
 
+        test("should fail when non-existing recipe provided") {
+            val result = runCommand.test("--recipe no.such.recipe")
+
+            result.statusCode shouldBe 1
+            result.output.trim() shouldBeEqual """
+            Recipe 'no.such.recipe' not found. $LIST_RECIPES_HINT
+            """.trimIndent()
+        }
+
+        test("should fail when non-existing file provided") {
+            val result = runCommand.test("--file no.such.file")
+
+            result.statusCode shouldBe 1
+            result.output.trim() shouldContain "Specified file not found"
+        }
+
+        test("should run recipe when correct recipe provided") {
+            val result = runCommand.test("--recipe pl.allegro.tech.allwrite.recipes.spring-boot-3")
+
+            result.statusCode shouldBe 0
+
+            fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
+                SPRING_BOOT_3_TEST_RECIPE
+            )
+        }
+
+        test("should run recipe when correct file provided") {
+            val result = runCommand.test("--file src/test/resources/recipes.json")
+
+            result.statusCode shouldBe 0
+
+            fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
+                SPRING_BOOT_3_TEST_RECIPE,
+                SPRING_BOOT_4_TEST_RECIPE
+            )
+        }
     }
 }

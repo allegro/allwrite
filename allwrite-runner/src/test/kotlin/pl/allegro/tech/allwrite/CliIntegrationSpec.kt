@@ -33,7 +33,7 @@ class CliIntegrationSpec : BaseRunnerSpec() {
             fakeSystemEnvironment["PR_MANAGER_SUMMARY_COMMENT_FILE"] = summaryCommentFile.pathString
 
             // when
-            appEntrypoint.execute("run-recipe", "--recipe", FailingPostProcessingRecipe.name)
+            appEntrypoint.execute("run", "--recipe", FailingPostProcessingRecipe.name)
 
             // then
             summaryCommentFile.readText() shouldBe """
