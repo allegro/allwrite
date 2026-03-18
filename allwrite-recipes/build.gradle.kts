@@ -17,7 +17,7 @@ recipeClasspaths {
     }
 
     register("pl.allegro.tech.allwrite.recipes.spring.DeleteSpringPropertyFromSpringAnnotations") {
-        classpath("org.springframework.boot:spring-boot-test:3.3.0")
+        classpath("org.springframework.boot:spring-boot-test:4.0.3")
         classpath("org.springframework:spring-test:6.2.17")
         classpath("org.springframework:spring-core:6.2.17")
         classpath("org.springframework:spring-context:6.2.17")
