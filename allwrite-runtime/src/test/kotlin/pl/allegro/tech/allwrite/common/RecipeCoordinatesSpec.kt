@@ -37,7 +37,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 recipe = "example",
                 fromVersion = Version.of(1L, 2L),
                 toVersion = null
-            ).toString() shouldBeEqual "test/example 1.2.0"
+            ).toString() shouldBeEqual "test/example 1.2"
         }
 
         test("should return fromVersion and toVersion when they are not null") {
@@ -46,7 +46,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 recipe = "example",
                 fromVersion = Version.of(1L, 2L),
                 toVersion = Version.of(3L, 4L, 5L)
-            ).toString() shouldBeEqual "test/example 1.2.0 3.4.5"
+            ).toString() shouldBeEqual "test/example 1.2 3.4.5"
         }
 
         test("should map descriptor to coordinates") {

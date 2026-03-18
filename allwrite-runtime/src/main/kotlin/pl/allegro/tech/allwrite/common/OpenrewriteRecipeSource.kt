@@ -13,14 +13,13 @@ internal class OpenrewriteRecipeSource : RecipeSource {
 
     private val openrewriteEnvironment by lazy {
         Environment.builder()
-            .scanRuntimeClasspath("pl.allegro.tech.allwrite.recipes")
+            .scanRuntimeClasspath("pl.allegro.tech.allwrite.recipes", "org.openrewrite")
             .build()
     }
 
-    override fun findAll(): List<RecipeDescriptor> =
+    override fun findAll(includeInternal: Boolean): List<RecipeDescriptor> =
         openrewriteEnvironment.listRecipeDescriptors()
-            .filter { it.name.startsWith("pl.allegro.tech.allwrite.recipes") }
-            .filter { PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), true) }
+            .filter { includeInternal || PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), ignoreCase = true) }
 
     override fun activate(recipe: String): Recipe = openrewriteEnvironment.activateRecipes(recipe)
 }

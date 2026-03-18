@@ -19,9 +19,9 @@ public data class RecipeCoordinates(
             append("/")
             append(recipe)
             if (fromVersion != null) {
-                append(" $fromVersion")
+                append(" ${fromVersion.toCompactString()}")
                 if (toVersion != null) {
-                    append(" $toVersion")
+                    append(" ${toVersion.toCompactString()}")
                 }
             }
         }
@@ -48,3 +48,14 @@ public fun RecipeDescriptor.getFromVersion(): Version? =
 
 public fun RecipeDescriptor.getToVersion(): Version? =
     tagPropertyOrNull("to")?.let { Version.parse(it, false) }
+
+public fun Version.toCompactString(): String =
+    buildString {
+        append(majorVersion())
+        if (minorVersion() != 0L || patchVersion() != 0L) {
+            append(".${minorVersion()}")
+            if (patchVersion() != 0L) {
+                append(".${patchVersion()}")
+            }
+        }
+    }
