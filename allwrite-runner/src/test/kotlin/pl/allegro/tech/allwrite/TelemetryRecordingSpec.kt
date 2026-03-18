@@ -17,7 +17,6 @@ import pl.allegro.tech.allwrite.fake.os.FakeOperatingSystemModule
 import pl.allegro.tech.allwrite.fake.os.FakeSystemInfo
 import pl.allegro.tech.allwrite.runner.application.ListRecipesCommand
 import pl.allegro.tech.allwrite.runner.application.RunCommand
-import pl.allegro.tech.allwrite.runner.application.RunRecipeCommand
 import pl.allegro.tech.allwrite.runner.application.port.outgoing.Telemetry.CommandOutcome.SUCCESS
 import java.time.Instant
 import kotlin.time.Duration
@@ -25,7 +24,6 @@ import kotlin.time.Duration
 class TelemetryRecordingSpec : BaseRunnerSpec() {
 
     private val listRecipesCommand: ListRecipesCommand by injectEagerly()
-    private val runRecipeCommand: RunRecipeCommand by injectEagerly()
     private val runCommand: RunCommand by injectEagerly()
     private val fakeTelemetryPublisher: FakeTelemetryPublisher by injectEagerly()
 
@@ -58,11 +56,11 @@ class TelemetryRecordingSpec : BaseRunnerSpec() {
         }
 
         test("should record telemetry for successful command with recipes in parameters") {
-            runRecipeCommand.test("--recipe pl.allegro.tech.allwrite.recipes.spring-boot-3")
+            runCommand.test("--recipe pl.allegro.tech.allwrite.recipes.spring-boot-3")
 
             val telemetry = fakeTelemetryPublisher.recordedTelemetries.firstOrNull()
             telemetry.shouldNotBeNull()
-            telemetry.command shouldBe "run-recipe"
+            telemetry.command shouldBe "run"
             telemetry.recipes shouldHaveSize 1
             telemetry.recipes shouldBe listOf("pl.allegro.tech.allwrite.recipes.spring-boot-3")
             telemetry.executionTime shouldBeGreaterThan Duration.ZERO
@@ -104,11 +102,11 @@ class TelemetryRecordingSpec : BaseRunnerSpec() {
         }
 
         test("should record telemetry for successful command with recipes in file") {
-            runRecipeCommand.test("--file src/test/resources/recipes.json")
+            runCommand.test("--file src/test/resources/recipes.json")
 
             val telemetry = fakeTelemetryPublisher.recordedTelemetries.firstOrNull()
             telemetry.shouldNotBeNull()
-            telemetry.command shouldBe "run-recipe"
+            telemetry.command shouldBe "run"
             telemetry.recipes shouldHaveSize 2
             telemetry.recipes shouldBe listOf("pl.allegro.tech.allwrite.recipes.spring-boot-3", "pl.allegro.tech.allwrite.recipes.spring-boot-4")
             telemetry.executionTime shouldBeGreaterThan Duration.ZERO
@@ -127,7 +125,7 @@ class TelemetryRecordingSpec : BaseRunnerSpec() {
         }
 
         test("should not record telemetry for failed command execution") {
-            runRecipeCommand.test("--incorrect parameter")
+            runCommand.test("--incorrect parameter")
 
             val telemetry = fakeTelemetryPublisher.recordedTelemetries.firstOrNull()
             telemetry shouldBe null

@@ -4,7 +4,7 @@ public enum class RecipeVisibility {
     /**
      * For internal usage, can be executed only via ID:
      * ```
-     * allwrite run-recipe --recipe pl.allegro.tech.recipes.SomeInternalRecipe
+     * allwrite run --recipe pl.allegro.tech.recipes.SomeInternalRecipe
      * ```
      */
     INTERNAL,
@@ -14,7 +14,7 @@ public enum class RecipeVisibility {
      * ```
      * allwrite run group/friendlyName
      *
-     * allwrite run-recipe --recipe pl.allegro.tech.recipes.SomePublicRecipe
+     * allwrite run --recipe pl.allegro.tech.recipes.SomePublicRecipe
      * ```
      */
     PUBLIC
