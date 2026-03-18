@@ -20,38 +20,26 @@ internal class RecipeInstantiator(
         try {
             logger.info { "Activating recipe $recipeName" }
             recipeSource.activate(recipeName)
-        } catch (e: RecipeException) {
-            throw PrintMessage(
-                message = "Recipe '$recipeName' not found. ${Messages.LIST_RECIPES_HINT}",
-                statusCode = 1
-            )
+        } catch (_: RecipeException) {
+            throw PrintMessage("Recipe '$recipeName' not found. ${Messages.LIST_RECIPES_HINT}", statusCode = 1)
         }
 
     fun instantiateAll(recipeNames: List<String>): List<Recipe> {
         try {
             logger.info { "Activating recipes: $recipeNames" }
             return recipeNames.map(recipeSource::activate)
-        } catch (e: RecipeException) {
-            throw PrintMessage(
-                message = "Recipe not found. ${Messages.LIST_RECIPES_HINT}",
-                statusCode = 1
-            )
+        } catch (_: RecipeException) {
+            throw PrintMessage("Recipe not found. ${Messages.LIST_RECIPES_HINT}", statusCode = 1)
         }
     }
 
     fun instantiateFrom(file: File): List<Recipe> {
         val recipeSet = try {
             JSON.decodeFromString<RecipeSet>(file.readText())
-        } catch (e: FileNotFoundException) {
-            throw PrintMessage(
-                message = "Specified file not found: ${file.absolutePath}",
-                statusCode = 1
-            )
-        } catch (e: IllegalArgumentException) {
-            throw PrintMessage(
-                message = "Can't parse file as JSON: ${file.absolutePath}",
-                statusCode = 1
-            )
+        } catch (_: FileNotFoundException) {
+            throw PrintMessage("Specified file not found: ${file.absolutePath}", statusCode = 1)
+        } catch (_: IllegalArgumentException) {
+            throw PrintMessage("Can't parse file as JSON: ${file.absolutePath}", statusCode = 1)
         }
         return recipeSet.recipes.map(this::instantiate)
     }
