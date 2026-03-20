@@ -9,6 +9,7 @@ import org.openrewrite.java.tree.JavaType
 import org.openrewrite.java.tree.Statement
 import org.openrewrite.java.tree.TypeUtils
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
+import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.spring.util.ANNOTATION_QUALIFIER
 import pl.allegro.tech.allwrite.recipes.spring.util.Variable
@@ -23,7 +24,16 @@ public class RenameTaskExecutorBean : AllwriteScanningRecipe<RenameTaskExecutorB
     displayName = "Rename task executor bean",
     description = "Rename task executor bean, as required by [Spring Boot 3.5](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.5-Release-Notes#auto-configured-taskexecutor-names).",
     visibility = RecipeVisibility.INTERNAL,
-) {
+), ClasspathAwareRecipe {
+
+    override fun requireOnClasspath(): List<String> =
+        listOf(
+            "spring-context-6",
+            "spring-core-6",
+            "spring-beans-6",
+            "jakarta.annotation-api-2",
+            "jakarta.inject-api-2",
+        )
 
     public data class Context(
         var hasCustomTaskExecutorBean: Boolean = false,

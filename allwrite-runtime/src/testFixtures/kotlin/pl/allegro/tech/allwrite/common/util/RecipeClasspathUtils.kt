@@ -1,39 +1,21 @@
 package pl.allegro.tech.allwrite.common.util
 
-import org.openrewrite.Recipe
+import org.openrewrite.InMemoryExecutionContext
+import org.openrewrite.groovy.GroovyParser
 import org.openrewrite.java.JavaParser
 import org.openrewrite.kotlin.KotlinParser
-import org.openrewrite.groovy.GroovyParser
 import org.openrewrite.test.RecipeSpec
-import pl.allegro.tech.allwrite.common.RecipeClasspathResolver
-import java.nio.file.Path
-
-private val resolver = RecipeClasspathResolver()
+import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 
 fun RecipeSpec.withRecipeClasspath(): RecipeSpec {
-    val recipeClasspath = recipe?.let(::classpathFor)
-        ?: error(".withRecipeClasspath() must be called after .recipe()")
+    val recipe = recipe ?: error(".withRecipeClasspath() must be called after .recipe()")
+    val classpathAwareRecipe = recipe as? ClasspathAwareRecipe ?: error(".withRecipeClasspath() is only supported for ClasspathAwareRecipe")
+    val artifacts = classpathAwareRecipe.requireOnClasspath().toTypedArray()
+    val ctx = InMemoryExecutionContext()
 
-    return withClasspath(recipeClasspath)
-}
+    parser(JavaParser.fromJavaVersion().classpathFromResources(ctx, *artifacts))
+    parser(KotlinParser.builder().classpathFromResources(ctx, *artifacts))
+    parser(GroovyParser.builder().classpathFromResource(ctx, *artifacts))
 
-fun RecipeSpec.withClasspathFor(recipeName: String): RecipeSpec {
-    val recipeClasspath = classpathFor(recipeName)
-    return withClasspath(recipeClasspath)
-}
-
-private fun RecipeSpec.withClasspath(classpath: List<Path>): RecipeSpec {
-    parser(JavaParser.fromJavaVersion().classpath(classpath))
-    parser(KotlinParser.builder().classpath(classpath))
-    parser(GroovyParser.builder().classpath(classpath))
     return this
 }
-
-fun classpathFor(recipe: Recipe) =
-    resolver.resolveClasspathTransitive(recipe)
-
-fun classpathFor(recipeName: String) =
-    resolver.resolveClasspathNonTransitive(recipeName)
-
-inline fun <reified T> classpathFor(): List<Path> =
-    classpathFor(T::class.qualifiedName ?: error("Can't provide classpath for unnamed class $${T::class}"))

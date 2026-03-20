@@ -5,8 +5,8 @@ import org.openrewrite.Recipe
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
 import org.openrewrite.test.RewriteTest.toRecipe
-import pl.allegro.tech.allwrite.recipes.AllwriteRecipe
-import pl.allegro.tech.allwrite.recipes.RecipeVisibility
+import pl.allegro.tech.allwrite.AllwriteRecipe
+import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.buildGradle
 import pl.allegro.tech.allwrite.recipes.buildGradleKts
 import java.util.function.Supplier

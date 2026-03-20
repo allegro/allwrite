@@ -2,31 +2,22 @@ plugins {
     `java-library`
     `maven-publish`
     `java-test-fixtures`
+    alias(libs.plugins.openrewrite.recipe.library.base)
     id("conventions.kotlin")
     id("conventions.koin")
-    id("conventions.recipe-classpaths")
 }
 
-recipeClasspaths {
-    register("spring-framework") {
-        classpath("org.springframework:spring-context:6.2.17")
-        classpath("org.springframework:spring-core:6.2.17")
-        classpath("org.springframework:spring-beans:6.2.17")
-        classpath("org.springframework:spring-web:6.2.17")
-        classpath("jakarta.annotation:jakarta.annotation-api:2.1.1")
-        classpath("jakarta.inject:jakarta.inject-api:2.0.1")
-    }
+recipeDependencies {
+    parserClasspath("org.springframework.boot:spring-boot-test:3.3.+")
 
-    register("pl.allegro.tech.allwrite.recipes.spring.DeleteSpringPropertyFromSpringAnnotations") {
-        classpath("org.springframework.boot:spring-boot-test:3.3.0")
-        classpath("org.springframework:spring-test:6.2.17")
-        classpath("org.springframework:spring-core:6.2.17")
-        classpath("org.springframework:spring-context:6.2.17")
-    }
+    parserClasspath("org.springframework:spring-context:6.+")
+    parserClasspath("org.springframework:spring-core:6.+")
+    parserClasspath("org.springframework:spring-beans:6.+")
+    parserClasspath("org.springframework:spring-web:6.+")
+    parserClasspath("org.springframework:spring-test:6.+")
 
-    register("pl.allegro.tech.allwrite.recipes.spring.QualifyVariable") {
-        classpath("org.springframework:spring-beans:6.2.17")
-    }
+    parserClasspath("jakarta.annotation:jakarta.annotation-api:2.+")
+    parserClasspath("jakarta.inject:jakarta.inject-api:2.+")
 }
 
 dependencies {

@@ -16,11 +16,17 @@ java {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(libs.versions.jvm.get().toInt())
     explicitApi()
 }
 
 tasks {
+    afterEvaluate {
+        withType<JavaCompile>().configureEach {
+            options.release = libs.versions.jvm.get().toInt()
+        }
+    }
+
     withType<KotlinCompile>().configureEach {
         compilerOptions {
             freeCompilerArgs.addAll("-opt-in=kotlin.io.path.ExperimentalPathApi")

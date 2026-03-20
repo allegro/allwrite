@@ -20,7 +20,6 @@ dependencies {
     implementation(projects.allwriteRuntime)
 
     implementation(projects.allwriteRecipes)
-    implementation(recipeClasspaths(projects.allwriteRecipes))
 
     // OpenRewrite
     implementation(libs.rewrite.java)
