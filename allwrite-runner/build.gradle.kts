@@ -20,7 +20,6 @@ dependencies {
     implementation(projects.allwriteRuntime)
 
     implementation(projects.allwriteRecipes)
-    implementation(recipeClasspaths(projects.allwriteRecipes))
 
     // OpenRewrite
     implementation(libs.rewrite.java)
@@ -61,20 +60,6 @@ dependencies {
     implementation(projects.allwriteCompletions)
 }
 
-testing.suites.register<JvmTestSuite>("e2e") {
-    dependencies {
-        implementation(libs.kotest.runner.junit5)
-        implementation(libs.kotest.assertions)
-        implementation(libs.apache.commons.lang3)
-    }
-
-    targets.all {
-        testTask {
-            dependsOn(tasks.jreleaserAssemble)
-        }
-    }
-}
-
 /**
  * Example command for local testing:
  * ./gradlew :allwrite-runner:run --args "run spring-boot/upgrade 3 4" -Pworkdir=/Users/username/IdeaProjects/some-service
@@ -88,15 +73,7 @@ tasks {
         archiveFileName = "allwrite.zip"
     }
 
-    distTar {
-        archiveFileName = "allwrite.tar"
-    }
-
     installDist {
         into(layout.buildDirectory.dir("installation"))
-    }
-
-    check {
-        dependsOn("e2e")
     }
 }

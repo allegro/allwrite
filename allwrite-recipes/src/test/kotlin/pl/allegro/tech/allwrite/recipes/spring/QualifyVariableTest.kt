@@ -9,7 +9,6 @@ import org.openrewrite.java.JavaParser
 import org.openrewrite.java.tree.J
 import org.openrewrite.kotlin.KotlinParser
 import org.openrewrite.kotlin.tree.K
-import pl.allegro.tech.allwrite.common.util.classpathFor
 import pl.allegro.tech.allwrite.recipes.spring.util.Variable
 import kotlin.jvm.optionals.getOrNull
 
@@ -257,7 +256,7 @@ class QualifyVariableTest {
 
     companion object {
         private val parser = JavaParser.fromJavaVersion()
-            .classpath(classpathFor<QualifyVariable>())
+            .classpathFromResources(InMemoryExecutionContext(), "spring-beans-6")
             .build()
         val kotlinParser: KotlinParser = KotlinParser.builder().build()
     }

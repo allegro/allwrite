@@ -9,6 +9,7 @@ import org.openrewrite.java.tree.Expression
 import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.JavaType.FullyQualified
 import pl.allegro.tech.allwrite.AllwriteRecipe
+import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.java.AnnotationArgument
 import pl.allegro.tech.allwrite.recipes.java.MultiValueAnnotationArgument
@@ -22,7 +23,16 @@ public class DeleteSpringPropertyFromSpringAnnotations(
 ) : AllwriteRecipe(
     displayName = "Remove Spring property from @SpringBootTest and @TestPropertySource annotations",
     visibility = INTERNAL
-) {
+), ClasspathAwareRecipe {
+
+    override fun requireOnClasspath(): List<String> =
+        listOf(
+            "spring-boot-test-3",
+            "spring-test-6",
+            "spring-core-6",
+            "spring-context-6",
+        )
+
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
         return Visitor(propertyName)
     }

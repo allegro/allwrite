@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.recipes.java.parser
+package pl.allegro.tech.allwrite.common
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals

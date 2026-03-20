@@ -19,15 +19,14 @@ import org.openrewrite.text.PlainTextParser
 import org.openrewrite.toml.TomlParser
 import org.openrewrite.tree.ParseError
 import org.openrewrite.yaml.YamlParser
+import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.ParsingAwareRecipe
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.extension
 
 @Single
-internal class SourceFilesParser(
-    private val recipeClasspathResolver: RecipeClasspathResolver
-) {
+internal class SourceFilesParser {
 
     fun parseSourceFiles(recipe: Recipe, files: List<Path>, ctx: ExecutionContext): List<SourceFile> {
         val filesToParse = selectFilesToParse(recipe, files)
@@ -36,8 +35,8 @@ internal class SourceFilesParser(
         val allParsedFiles = mutableListOf<SourceFile>()
 
         val classpath = resolveClasspath(recipe)
-        val sourceSet = JavaSourceSet.build("allwrite", classpath)
-        val parsers = createParsers(classpath)
+        val sourceSet = JavaSourceSet.build("allwrite", emptyList()) // TODO is it ok to put empty list here?
+        val parsers = createParsers(classpath, ctx)
 
         for (parser in parsers) {
             val acceptedFiles = remainingFiles.filter(parser::accept)
@@ -67,23 +66,23 @@ internal class SourceFilesParser(
     private fun selectFilesToParse(recipe: Recipe, files: List<Path>) =
         (recipe as? ParsingAwareRecipe)?.selectFilesToParse(files) ?: files
 
-    private fun resolveClasspath(recipe: Recipe): List<Path> {
-        val classpath = recipeClasspathResolver.resolveClasspathTransitive(recipe)
-        if (classpath.isNotEmpty()) {
-            logger.info { "Resolved recipe classpath: ${classpath.map { it.fileName }}" }
+    private fun resolveClasspath(recipe: Recipe): List<String> {
+        val artifacts = (recipe as? ClasspathAwareRecipe)?.requireOnClasspath() ?: emptyList()
+
+        if (artifacts.isNotEmpty()) {
+            logger.info { "Resolved recipe classpath: $artifacts" }
         } else {
             logger.info { "No recipe classpath resolved" }
         }
-
-        return classpath
+        return artifacts
     }
 
-    private fun createParsers(classpath: List<Path>): List<Parser> {
+    private fun createParsers(classpath: List<String>, ctx: ExecutionContext): List<Parser> {
         return listOf(
             GradleParser.builder().build(),
-            KotlinParser.builder().classpath(classpath).build(),
-            GroovyParser.builder().classpath(classpath).build(),
-            JavaParser.fromJavaVersion().classpath(classpath).build(),
+            KotlinParser.builder().classpathFromResources(ctx, *classpath.toTypedArray()).build(),
+            GroovyParser.builder().classpathFromResource(ctx, *classpath.toTypedArray()).build(),
+            JavaParser.fromJavaVersion().classpathFromResources(ctx, *classpath.toTypedArray()).build(),
             YamlParser.builder().build(),
             TomlParser.builder().build(),
             PropertiesParser.builder().build(),
