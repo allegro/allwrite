@@ -1,6 +1,5 @@
-package pl.allegro.tech.allwrite.recipes.java.parser
+package pl.allegro.tech.allwrite.common
 
-import org.openrewrite.Cursor
 import org.openrewrite.ExecutionContext
 import org.openrewrite.Tree
 import org.openrewrite.java.JavaIsoVisitor
@@ -11,7 +10,7 @@ import org.openrewrite.java.tree.J
  * java:
  * - unnamed variables in lambda arguments ([JEP 456](https://openjdk.org/jeps/456))
  */
-public class Java22TreeAdapterVisitor : JavaIsoVisitor<ExecutionContext>() {
+internal class Java22TreeAdapterVisitor : JavaIsoVisitor<ExecutionContext>() {
 
     override fun visit(tree: Tree?, p: ExecutionContext): J? {
         val result = UnnamedLambdaArgumentsVisitor().visit(tree, p)

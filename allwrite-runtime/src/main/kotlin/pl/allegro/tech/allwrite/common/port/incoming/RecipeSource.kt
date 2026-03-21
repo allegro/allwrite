@@ -5,5 +5,5 @@ import org.openrewrite.config.RecipeDescriptor
 
 public interface RecipeSource {
     public fun findAll(includeInternal: Boolean = false): List<RecipeDescriptor>
-    public fun activate(recipe: String): Recipe
+    public fun get(recipe: String): Recipe
 }

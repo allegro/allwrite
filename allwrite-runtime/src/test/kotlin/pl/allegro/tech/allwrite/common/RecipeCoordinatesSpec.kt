@@ -16,7 +16,7 @@ class RecipeCoordinatesSpec : FunSpec() {
         test("should return group and name when versions are not present") {
             RecipeCoordinates(
                 group = "test",
-                recipe = "example",
+                action = "example",
                 fromVersion = null,
                 toVersion = null
             ).toString() shouldBeEqual "test/example"
@@ -25,7 +25,7 @@ class RecipeCoordinatesSpec : FunSpec() {
         test("should not return toVersion when fromVersion is null") {
             RecipeCoordinates(
                 group = "test",
-                recipe = "example",
+                action = "example",
                 fromVersion = null,
                 toVersion = Version.of(1L)
             ).toString() shouldBeEqual "test/example"
@@ -34,7 +34,7 @@ class RecipeCoordinatesSpec : FunSpec() {
         test("should return fromVersion when it is not null") {
             RecipeCoordinates(
                 group = "test",
-                recipe = "example",
+                action = "example",
                 fromVersion = Version.of(1L, 2L),
                 toVersion = null
             ).toString() shouldBeEqual "test/example 1.2"
@@ -43,7 +43,7 @@ class RecipeCoordinatesSpec : FunSpec() {
         test("should return fromVersion and toVersion when they are not null") {
             RecipeCoordinates(
                 group = "test",
-                recipe = "example",
+                action = "example",
                 fromVersion = Version.of(1L, 2L),
                 toVersion = Version.of(3L, 4L, 5L)
             ).toString() shouldBeEqual "test/example 1.2 3.4.5"
@@ -54,7 +54,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "group:some-group",
-                    "recipe:some-type",
+                    "action:some-action",
                     "from:1.0.0",
                     "to:2.0.0",
                 )
@@ -66,7 +66,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             // then
             recipeCoordinates shouldBe RecipeCoordinates(
                 group = "some-group",
-                recipe = "some-type",
+                action = "some-action",
                 fromVersion = Version.parse("1.0.0", false),
                 toVersion = Version.parse("2.0.0", false)
             )
@@ -77,7 +77,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "group:some-group",
-                    "recipe:some-type",
+                    "action:some-action",
                 )
             )
 
@@ -87,7 +87,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             // then
             recipeCoordinates shouldBe RecipeCoordinates(
                 group = "some-group",
-                recipe = "some-type",
+                action = "some-action",
                 fromVersion = null,
                 toVersion = null
             )
@@ -112,7 +112,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             // given
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
-                    "recipe:some-recipe",
+                    "action:some-action",
                 )
             )
 

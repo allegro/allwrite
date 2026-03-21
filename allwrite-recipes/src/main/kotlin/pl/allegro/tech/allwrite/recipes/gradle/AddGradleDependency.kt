@@ -7,8 +7,8 @@ import org.openrewrite.Tree
 import org.openrewrite.TreeVisitor
 import org.openrewrite.toml.tree.Toml
 import org.slf4j.LoggerFactory
-import pl.allegro.tech.allwrite.recipes.AllwriteScanningRecipe
-import pl.allegro.tech.allwrite.recipes.RecipeVisibility
+import pl.allegro.tech.allwrite.AllwriteScanningRecipe
+import pl.allegro.tech.allwrite.RecipeVisibility
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.Path

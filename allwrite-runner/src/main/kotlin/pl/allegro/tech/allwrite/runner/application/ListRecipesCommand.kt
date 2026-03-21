@@ -10,7 +10,7 @@ import pl.allegro.tech.allwrite.common.port.incoming.RecipeSource
 import pl.allegro.tech.allwrite.common.port.incoming.tagPropertyOrNull
 import pl.allegro.tech.allwrite.common.port.incoming.toCompactString
 import pl.allegro.tech.allwrite.common.port.incoming.toRecipeCoordinatesOrNull
-import pl.allegro.tech.allwrite.recipes.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 import pl.allegro.tech.allwrite.runner.application.CommandExecutionResult.ExecutionResult
 import com.github.ajalt.mordant.markdown.Markdown as MdWidget
 
@@ -59,7 +59,7 @@ internal class ListRecipesCommand(
             .sortedBy { it.group }
             .joinToString(separator = "\n") {
                 buildString {
-                    append("${it.group}/${it.recipe}")
+                    append("${it.group}/${it.action}")
                     it.fromVersion?.let { append(" ${it.toCompactString()}") }
                     it.toVersion?.let { append(" ${it.toCompactString()}") }
                 }
@@ -96,7 +96,7 @@ internal class ListRecipesCommand(
             .sortedBy { it.first.group }
             .map { (coords, descriptor) ->
                 buildString {
-                    append("${coords.group}/${coords.recipe}")
+                    append("${coords.group}/${coords.action}")
                     coords.fromVersion?.let { append(" ${it.toCompactString()}") }
                     coords.toVersion?.let { append(" ${it.toCompactString()}") }
                     append(" -> ${descriptor.name}")

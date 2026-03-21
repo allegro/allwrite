@@ -5,19 +5,19 @@ import org.openrewrite.config.RecipeDescriptor
 
 public data class RecipeCoordinates(
     val group: String,
-    val recipe: String,
+    val action: String,
     val fromVersion: Version?,
     val toVersion: Version?
 ) {
 
     public val canonicalName: String
-        get() = "$group/$recipe"
+        get() = "$group/$action"
 
     override fun toString(): String =
         buildString {
             append(group)
             append("/")
-            append(recipe)
+            append(action)
             if (fromVersion != null) {
                 append(" ${fromVersion.toCompactString()}")
                 if (toVersion != null) {
@@ -31,7 +31,7 @@ public fun RecipeDescriptor.toRecipeCoordinatesOrNull(): RecipeCoordinates? =
     runCatching {
         RecipeCoordinates(
             group = tagProperty("group"),
-            recipe = tagProperty("recipe"),
+            action = tagProperty("action"),
             fromVersion = getFromVersion(),
             toVersion = getToVersion()
         )

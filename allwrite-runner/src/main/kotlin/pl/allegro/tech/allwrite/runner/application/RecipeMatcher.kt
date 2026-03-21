@@ -20,10 +20,50 @@ internal class RecipeMatcher(
         val descriptors = recipeSource.findAll()
         val groupRecipes = descriptors
             .filter { group == it.tagPropertyOrNull("group") }
-            .filter { recipe == it.tagPropertyOrNull("recipe") }
+            .filter { recipe == it.tagPropertyOrNull("action") }
 
         return findExactMatch(from, to, groupRecipes)?.let(::listOf)
             ?: findAllMatching(from, to, groupRecipes)
+    }
+
+    fun findMatchingByTargetVersion(group: String, recipe: String, to: Version): List<RecipeDescriptor> {
+        val descriptors = recipeSource.findAll()
+        val groupRecipes = descriptors
+            .filter { group == it.tagPropertyOrNull("group") }
+            .filter { recipe == it.tagPropertyOrNull("action") }
+            .filter { it.getFromVersion() != null && it.getToVersion() != null }
+
+        val lowestFrom = groupRecipes
+            .map { it.getFromVersion()!! }
+            .minOrNull() ?: return emptyList()
+
+        val directRecipe = groupRecipes
+            .filter { lowestFrom.isSameMinorVersionAs(it.getFromVersion()) }
+            .firstOrNull { to.isSameMinorVersionAs(it.getToVersion()) }
+
+        if (directRecipe != null) {
+            return listOf(directRecipe)
+        }
+
+        return buildRecipeChain(lowestFrom, to, groupRecipes)
+    }
+
+    private fun buildRecipeChain(from: Version, to: Version, recipes: List<RecipeDescriptor>): List<RecipeDescriptor> {
+        val chain = mutableListOf<RecipeDescriptor>()
+        var current = from
+
+        while (current.isLowerThan(to)) {
+            val next = recipes
+                .filter { current.isSameMinorVersionAs(it.getFromVersion()) }
+                .filter { to.isHigherThanOrEquivalentTo(it.getToVersion()!!) }
+                .maxByOrNull { it.getToVersion()!! }
+                ?: return emptyList()
+
+            chain.add(next)
+            current = next.getToVersion()!!
+        }
+
+        return chain
     }
 
     private fun findExactMatch(from: Version?, to: Version?, recipes: List<RecipeDescriptor>): RecipeDescriptor? =

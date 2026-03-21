@@ -36,7 +36,7 @@ internal class RunCommand(
     private val recipeExecutor: RecipeExecutor
 ) : SubCommand(
     name = COMMAND_NAME,
-    help = "Runs a recipe. Supports positional arguments <group>/<type> [<from> <to>], --recipe <id>, or --file <path>"
+    help = "Runs a recipe. Supports positional arguments <group>/<action> [<from> <to>], --recipe <id>, or --file <path>"
 ) {
 
     private val recipeFriendlyName: String? by argument(
@@ -84,13 +84,17 @@ internal class RunCommand(
     }
 
     private fun runByFriendlyName(canonicalName: String): ExecutionResult {
-        val (group, type) = decomposeCanonicalName(canonicalName)
-        if (group.isNullOrEmpty() || type.isNullOrEmpty()) {
-            throw PrintMessage("Invalid group or type: $canonicalName. The expected syntax is <group>/<type>. $LIST_RECIPES_HINT", statusCode = 1)
+        val (group, action) = decomposeCanonicalName(canonicalName)
+        if (group.isNullOrEmpty() || action.isNullOrEmpty()) {
+            throw PrintMessage("Invalid group or action: $canonicalName. The expected syntax is <group>/<action>. $LIST_RECIPES_HINT", statusCode = 1)
         }
 
-        val coordinates = RecipeCoordinates(group, type, fromVersion, toVersion)
-        val matching = recipeMatcher.findMatching(coordinates).map { it.name }
+        val matching = if (fromVersion != null && toVersion == null) {
+            recipeMatcher.findMatchingByTargetVersion(group, action, fromVersion!!).map { it.name }
+        } else {
+            val coordinates = RecipeCoordinates(group, action, fromVersion, toVersion)
+            recipeMatcher.findMatching(coordinates).map { it.name }
+        }
 
         if (matching.isEmpty()) {
             throw PrintMessage(

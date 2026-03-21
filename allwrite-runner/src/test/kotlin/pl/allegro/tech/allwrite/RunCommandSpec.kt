@@ -89,6 +89,28 @@ class RunCommandSpec : BaseRunnerSpec() {
             )
         }
 
+        test("should run chain of recipes when only target version is provided") {
+            val result = runCommand.test("spring-boot/upgrade 4")
+
+            result.statusCode shouldBe 0
+
+            fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
+                SPRING_BOOT_3_TEST_RECIPE,
+                SPRING_BOOT_4_TEST_RECIPE
+            )
+        }
+
+        test("should fail when only target version is provided and no matching recipes found") {
+            val result = runCommand.test("spring-boot/upgrade 999")
+
+            result.statusCode shouldBe 1
+            result.output.trim() shouldBeEqual """
+            No matching recipes found. $LIST_RECIPES_HINT
+            """.trimIndent()
+
+            fakeRecipeExecutor.executedRecipes.shouldBeEmpty()
+        }
+
         test("should fail when odd arguments are present") {
             val result = runCommand.test("spring-boot/upgrade", "2", "3", "a", "b", "c")
 
