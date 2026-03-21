@@ -10,8 +10,8 @@ import org.openrewrite.java.tree.JRightPadded
 import org.openrewrite.java.tree.JavaType
 import org.openrewrite.java.tree.Space
 import org.openrewrite.marker.Markers
-import pl.allegro.tech.allwrite.recipes.AllwriteRecipe
-import pl.allegro.tech.allwrite.recipes.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.AllwriteRecipe
+import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import java.util.UUID
 
 public class ReplaceFactoryWithConstructor(

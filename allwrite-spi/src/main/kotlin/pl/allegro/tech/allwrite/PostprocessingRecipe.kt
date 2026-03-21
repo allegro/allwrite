@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.recipes
+package pl.allegro.tech.allwrite
 
 public interface PostprocessingRecipe {
     public fun postprocess(): PostprocessingResult

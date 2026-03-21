@@ -3,6 +3,7 @@ plugins {
     `maven-publish`
     `java-test-fixtures`
     id("conventions.kotlin")
+    id("conventions.koin")
     id("conventions.recipe-classpaths")
 }
 
@@ -29,10 +30,14 @@ recipeClasspaths {
 }
 
 dependencies {
+    api(projects.allwriteSpi)
+    implementation(projects.allwriteRuntime)
+
     implementation(platform(libs.rewrite.bom))
     implementation(libs.rewrite.java)
     implementation(libs.rewrite.java17)
     implementation(libs.rewrite.java21)
+    implementation(libs.rewrite.java25)
     implementation(libs.rewrite.kotlin)
     implementation(libs.rewrite.groovy)
     implementation(libs.rewrite.yaml)

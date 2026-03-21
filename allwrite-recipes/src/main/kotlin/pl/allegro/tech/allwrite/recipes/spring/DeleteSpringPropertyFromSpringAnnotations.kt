@@ -8,8 +8,8 @@ import org.openrewrite.java.JavaIsoVisitor
 import org.openrewrite.java.tree.Expression
 import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.JavaType.FullyQualified
-import pl.allegro.tech.allwrite.recipes.AllwriteRecipe
-import pl.allegro.tech.allwrite.recipes.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.AllwriteRecipe
+import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.java.AnnotationArgument
 import pl.allegro.tech.allwrite.recipes.java.MultiValueAnnotationArgument
 import pl.allegro.tech.allwrite.recipes.java.PrimitiveAnnotationArgument

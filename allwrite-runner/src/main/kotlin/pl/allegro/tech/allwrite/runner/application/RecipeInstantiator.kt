@@ -19,7 +19,7 @@ internal class RecipeInstantiator(
     fun instantiate(recipeName: String): Recipe =
         try {
             logger.info { "Activating recipe $recipeName" }
-            recipeSource.activate(recipeName)
+            recipeSource.get(recipeName)
         } catch (_: RecipeException) {
             throw PrintMessage("Recipe '$recipeName' not found. ${Messages.LIST_RECIPES_HINT}", statusCode = 1)
         }
@@ -27,8 +27,8 @@ internal class RecipeInstantiator(
     fun instantiateAll(recipeNames: List<String>): List<Recipe> {
         try {
             logger.info { "Activating recipes: $recipeNames" }
-            return recipeNames.map(recipeSource::activate)
-        } catch (_: RecipeException) {
+            return recipeNames.map(recipeSource::get)
+        } catch (e: RecipeException) {
             throw PrintMessage("Recipe not found. ${Messages.LIST_RECIPES_HINT}", statusCode = 1)
         }
     }

@@ -1,16 +1,18 @@
-package pl.allegro.tech.allwrite.recipes
+package pl.allegro.tech.allwrite
 
 import org.openrewrite.ScanningRecipe
 
 public abstract class AllwriteScanningRecipe<T : Any>(
     displayName: String? = null,
     description: String? = null,
-    public val visibility: RecipeVisibility = RecipeVisibility.INTERNAL,
-    public val group: String? = null,
-    public val recipe: String? = null,
+    visibility: RecipeVisibility = RecipeVisibility.INTERNAL,
+    group: String? = null,
+    recipe: String? = null,
+    from: String? = null,
+    to: String? = null,
 ) : ScanningRecipe<T>() {
 
-    private val metadata = RecipeMetadata(displayName, description, visibility, group, recipe)
+    private val metadata = RecipeMetadata(displayName, description, visibility, group, recipe, from, to)
 
     override fun getDisplayName(): String = metadata.displayName
     override fun getDescription(): String = metadata.description

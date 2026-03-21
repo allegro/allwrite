@@ -6,7 +6,7 @@ import org.openrewrite.RecipeException
 import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.common.port.incoming.RecipeSource
 import pl.allegro.tech.allwrite.common.port.incoming.tagPropertyOrNull
-import pl.allegro.tech.allwrite.recipes.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 
 @Single
 class FakeRecipeSource(val recipes: List<Recipe> = TEST_RECIPES) : RecipeSource {
@@ -17,7 +17,7 @@ class FakeRecipeSource(val recipes: List<Recipe> = TEST_RECIPES) : RecipeSource 
         recipes.map(Recipe::getDescriptor)
             .filter { includeInternal || PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), ignoreCase = true) }
 
-    override fun activate(recipe: String): Recipe =
+    override fun get(recipe: String): Recipe =
         recipes
             .firstOrNull { it.name == recipe }
             ?: throw RecipeException("Recipes not found: $recipe")
@@ -28,25 +28,25 @@ class FakeRecipeSource(val recipes: List<Recipe> = TEST_RECIPES) : RecipeSource 
             id = "pl.allegro.tech.allwrite.recipes.spring-boot-3",
             displayName = "This recipe upgrades Spring Boot\n2 to 3",
             description = "Longer first description\nline break",
-            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:spring-boot", "recipe:upgrade")
+            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:spring-boot", "action:upgrade")
         )
         val SPRING_BOOT_4_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.spring-boot-4",
             displayName = "Upgrade Spring Boot from 3 to 4",
             description = "This recipe upgrades Spring Boot\n3 to 4",
-            tags = setOf("visibility:PUBLIC", "from:3", "to:4", "group:spring-boot", "recipe:upgrade")
+            tags = setOf("visibility:PUBLIC", "from:3", "to:4", "group:spring-boot", "action:upgrade")
         )
         val JACKSON_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.jackson",
             displayName = "Move from Jackson to kotlinx-serialization",
             description = "Move from Jackson to kotlinx-serialization.",
-            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:jackson", "recipe:upgrade")
+            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:jackson", "action:upgrade")
         )
         val SETUP_CI_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.setup-ci",
             displayName = "Setup CI",
             description = "Introduce CI setup action",
-            tags = setOf("visibility:PUBLIC", "group:workflows", "recipe:introduceSetupCi")
+            tags = setOf("visibility:PUBLIC", "group:workflows", "action:introduceSetupCi")
         )
         val EXPAND_MAPPINGS_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.yaml.ExpandMappings",

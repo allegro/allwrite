@@ -39,6 +39,7 @@ rewrite-java = { group = "org.openrewrite", name = "rewrite-java" }
 rewrite-java11 = { group = "org.openrewrite", name = "rewrite-java-11" }
 rewrite-java17 = { group = "org.openrewrite", name = "rewrite-java-17" }
 rewrite-java21 = { group = "org.openrewrite", name = "rewrite-java-21" }
+rewrite-java25 = { group = "org.openrewrite", name = "rewrite-java-25" }
 rewrite-yaml = { group = "org.openrewrite", name = "rewrite-yaml" }
 rewrite-toml = { group = "org.openrewrite", name = "rewrite-toml" }
 rewrite-properties = { group = "org.openrewrite", name = "rewrite-properties" }

@@ -5,8 +5,8 @@ import org.openrewrite.Option
 import org.openrewrite.TreeVisitor
 import org.openrewrite.yaml.YamlIsoVisitor
 import org.openrewrite.yaml.tree.Yaml
-import pl.allegro.tech.allwrite.recipes.AllwriteRecipe
-import pl.allegro.tech.allwrite.recipes.RecipeVisibility
+import pl.allegro.tech.allwrite.AllwriteRecipe
+import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.yaml.YamlPath.Companion.toYamlPath
 import pl.allegro.tech.allwrite.recipes.yaml.visitor.AutoFormatVisitor
 

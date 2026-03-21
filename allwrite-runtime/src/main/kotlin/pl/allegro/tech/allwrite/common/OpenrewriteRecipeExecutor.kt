@@ -12,8 +12,8 @@ import pl.allegro.tech.allwrite.common.port.incoming.RecipeExecutor
 import pl.allegro.tech.allwrite.common.port.outgoing.Problem
 import pl.allegro.tech.allwrite.common.port.outgoing.UserProblemReporter
 import pl.allegro.tech.allwrite.common.util.WORKDIR
-import pl.allegro.tech.allwrite.recipes.PostprocessingRecipe
-import pl.allegro.tech.allwrite.recipes.PostprocessingResult
+import pl.allegro.tech.allwrite.PostprocessingRecipe
+import pl.allegro.tech.allwrite.PostprocessingResult
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.deleteIfExists

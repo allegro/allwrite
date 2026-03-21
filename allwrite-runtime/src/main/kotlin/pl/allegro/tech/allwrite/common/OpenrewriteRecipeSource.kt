@@ -6,20 +6,31 @@ import org.openrewrite.config.Environment
 import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.common.port.incoming.RecipeSource
 import pl.allegro.tech.allwrite.common.port.incoming.tagPropertyOrNull
-import pl.allegro.tech.allwrite.recipes.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 
 @Single
 internal class OpenrewriteRecipeSource : RecipeSource {
 
-    private val openrewriteEnvironment by lazy {
-        Environment.builder()
-            .scanRuntimeClasspath("pl.allegro.tech.allwrite.recipes", "org.openrewrite")
-            .build()
-    }
+    private val allwriteEnvironment = Environment.builder()
+        .scanRuntimeClasspath(ALLWRITE_PACKAGE)
+        .build()
+
+    private val openrewriteEnvironment = Environment.builder()
+        .scanRuntimeClasspath(OPEN_REWRITE_PACKAGE)
+        .build()
 
     override fun findAll(includeInternal: Boolean): List<RecipeDescriptor> =
-        openrewriteEnvironment.listRecipeDescriptors()
+        listOf(allwriteEnvironment, openrewriteEnvironment)
+            .flatMap(Environment::listRecipeDescriptors)
+            .distinct()
             .filter { includeInternal || PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), ignoreCase = true) }
 
-    override fun activate(recipe: String): Recipe = openrewriteEnvironment.activateRecipes(recipe)
+    override fun get(recipe: String): Recipe =
+        if (recipe.startsWith(ALLWRITE_PACKAGE)) allwriteEnvironment.activateRecipes(recipe)
+        else openrewriteEnvironment.activateRecipes(recipe)
+
+    companion object {
+        private const val ALLWRITE_PACKAGE = "pl.allegro.tech.allwrite.recipes"
+        private const val OPEN_REWRITE_PACKAGE = "org.openrewrite"
+    }
 }
