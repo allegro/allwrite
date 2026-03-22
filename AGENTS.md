@@ -37,7 +37,7 @@ Multi-module Gradle project using **Hexagonal Architecture (Ports & Adapters)**.
 ## Module Dependency Graph
 
 ```
-allwrite-runner  -->  allwrite-runtime  -->  allwrite-recipes
+allwrite-cli  -->  allwrite-runtime  -->  allwrite-recipes
       |                                            ^
       +-----> allwrite-completions ----------------+
                     (annotation processor)
@@ -51,7 +51,7 @@ allwrite-runner  -->  allwrite-runtime  -->  allwrite-recipes
 |---|---|
 | `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. |
 | `allwrite-runtime` | Domain layer. Port interfaces and OpenRewrite-backed implementations. |
-| `allwrite-runner` | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring. |
+| `allwrite-cli` | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring. |
 | `allwrite-completions` | Build-time annotation processor for shell completion generation. |
 | `build-logic` | Gradle composite build with convention plugins and custom tasks. |
 
@@ -59,7 +59,7 @@ allwrite-runner  -->  allwrite-runtime  -->  allwrite-recipes
 
 ```
 allwrite/
-├── allwrite-runner/
+├── allwrite-cli/
 │   ├── src/main/kotlin/              CLI application (commands, infrastructure adapters)
 │   │   ├── runner/Main.kt            Entry point
 │   │   ├── runner/RunnerModule.kt
@@ -106,7 +106,7 @@ allwrite/
 
 # Entry Point
 
-`allwrite-runner/src/main/kotlin/pl/allegro/tech/allwrite/runner/Main.kt`
+`allwrite-cli/src/main/kotlin/pl/allegro/tech/allwrite/runner/Main.kt`
 
 The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` when running in GitHub Actions, then delegates to `AppEntrypoint.execute(args)`. `AppEntrypoint` is implemented by `MainCommand` (a Clikt command) dispatching to sub-commands.
 
@@ -145,8 +145,8 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 
 | Module | Location | Framework | Naming |
 |---|---|---|---|
-| `allwrite-runner` | `src/test/kotlin/` | Kotest FunSpec | `*Spec.kt` |
-| `allwrite-runner` | `src/e2e/kotlin/` | Kotest FunSpec | `*IntegrationSpec.kt` |
+| `allwrite-cli` | `src/test/kotlin/` | Kotest FunSpec | `*Spec.kt` |
+| `allwrite-cli` | `src/e2e/kotlin/` | Kotest FunSpec | `*IntegrationSpec.kt` |
 | `allwrite-runtime` | `src/test/kotlin/` | Kotest FunSpec | `*Spec.kt` |
 | `allwrite-recipes` | `src/test/kotlin/` | JUnit 5 + RewriteTest | `*Test.kt` |
 
@@ -161,8 +161,8 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 |---|---|
 | `./gradlew test` | Run unit tests across all modules |
 | `./gradlew build` | Full build including JReleaser assembly |
-| `./gradlew :allwrite-runner:run --args "<args>"` | Run the CLI locally |
-| `./gradlew :allwrite-runner:e2e` | Run end-to-end tests |
+| `./gradlew :allwrite-cli:run --args "<args>"` | Run the CLI locally |
+| `./gradlew :allwrite-cli:e2e` | Run end-to-end tests |
 | `./gradlew check` | Run tests + e2e |
 
 # Key Dependencies

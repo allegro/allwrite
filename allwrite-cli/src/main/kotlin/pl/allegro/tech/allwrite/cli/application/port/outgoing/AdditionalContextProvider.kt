@@ -1,0 +1,6 @@
+package pl.allegro.tech.allwrite.cli.application.port.outgoing
+
+public interface AdditionalContextProvider {
+
+    public fun extractFromSystemEnvs(): Map<String, String>
+}

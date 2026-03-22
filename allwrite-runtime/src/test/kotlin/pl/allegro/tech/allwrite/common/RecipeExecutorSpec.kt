@@ -7,6 +7,8 @@ import io.kotest.data.forAll
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import pl.allegro.tech.allwrite.PostprocessingResult
+import pl.allegro.tech.allwrite.PostprocessingResult.Failure
 import pl.allegro.tech.allwrite.common.base.BaseRuntimeSpec
 import pl.allegro.tech.allwrite.common.fake.FakeCompositeRecipe
 import pl.allegro.tech.allwrite.common.fake.FakePostProcessingRecipe
@@ -16,7 +18,6 @@ import pl.allegro.tech.allwrite.common.fake.FakeUserProblemReporter
 import pl.allegro.tech.allwrite.common.port.incoming.RecipeExecutor
 import pl.allegro.tech.allwrite.common.port.outgoing.Problem
 import pl.allegro.tech.allwrite.common.util.injectEagerly
-import pl.allegro.tech.allwrite.recipes.PostprocessingResult.Failure
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.walk
@@ -112,8 +113,4 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
 
     private fun inputFiles(): List<Path> =
         Paths.get("src/testFixtures/inputFilesForTests").walk().toList()
-
-    companion object {
-        private val WORKDIR = Paths.get(".")
-    }
 }

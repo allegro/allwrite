@@ -75,7 +75,7 @@ jobs:
 
       - name: Replace file in allegro/homebrew-tap
         run: |
-          cp allwrite-runner/build/jreleaser/package/allwrite/brew/Formula/allwrite.rb homebrew-tap/Formula/allwrite.rb
+          cp allwrite-cli/build/jreleaser/package/allwrite/brew/Formula/allwrite.rb homebrew-tap/Formula/allwrite.rb
           cd homebrew-tap
           git add Formula/allwrite.rb
           git status
