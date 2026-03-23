@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit-tests:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,65 +26,14 @@ jobs:
         with:
           cache-read-only: false
 
-      - run: ./gradlew test
+      - run: ./gradlew check
 
       - uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
           report_paths: '**/test-results/*/*.xml'
 
-  publish-to-homebrew:
-    runs-on: ubuntu-latest
-#    if: github.event_name == 'release'
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v5
-        with:
-          java-version: 21
-          distribution: temurin
-
-      - uses: gradle/actions/setup-gradle@v5
-        with:
-          cache-read-only: false
-
-      - run: ./gradlew build
-        env:
-          JRELEASER_GITHUB_TOKEN: dummy
-
-      - id: publish
-        run: ./gradlew publish
+      - run: ./gradlew publish
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-
-      - id: generate-token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.ALLEGRO_HOMEBREW_APP_ID }}
-          private-key: ${{ secrets.ALLEGRO_HOMEBREW_PRIVATE_KEY }}
-          owner: allegro
-          repositories: homebrew-tap
-
-      - name: Checkout allegro/homebrew-tap
-        uses: actions/checkout@v4
-        with:
-          repository: allegro/homebrew-tap
-          path: homebrew-tap
-          token: ${{ steps.generate-token.outputs.token }}
-
-      - name: Replace file in allegro/homebrew-tap
-        run: |
-          cp allwrite-cli/build/jreleaser/package/allwrite/brew/Formula/allwrite.rb homebrew-tap/Formula/allwrite.rb
-          cd homebrew-tap
-          git add Formula/allwrite.rb
-          git status
-
-      - name: Commit changes in allegro/homebrew-tap
-        uses: dsanders11/github-app-commit-action@v2
-        with:
-          owner: allegro
-          repository: homebrew-tap
-          message: 'Release allwrite ${{ steps.publish.outputs.published-version }}'
-          token: ${{ steps.generate-token.outputs.token }}
-          working-directory: ./homebrew-tap

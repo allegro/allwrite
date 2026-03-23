@@ -10,10 +10,10 @@ import java.net.URI
 
 /**
  * This convention configures the build for the CLI distributions as a self-contained platform-specific
- * archives. To achieve this, it has to download JDKs for each of the target platforms
- * and then build it with JRE image with jlink.
+ * archives. To achieve this, it has to download JDKs for each of the target platforms and then build
+ * a custom JRE with jlink.
  *
- * It also configures maven publishing for the resulting distributions and creates homebrew formulae.
+ * The distribution files will be uploaded as GitHub Release assets and referenced in Homebrew formula.
  */
 plugins {
     application
@@ -90,11 +90,19 @@ jreleaser {
                 multiPlatform = true
                 repository.repoOwner = "allegro"
                 repository.name = "homebrew-tap"
-                publishing.repositories.withType<MavenArtifactRepository> {
-                    downloadUrl = buildUrlTemplate(url)
-                }
                 templateDirectory = file("src/jreleaser/templates")
             }
+        }
+    }
+    release {
+        github {
+            releaseName = "v${project.version}"
+            overwrite = false
+            update {
+                enabled = true
+                section("ASSETS")
+            }
+            skipTag = true
         }
     }
 }
@@ -113,28 +121,4 @@ tasks {
     build {
         dependsOn(jreleaserAssemble, jreleaserPackage)
     }
-}
-
-afterEvaluate {
-    publishing.publications.create<MavenPublication>("jreleaser") {
-        tasks.jreleaserAssemble.get().outputDirectory.asFileTree.matching { include("**/*.zip") }
-            .forEach { zip ->
-                val platform = zip.name
-                    .substringAfterLast(version.toString())
-                    .substringBeforeLast(".zip")
-                    .removePrefix("-")
-
-                artifact(zip) {
-                    extension = "zip"
-                    classifier = platform
-                }
-            }
-    }
-}
-
-fun buildUrlTemplate(repositoryUrl: URI): String {
-    val groupPath = group.toString().replace(".", "/")
-    val artifactPath = "{{projectJavaArtifactId}}/{{artifactVersion}}"
-    val filePath = "{{projectJavaArtifactId}}-{{artifactVersion}}-{{artifactPlatform}}{{artifactFileExtension}}"
-    return "$repositoryUrl/$groupPath/$artifactPath/$filePath"
 }
