@@ -33,7 +33,7 @@ public class ReplaceFactoryWithConstructor(
         }
 
         override fun visitNewClass(newClass: J.NewClass, p: ExecutionContext): J {
-            cursor.root.putMessage("constructorIdentifierPrefix", newClass.clazz?.prefix)
+            cursor.root.putMessage("constructorIdentifierPrefix", newClass.clazz!!.prefix)
             return super.visitNewClass(newClass, p)
         }
     }

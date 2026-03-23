@@ -45,7 +45,7 @@ public class UnnestProperties(
                 newEntries.addAll(targetEntryBlock.entries)
 
                 val newMapping = mapping.withEntries(newEntries)
-                return AutoFormatVisitor().visit(newMapping, ctx, cursor.parent) as Yaml.Mapping
+                return AutoFormatVisitor().visit(newMapping, ctx, cursor.parent!!) as Yaml.Mapping
             }
         }
     }

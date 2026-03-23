@@ -45,7 +45,7 @@ internal object Mutators {
     inline fun <reified Y: Yaml.Block> Yaml.Document.mapBlock(mapper: (Y) -> Y) = if (this.block is Y) this.withBlock(mapper(this.block as Y)) else this
     fun Yaml.Mapping.mapEntries(mapper: (Yaml.Mapping.Entry) -> Yaml.Mapping.Entry) = this.withEntries(this.entries.map(mapper))
     fun Yaml.Sequence.mapEntries(mapper: (Yaml.Sequence.Entry) -> Yaml.Sequence.Entry) = this.withEntries(this.entries.map(mapper))
-    fun Yaml.Sequence.mapFirstEntry(mapper: (Yaml.Sequence.Entry) -> Yaml.Sequence.Entry) = this.withEntries(ListUtils.mapFirst(this.entries, mapper))
+    fun Yaml.Sequence.mapFirstEntry(mapper: (Yaml.Sequence.Entry) -> Yaml.Sequence.Entry) = this.withEntries(ListUtils.mapFirst(this.entries, mapper)!!)
     fun Yaml.Mapping.Entry.withMapping(entries: List<Yaml.Mapping.Entry>) = this.withValue(mapping(entries))
 }
 

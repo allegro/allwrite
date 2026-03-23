@@ -31,7 +31,7 @@ class QualifyVariableTest {
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
         // when
-        val result = QualifyVariable(Variable(variable.variables[0], variable), "test").visit(j, InMemoryExecutionContext())
+        val result = QualifyVariable(Variable(variable.variables[0], variable), "test").visit(j, InMemoryExecutionContext())!!
 
         // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(

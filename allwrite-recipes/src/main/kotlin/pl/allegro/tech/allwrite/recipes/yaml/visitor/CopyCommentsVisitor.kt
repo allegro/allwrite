@@ -76,7 +76,7 @@ internal class CopyCommentsVisitor(
             val newPrefix = copyComments(key, y.prefix, doc.id)
             if (newPrefix != y.prefix) {
                 y = commentSetter(y, newPrefix)
-                y = AutoFormatVisitor().visit(y, ctx, cursor.parent) as Y
+                y = AutoFormatVisitor().visit(y, ctx, cursor.parent!!) as Y
             }
         }
 

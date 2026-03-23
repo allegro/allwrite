@@ -102,7 +102,7 @@ public class ExpandMappings(
                     .withPrefix(PrefixParts(remainder, "", indent).asString())
 
                 entry = autoFormat(entry, context, cursor.parentOrThrow)
-                cursor = Cursor(cursor.parent, entry)
+                setCursor(Cursor(cursor.parent, entry))
             }
             return super.visitMappingEntry(entry, context)
         }

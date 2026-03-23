@@ -25,7 +25,7 @@ public class YamlEntryHasValue(
         override fun visitMappingEntry(entry: Yaml.Mapping.Entry, p: ExecutionContext): Yaml {
             val visitedEntry = super.visitMappingEntry(entry, p) as Yaml.Mapping.Entry
             return when {
-                matches(visitedEntry) -> SearchResult.found(visitedEntry)
+                matches(visitedEntry) -> SearchResult.found(visitedEntry)!!
                 else -> visitedEntry
             }
         }

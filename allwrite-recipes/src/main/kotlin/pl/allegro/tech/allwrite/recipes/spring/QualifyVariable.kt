@@ -31,16 +31,20 @@ internal class QualifyVariable(
         val qualifiedName = variable.qualifiedName
         if (variable.declaration.hasQualifyingAnnotation()) {
             // if there is a qualifier annotation, change its value
+            val originalPrefixes = tree.leadingAnnotations.associate { it.id to it.prefix }
             var jtree = AddOrUpdateAnnotationAttribute(annotationType = ANNOTATION_QUALIFIER, oldAttributeValue = qualifiedName, attributeValue = newName)
-                .visitor.visit(tree, p, cursor.parent) as J
+                .visitor.visit(tree, p, cursor.parent!!) as J
             jtree = AddOrUpdateAnnotationAttribute(annotationType = ANNOTATION_RESOURCE, oldAttributeValue = qualifiedName, attributeName = "name", attributeValue = newName)
-                .visitor.visit(jtree, p, cursor.parent) as J
+                .visitor.visit(jtree, p, cursor.parent!!) as J
             jtree = AddOrUpdateAnnotationAttribute(annotationType = ANNOTATION_NAMED, oldAttributeValue = qualifiedName, attributeValue = newName)
-                .visitor.visit(jtree, p, cursor.parent) as J
-            return jtree as J.VariableDeclarations
+                .visitor.visit(jtree, p, cursor.parent!!) as J
+            val result = jtree as J.VariableDeclarations
+            return result.withLeadingAnnotations(result.leadingAnnotations.map { ann ->
+                originalPrefixes[ann.id]?.let { prefix -> ann.withPrefix(prefix) } ?: ann
+            })
         } else {
             // otherwise add a qualifier annotation
-            return AddQualifierAnnotation(variable.variable, newName).visit(tree, p, cursor.parent) as J.VariableDeclarations
+            return AddQualifierAnnotation(variable.variable, newName).visit(tree, p, cursor.parent!!) as J.VariableDeclarations
         }
     }
 
@@ -97,7 +101,7 @@ private class AddQualifierAnnotation(val variable: J.VariableDeclarations.NamedV
                 return v.withModifiers(v.modifiers.mapFirst { it.withPrefix(SINGLE_SPACE) })
             }
         } else if (v.variables.isNotEmpty()) {
-            // If there are no modifiers, we are adding a space before the variable name
+            // if there are no modifiers, we are adding a space before the variable name
             val variable = v.variables.first()
             if (variable.prefix == null || variable.prefix.isEmpty) {
                 return v.withVariables(v.variables.mapFirst { it.withPrefix(SINGLE_SPACE) })

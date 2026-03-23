@@ -1,11 +1,12 @@
 [versions]
 jvm = "21"
-kotlin = "2.0.21"
-ksp = "2.0.21-1.0.28"
+kotlin = "2.3.20"
+ksp = "2.3.6"
 kotlinx-serialization = "1.7.1"
-openrewrite = "8.71.0"
+openrewrite = "8.76.0"
 openrewrite-spring = "6.22.1"
 openrewrite-static-analysis = "2.25.0"
+openrewrite-build-plugins = "2.11.3"
 test-logger = "4.0.0"
 slf4j = { strictly = "2.0.17" }
 logback = "1.5.18"
@@ -25,7 +26,6 @@ semver = "0.10.2"
 markout = "0.0.11"
 kotlinx-datetime = "0.6.0"
 nexus-publish = "2.0.0"
-openrewrite-build-plugins = "2.11.3"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

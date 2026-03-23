@@ -84,7 +84,7 @@ private class KotlinAddVersionCatalogDependencyReference(
 
     override fun visitMethodInvocation(method: J.MethodInvocation, p: ExecutionContext): J.MethodInvocation =
         if (cursor.getNearestMessage<Any>(MESSAGE_TARGET) == method)
-            DependenciesVisitor(configuration, library, versionCatalogAlias).visit(method, p, cursor.parent) as J.MethodInvocation
+            DependenciesVisitor(configuration, library, versionCatalogAlias).visit(method, p, cursor.parent!!) as J.MethodInvocation
         else
             super.visitMethodInvocation(method, p)
 }
@@ -122,7 +122,7 @@ private class GroovyAddVersionCatalogDependencyReference(
 
     override fun visitStatement(statement: Statement, p: ExecutionContext) =
         if (cursor.getNearestMessage<Any>(MESSAGE_TARGET) == statement)
-            DependenciesVisitor(configuration, library, versionCatalogAlias).visit(statement, p, cursor.parent) as Statement
+            DependenciesVisitor(configuration, library, versionCatalogAlias).visit(statement, p, cursor.parent!!) as Statement
         else
             super.visitStatement(statement, p)
 }

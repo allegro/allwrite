@@ -55,7 +55,7 @@ internal class AutoFormatVisitor(
     }
 
     override fun visit(tree: Tree?, p: ExecutionContext): Yaml? {
-        if (cursor.getNearestMessage<Any?>("stop") != null) {
+        if (cursor.getNearestMessage<Any>("stop") != null) {
             return tree as Yaml?
         }
         return super.visit(tree, p)

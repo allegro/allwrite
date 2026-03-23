@@ -218,9 +218,9 @@ internal fun J.Annotation.getArgument(name: String): AnnotationArgument? {
 
     return when (argumentValue) {
         is J.Literal -> PrimitiveAnnotationArgument(name, argumentValue, argument, this)
-        is J.NewArray -> ListAnnotationArgument(name, argumentValue.initializer ?: emptyList(), argumentValue.type, argument, this)
-        is K.ListLiteral -> ListAnnotationArgument(name, argumentValue.elements, argumentValue.type, argument, this)
-        is G.ListLiteral -> ListAnnotationArgument(name, argumentValue.elements, argumentValue.type, argument, this)
+        is J.NewArray -> ListAnnotationArgument(name, argumentValue.initializer ?: emptyList(), argumentValue.type!!, argument, this)
+        is K.ListLiteral -> ListAnnotationArgument(name, argumentValue.elements, argumentValue.type!!, argument, this)
+        is G.ListLiteral -> ListAnnotationArgument(name, argumentValue.elements, argumentValue.type!!, argument, this)
         is K.StringTemplate -> CalculatedAnnotationArgument(name, argument, this)
         is G.GString -> CalculatedAnnotationArgument(name, argument, this)
         is J.Identifier -> ReferenceAnnotationArgument(name, argumentValue.type, null, argument, this)

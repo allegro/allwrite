@@ -33,7 +33,7 @@ public class FindKey(
 
         override fun visitMappingEntry(entry: Yaml.Mapping.Entry, p: ExecutionContext): Yaml.Mapping.Entry {
             val path = LOWER_HYPHEN.format(cursor.toYamlPath().path)
-            if (path == target || path.startsWith("$target.")) return SearchResult.found(entry)
+            if (path == target || path.startsWith("$target.")) return SearchResult.found(entry)!!
             if (target.startsWith(path)) {
                 return super.visitMappingEntry(entry, p)
             }
@@ -42,7 +42,7 @@ public class FindKey(
 
         override fun visitMapping(mapping: Yaml.Mapping, p: ExecutionContext): Yaml.Mapping {
             val path = cursor.toYamlPath().path
-            if (path == target || path.startsWith("$target.")) return SearchResult.found(mapping)
+            if (path == target || path.startsWith("$target.")) return SearchResult.found(mapping)!!
             if (target.startsWith(path)) {
                 return super.visitMapping(mapping, p)
             }
@@ -51,7 +51,7 @@ public class FindKey(
 
         override fun visitSequenceEntry(entry: Yaml.Sequence.Entry, p: ExecutionContext): Yaml.Sequence.Entry {
             val path = cursor.toYamlPath().path
-            if (path == target || path.startsWith("$target.")) return SearchResult.found(entry)
+            if (path == target || path.startsWith("$target.")) return SearchResult.found(entry)!!
             if (target.startsWith(path)) {
                 return super.visitSequenceEntry(entry, p)
             }
