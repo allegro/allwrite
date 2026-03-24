@@ -42,11 +42,13 @@ internal class TelemetryRecordingCommandListener(
             executionTime = event.executionTime,
             outcome = if (event.throwable == null) SUCCESS else FAILURE,
             failure = event.throwable?.let(Telemetry::Failure),
-            git = Telemetry.Git(
-                repoOwner = gitMetadata.repo.owner,
-                repoName = gitMetadata.repo.name,
-                branch = gitMetadata.branch,
-            ),
+            git = if (gitMetadata.repo != null && gitMetadata.branch != null) {
+                Telemetry.Git(
+                    repoOwner = gitMetadata.repo!!.owner,
+                    repoName = gitMetadata.repo!!.name,
+                    branch = gitMetadata.branch!!,
+                )
+            } else null,
             os = Telemetry.OperatingSystem(
                 name = systemInfo.os.name,
                 version = systemInfo.os.version,

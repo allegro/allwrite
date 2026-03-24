@@ -19,8 +19,8 @@ class LocalGitMetadataSpec : BaseCliSpec() {
                     .returns("git@github.com:example-org/some-service.git")
             }
 
-            localGitMetadata.repo.owner shouldBe "example-org"
-            localGitMetadata.repo.name shouldBe "some-service"
+            localGitMetadata.repo?.owner shouldBe "example-org"
+            localGitMetadata.repo?.name shouldBe "some-service"
         }
 
         test("should parse git remote URL on local operating system via HTTPS") {
@@ -29,8 +29,8 @@ class LocalGitMetadataSpec : BaseCliSpec() {
                     .returns("https://github.com/example-org/some-service.git")
             }
 
-            localGitMetadata.repo.owner shouldBe "example-org"
-            localGitMetadata.repo.name shouldBe "some-service"
+            localGitMetadata.repo?.owner shouldBe "example-org"
+            localGitMetadata.repo?.name shouldBe "some-service"
         }
     }
 }
