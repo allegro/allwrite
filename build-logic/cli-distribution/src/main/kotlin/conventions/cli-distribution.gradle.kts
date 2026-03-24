@@ -45,13 +45,8 @@ jreleaser {
                 jdk {
                     path = Jvm.current().javaHome
                 }
-                mainJar {
-                    path = tasks.jar.flatMap { it.archiveFile }
-                }
-                jars {
-                    pattern = tasks.installDist
-                        .map { it.destinationDir }
-                        .map { it.resolve("lib").absolutePath + "/*" }
+                javaArchive {
+                    path = tasks.distZip.flatMap { it.archiveFile }.map { it.asFile.absolutePath }
                 }
                 moduleNames.addAll(
                     "java.base",
@@ -113,7 +108,7 @@ jreleaser {
 
 tasks {
     jreleaserAssemble {
-        dependsOn(jar, installDist, rootProject.tasks["provisionJdks"])
+        dependsOn(distZip, rootProject.tasks["provisionJdks"])
     }
 
     withType<AbstractJReleaserTask> {
