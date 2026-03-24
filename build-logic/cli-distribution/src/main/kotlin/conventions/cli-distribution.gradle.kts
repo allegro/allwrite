@@ -2,11 +2,11 @@
 
 package conventions
 
-import ExtractJdkTask
+import pl.allegro.tech.allwrite.buildlogic.jdk.ExtractJdkTask
 import libs
 import org.gradle.internal.jvm.Jvm
-import org.jreleaser.model.Active
-import java.net.URI
+import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
+import org.jreleaser.model.Active.ALWAYS
 
 /**
  * This convention configures the build for the CLI distributions as a self-contained platform-specific
@@ -17,13 +17,9 @@ import java.net.URI
  */
 plugins {
     application
-    `maven-publish`
     alias(libs.plugins.jreleaser)
 }
 
-/**
- * Configure JReleaser to build JLink images and Homebrew formulae
- */
 jreleaser {
     gitRootSearch = true
     project {
@@ -37,7 +33,7 @@ jreleaser {
             mainClass = application.mainClass
             groupId = group.toString()
             artifactId = project.name
-            version = "21"
+            version = libs.versions.jvm.get()
         }
     }
     assemble {
@@ -45,7 +41,7 @@ jreleaser {
         jlink {
             create("allwrite") {
                 enabled = true
-                active = Active.ALWAYS
+                active = ALWAYS
                 jdk {
                     path = Jvm.current().javaHome
                 }
@@ -53,10 +49,9 @@ jreleaser {
                     path = tasks.jar.flatMap { it.archiveFile }
                 }
                 jars {
-                    pattern =
-                        tasks.installDist
-                            .map { it.destinationDir }
-                            .map { it.resolve("lib").absolutePath + "/*" }
+                    pattern = tasks.installDist
+                        .map { it.destinationDir }
+                        .map { it.resolve("lib").absolutePath + "/*" }
                 }
                 moduleNames.addAll(
                     "java.base",
@@ -74,7 +69,7 @@ jreleaser {
                 )
 
                 // For each downloaded JDK, configure it as a JLink target in JReleaser
-                tasks.withType<ExtractJdkTask>().all {
+                rootProject.tasks.withType<ExtractJdkTask>().all {
                     val task = this
                     targetJdk {
                         path = task.targetDir.flatMap { it.file(task.target.map { it.jdkPath }) }
@@ -85,12 +80,21 @@ jreleaser {
         }
         packagers {
             brew {
-                active = Active.ALWAYS
+                active = ALWAYS
                 formulaName = "allwrite"
                 multiPlatform = true
+
+                templateDirectory = file("src/jreleaser/templates")
+                skipTemplate("README.md.tpl")
+
                 repository.repoOwner = "allegro"
                 repository.name = "homebrew-tap"
-                templateDirectory = file("src/jreleaser/templates")
+                repository.commitMessage = "Release {{distributionName}} {{tagName}}"
+                repository.tagName = "{{distributionName}}-{{tagName}}"
+                commitAuthor {
+                    name = "allegro-homebrew[bot]"
+                    email = "269041864+allegro-homebrew[bot]@users.noreply.github.com"
+                }
             }
         }
     }
@@ -108,17 +112,11 @@ jreleaser {
 }
 
 tasks {
-    jreleaserAssemble.configure {
-        dependsOn(jar, installDist, tasks["provisionJdks"])
-        mkdir(layout.buildDirectory.dir("jreleaser"))
-        notCompatibleWithConfigurationCache("Uses Task.project at runtime")
+    jreleaserAssemble {
+        dependsOn(jar, installDist, rootProject.tasks["provisionJdks"])
     }
 
-    jreleaserPackage.configure {
+    withType<AbstractJReleaserTask> {
         notCompatibleWithConfigurationCache("Uses Task.project at runtime")
-    }
-
-    build {
-        dependsOn(jreleaserAssemble, jreleaserPackage)
     }
 }

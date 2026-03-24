@@ -1,3 +1,5 @@
+package pl.allegro.tech.allwrite.buildlogic.jdk
+
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -18,7 +20,7 @@ import kotlin.io.path.exists
 import kotlin.text.format
 
 @CacheableTask
-internal abstract class FetchJdkTask : DefaultTask() {
+abstract class FetchJdkTask : DefaultTask() {
 
     @Input
     val target: Property<JdkDistribution> = project.objects.property(JdkDistribution::class.java)

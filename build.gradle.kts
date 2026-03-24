@@ -1,20 +1,13 @@
 plugins {
-    alias(libs.plugins.axion.release)
-    alias(libs.plugins.nexus.publish)
+    id("conventions.versioning")
+    id("conventions.maven-central")
+    id("conventions.jdk-provisioning")
 }
 
-allprojects {
-    group = "pl.allegro.tech.allwrite"
-    version = rootProject.scmVersion.version
-}
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl = uri("https://ossrh-staging-api.central.sonatype.com/service/local")
-            snapshotRepositoryUrl = uri("https://central.sonatype.com/repository/maven-snapshots")
-            username = System.getenv("SONATYPE_USERNAME")
-            password = System.getenv("SONATYPE_PASSWORD")
-        }
+buildscript {
+    dependencies {
+        // unfortunately, JReleaser requires very old version of JGit (newer one is brought by axion-release-plugin)
+        classpath("org.eclipse.jgit:org.eclipse.jgit") { version { strictly("5.13.0.202109080827-r") } }
     }
 }
+

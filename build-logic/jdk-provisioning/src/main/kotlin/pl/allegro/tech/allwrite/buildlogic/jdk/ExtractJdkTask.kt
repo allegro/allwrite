@@ -1,3 +1,5 @@
+package pl.allegro.tech.allwrite.buildlogic.jdk
+
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.Directory
@@ -20,7 +22,7 @@ import java.util.zip.GZIPInputStream
 import java.util.zip.ZipInputStream
 
 @CacheableTask
-internal abstract class ExtractJdkTask : DefaultTask() {
+abstract class ExtractJdkTask : DefaultTask() {
 
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)

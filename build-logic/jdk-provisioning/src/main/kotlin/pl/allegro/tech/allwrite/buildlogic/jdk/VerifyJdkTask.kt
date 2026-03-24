@@ -1,3 +1,5 @@
+package pl.allegro.tech.allwrite.buildlogic.jdk
+
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
@@ -10,7 +12,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 @CacheableTask
-internal abstract class VerifyJdkTask : DefaultTask() {
+abstract class VerifyJdkTask : DefaultTask() {
 
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)

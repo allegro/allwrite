@@ -1,8 +1,9 @@
 package conventions
 
-import ExtractJdkTask
-import FetchJdkTask
-import VerifyJdkTask
+import pl.allegro.tech.allwrite.buildlogic.jdk.ExtractJdkTask
+import pl.allegro.tech.allwrite.buildlogic.jdk.FetchJdkTask
+import pl.allegro.tech.allwrite.buildlogic.jdk.VerifyJdkTask
+import pl.allegro.tech.allwrite.buildlogic.jdk.JdkDistribution
 import java.nio.file.Path
 
 val provisionJdksTask = tasks.register("provisionJdks")

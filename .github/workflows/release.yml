@@ -1,7 +1,13 @@
+name: Release
+
 on:
   release:
     types:
       - published
+  workflow_dispatch:
+
+env:
+  JRELEASER_GITHUB_TOKEN: ${{ github.token }}
 
 jobs:
   release:
@@ -18,10 +24,11 @@ jobs:
         with:
           cache-read-only: false
 
-      - name: Upload assets to GitHub release
-        run: ./gradlew jreleaserAssemble jreleaserRelease
-        env:
-          JRELEASER_GITHUB_TOKEN: ${{ github.token }}
+      - name: Build CLI distribution
+        run: ./gradlew jreleaserAssemble
+
+      - name: Upload GitHub release assets
+        run: ./gradlew jreleaserRelease --stacktrace
 
       - name: Generate token for Homebrew
         id: generate-homebrew-token
@@ -32,7 +39,16 @@ jobs:
           owner: allegro
           repositories: homebrew-tap
 
-      - name: Publish formula to Homebrew
-        run: ./gradlew jreleaserPackage jreleaserPublish
+      - name: Prepare Homebrew formula
+        run: ./gradlew jreleaserPackage
+
+      - name: Update Homebrew formula in allegro/homebrew-tap
+        run: ./gradlew jreleaserPublish
         env:
           JRELEASER_HOMEBREW_GITHUB_TOKEN: ${{ steps.generate-homebrew-token.outputs.token }}
+
+      - name: Publish recipes to Maven Central
+        run: ./gradlew publish closeSonatypeStagingRepository
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

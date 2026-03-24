@@ -3,7 +3,6 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
     }
-    includeBuild("build-logic")
 }
 
 dependencyResolutionManagement {
@@ -21,3 +20,5 @@ include("allwrite-cli")
 include("allwrite-spi")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+includeBuild("build-logic")

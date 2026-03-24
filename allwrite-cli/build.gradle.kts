@@ -6,8 +6,7 @@ import java.nio.file.Paths
 plugins {
     id("conventions.kotlin")
     id("conventions.koin")
-    id("conventions.jdk-provisioning")
-    id("conventions.jreleaser")
+    id("conventions.cli-distribution")
     alias(libs.plugins.kotlinx.serialization)
 }
 
@@ -77,3 +76,4 @@ tasks {
         into(layout.buildDirectory.dir("installation"))
     }
 }
+

@@ -1,4 +1,6 @@
-internal enum class JdkDistribution(
+package pl.allegro.tech.allwrite.buildlogic.jdk
+
+enum class JdkDistribution(
     /**
      * Name used to make up the Temurin JDK release asset filename
      */
