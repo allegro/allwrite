@@ -46,13 +46,16 @@ jobs:
       - name: Prepare Homebrew formula
         run: ./gradlew jreleaserPackage
 
-      - name: Update Homebrew formula in allegro/homebrew-tap
+      - name: Update Homebrew formula in tap repo
         run: ./gradlew jreleaserPublish
         env:
           JRELEASER_HOMEBREW_GITHUB_TOKEN: ${{ steps.generate-homebrew-token.outputs.token }}
 
-      - name: Publish recipes to Maven Central
+      - name: Publish to Maven Central
         run: ./gradlew publish closeSonatypeStagingRepository
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PRIVATE_KEY_PASSWORD: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}

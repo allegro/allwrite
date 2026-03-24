@@ -13,11 +13,15 @@ plugins {
 
 java {
     withSourcesJar()
+    withJavadocJar()
 }
 
 kotlin {
     jvmToolchain(libs.versions.jvm.get().toInt())
     explicitApi()
+    compilerOptions {
+        javaParameters = true
+    }
 }
 
 tasks {
