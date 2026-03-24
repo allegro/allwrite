@@ -32,7 +32,7 @@ jobs:
 
       - run: ./gradlew check
 
-      - uses: mikepenz/action-junit-report@v4
+      - uses: mikepenz/action-junit-report@v6
         if: success() || failure()
         with:
           report_paths: '**/test-results/*/*.xml'
