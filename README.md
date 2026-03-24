@@ -5,7 +5,7 @@ What is `allwrite`? It's all you need for automatic code migrations!
 - a CLI tool for running recipes via friendly names
 - a collection of recipes, filling the gaps in vanilla [OpenRewrite](https://docs.openrewrite.org)
 - a GitHub action integrating with Dependabot (coming soon)
-- a GitHub workflow that can be externally orchestrated (coming soon)
+- a GitHub bot automatically running migrations for Dependabot PRs (coming soon)
 
 ## Usage
 
