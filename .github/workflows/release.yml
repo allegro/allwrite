@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate token for Homebrew
         id: generate-homebrew-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.ALLEGRO_HOMEBREW_APP_ID }}
           private-key: ${{ secrets.ALLEGRO_HOMEBREW_PRIVATE_KEY }}
