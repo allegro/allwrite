@@ -1,6 +1,3 @@
-> [!WARNING]
-> This repo is still work-in-progress, please wait for the first non-snapshot release!
-
 allwrite
 ========
 
