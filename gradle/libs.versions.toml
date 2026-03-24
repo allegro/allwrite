@@ -12,7 +12,7 @@ slf4j = { strictly = "2.0.17" }
 logback = "1.5.18"
 koin = "4.0.0"
 koin-annotations = "2.0.0"
-clikt = "5.0.1"
+clikt = "5.1.0"
 kotest = "5.9.1"
 kotest-extensions-koin = "1.3.0"
 kotlin-logging = "6.0.9"
