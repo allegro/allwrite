@@ -6,7 +6,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.ksp.generated.module
-import pl.allegro.tech.allwrite.common.port.incoming.RecipeSource
+import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
 import pl.allegro.tech.allwrite.kapt.generators.CompletionGenerator
 import pl.allegro.tech.allwrite.kapt.util.injectAll
 import java.io.File

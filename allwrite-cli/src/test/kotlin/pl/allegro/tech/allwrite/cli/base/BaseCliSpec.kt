@@ -7,7 +7,7 @@ import org.koin.test.KoinTest
 import pl.allegro.tech.allwrite.cli.CliModule
 import pl.allegro.tech.allwrite.cli.fake.clock.FakeClockModule
 import pl.allegro.tech.allwrite.cli.fake.external.FakeExternalDependenciesModule
-import pl.allegro.tech.allwrite.common.util.KoinMockkExtension
+import pl.allegro.tech.allwrite.runtime.util.KoinMockkExtension
 
 abstract class BaseCliSpec : FunSpec(), KoinTest {
 

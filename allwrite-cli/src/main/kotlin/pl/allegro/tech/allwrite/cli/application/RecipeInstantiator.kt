@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
 import org.openrewrite.RecipeException
-import pl.allegro.tech.allwrite.common.port.incoming.RecipeSource
+import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
 import pl.allegro.tech.allwrite.cli.util.JSON
 import java.io.File
 import java.io.FileNotFoundException

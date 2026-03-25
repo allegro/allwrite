@@ -6,7 +6,7 @@ import org.koin.test.mock.declareMock
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.cli.infrastructure.os.LocalGitMetadata
 import pl.allegro.tech.allwrite.cli.infrastructure.os.SystemCommandExecutor
-import pl.allegro.tech.allwrite.common.util.injectEagerly
+import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class LocalGitMetadataSpec : BaseCliSpec() {
 

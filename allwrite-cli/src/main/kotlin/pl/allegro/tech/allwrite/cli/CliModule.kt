@@ -1,7 +1,7 @@
 package pl.allegro.tech.allwrite.cli
 
 import org.koin.core.annotation.Module
-import pl.allegro.tech.allwrite.common.RuntimeModule
+import pl.allegro.tech.allwrite.runtime.RuntimeModule
 import pl.allegro.tech.allwrite.cli.application.ApplicationModule
 import pl.allegro.tech.allwrite.cli.infrastructure.os.OperatingSystemModule
 import pl.allegro.tech.allwrite.cli.infrastructure.pullrequestmanager.PullRequestManagerModule

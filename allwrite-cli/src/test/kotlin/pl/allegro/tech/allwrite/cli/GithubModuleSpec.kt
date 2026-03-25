@@ -14,8 +14,8 @@ import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.cli.infrastructure.github.GithubModule
 import pl.allegro.tech.allwrite.cli.infrastructure.github.GithubPullRequestContext
 import pl.allegro.tech.allwrite.cli.infrastructure.os.port.incoming.SystemEnvironment
-import pl.allegro.tech.allwrite.common.util.declareFake
-import pl.allegro.tech.allwrite.common.util.injectEagerly
+import pl.allegro.tech.allwrite.runtime.util.declareFake
+import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class GithubModuleSpec : BaseCliSpec() {
 

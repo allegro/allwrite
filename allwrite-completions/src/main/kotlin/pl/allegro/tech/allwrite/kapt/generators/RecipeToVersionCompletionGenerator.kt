@@ -4,7 +4,7 @@ import com.github.mustachejava.Mustache
 import com.squareup.kotlinpoet.PropertySpec
 import org.koin.core.annotation.Single
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.common.port.incoming.toRecipeCoordinatesOrNull
+import pl.allegro.tech.allwrite.runtime.port.incoming.toRecipeCoordinatesOrNull
 import pl.allegro.tech.allwrite.kapt.util.MustacheUtils.executeToString
 import pl.allegro.tech.allwrite.kapt.util.MustacheUtils.resourceTemplate
 

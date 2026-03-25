@@ -8,7 +8,7 @@ import com.github.ajalt.clikt.parameters.options.required
 import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
-import pl.allegro.tech.allwrite.common.port.incoming.RecipeExecutor
+import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeExecutor
 import pl.allegro.tech.allwrite.cli.application.CommandExecutionResult.ExecutionResult
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.InputFilesProvider
 import pl.allegro.tech.allwrite.cli.util.JSON
