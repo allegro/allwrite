@@ -86,7 +86,7 @@ github-client = { group = "com.spotify", name = "github-client", version = "0.4.
 
 # Other
 semver = { group = "com.github.zafarkhaja", name = "java-semver", version.ref = "semver" }
-snakeyaml = { group = "org.yaml", name = "snakeyaml", version = "2.4" }
+snakeyaml = { group = "org.yaml", name = "snakeyaml", version = "2.6" }
 kotlinpoet = { group = "com.squareup", name = "kotlinpoet-jvm", version = "1.18.1" }
 mustache = { group = "com.github.spullara.mustache.java", name = "compiler", version = "0.9.14" }
 autoservice = { group = "com.google.auto.service", name = "auto-service", version = "1.1.1" }
