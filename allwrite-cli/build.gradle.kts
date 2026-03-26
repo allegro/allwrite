@@ -17,7 +17,6 @@ application {
 
 dependencies {
     implementation(projects.allwriteRuntime)
-
     implementation(projects.allwriteRecipes)
 
     // OpenRewrite

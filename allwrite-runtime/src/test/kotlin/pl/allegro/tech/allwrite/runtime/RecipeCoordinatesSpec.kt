@@ -5,10 +5,10 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeCoordinates
-import pl.allegro.tech.allwrite.runtime.port.incoming.getFromVersion
-import pl.allegro.tech.allwrite.runtime.port.incoming.getToVersion
-import pl.allegro.tech.allwrite.runtime.port.incoming.toRecipeCoordinatesOrNull
+import pl.allegro.tech.allwrite.api.RecipeCoordinates
+import pl.allegro.tech.allwrite.api.getFromVersion
+import pl.allegro.tech.allwrite.api.getToVersion
+import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
 import java.net.URI
 
 class RecipeCoordinatesSpec : FunSpec() {

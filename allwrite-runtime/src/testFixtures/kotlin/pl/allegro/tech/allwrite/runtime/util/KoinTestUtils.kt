@@ -7,7 +7,6 @@ import org.koin.core.module.Module
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
 import org.koin.test.KoinTest
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty

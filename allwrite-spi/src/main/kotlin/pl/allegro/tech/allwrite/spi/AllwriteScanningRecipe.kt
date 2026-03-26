@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite
+package pl.allegro.tech.allwrite.spi
 
 import org.openrewrite.ScanningRecipe
 

@@ -1,10 +1,10 @@
 package pl.allegro.tech.allwrite.runtime.fake
 
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.PostprocessingRecipe
-import pl.allegro.tech.allwrite.PostprocessingResult
-import pl.allegro.tech.allwrite.PostprocessingResult.Success
-import pl.allegro.tech.allwrite.RecipeVisibility
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.PostprocessingRecipe
+import pl.allegro.tech.allwrite.spi.PostprocessingResult
+import pl.allegro.tech.allwrite.spi.PostprocessingResult.Success
+import pl.allegro.tech.allwrite.spi.RecipeVisibility
 
 open class FakePostProcessingRecipe(
     private val id: String = "pl.allegro.tech.allwrite.recipes.fake.postprocessing",

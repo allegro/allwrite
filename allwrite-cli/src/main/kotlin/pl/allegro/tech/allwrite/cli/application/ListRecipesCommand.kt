@@ -6,11 +6,11 @@ import com.github.ajalt.clikt.parameters.options.option
 import io.koalaql.markout.md.markdown
 import org.koin.core.annotation.Single
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
-import pl.allegro.tech.allwrite.runtime.port.incoming.tagPropertyOrNull
-import pl.allegro.tech.allwrite.runtime.port.incoming.toCompactString
-import pl.allegro.tech.allwrite.runtime.port.incoming.toRecipeCoordinatesOrNull
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.api.tagPropertyOrNull
+import pl.allegro.tech.allwrite.api.toCompactString
+import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.PUBLIC
 import pl.allegro.tech.allwrite.cli.application.CommandExecutionResult.ExecutionResult
 import com.github.ajalt.mordant.markdown.Markdown as MdWidget
 

@@ -10,8 +10,8 @@ import org.openrewrite.properties.DeleteProperty
 import org.openrewrite.properties.tree.Properties
 import org.openrewrite.yaml.search.FindProperty
 import org.openrewrite.yaml.tree.Yaml.Documents
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.util.Find
 import pl.allegro.tech.allwrite.recipes.yaml.DeleteProperty as DeleteYamlProperty
 

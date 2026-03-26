@@ -1,7 +1,7 @@
 package pl.allegro.tech.allwrite.recipes
 
 import org.openrewrite.Recipe
-import pl.allegro.tech.allwrite.RecipeVisibility
+import pl.allegro.tech.allwrite.spi.RecipeVisibility
 
 class KotlinPublicRecipe : Recipe() {
 

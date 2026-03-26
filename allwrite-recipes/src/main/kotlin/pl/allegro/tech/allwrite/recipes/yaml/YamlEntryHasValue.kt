@@ -6,8 +6,8 @@ import org.openrewrite.marker.SearchResult
 import org.openrewrite.yaml.JsonPathMatcher
 import org.openrewrite.yaml.YamlVisitor
 import org.openrewrite.yaml.tree.Yaml
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.INTERNAL
 
 public class YamlEntryHasValue(
     key: String,

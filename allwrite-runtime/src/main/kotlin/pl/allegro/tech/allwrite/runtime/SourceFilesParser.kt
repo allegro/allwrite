@@ -19,8 +19,8 @@ import org.openrewrite.text.PlainTextParser
 import org.openrewrite.toml.TomlParser
 import org.openrewrite.tree.ParseError
 import org.openrewrite.yaml.YamlParser
-import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.ParsingAwareRecipe
+import pl.allegro.tech.allwrite.spi.ClasspathAwareRecipe
+import pl.allegro.tech.allwrite.spi.ParsingAwareRecipe
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.extension

@@ -5,7 +5,7 @@ import org.openrewrite.groovy.GroovyParser
 import org.openrewrite.java.JavaParser
 import org.openrewrite.kotlin.KotlinParser
 import org.openrewrite.test.RecipeSpec
-import pl.allegro.tech.allwrite.ClasspathAwareRecipe
+import pl.allegro.tech.allwrite.spi.ClasspathAwareRecipe
 
 fun RecipeSpec.withRecipeClasspath(): RecipeSpec {
     val recipe = recipe ?: error(".withRecipeClasspath() must be called after .recipe()")

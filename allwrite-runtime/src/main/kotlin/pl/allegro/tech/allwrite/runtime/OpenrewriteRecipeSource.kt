@@ -4,9 +4,9 @@ import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
 import org.openrewrite.config.Environment
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
-import pl.allegro.tech.allwrite.runtime.port.incoming.tagPropertyOrNull
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.api.tagPropertyOrNull
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.PUBLIC
 
 @Single
 internal class OpenrewriteRecipeSource : RecipeSource {

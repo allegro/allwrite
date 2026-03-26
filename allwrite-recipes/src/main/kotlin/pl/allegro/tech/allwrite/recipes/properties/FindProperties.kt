@@ -8,8 +8,8 @@ import org.openrewrite.internal.NameCaseConvention
 import org.openrewrite.marker.SearchResult
 import org.openrewrite.properties.PropertiesVisitor
 import org.openrewrite.properties.tree.Properties
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.INTERNAL
 
 public class FindProperties(
     @Option(

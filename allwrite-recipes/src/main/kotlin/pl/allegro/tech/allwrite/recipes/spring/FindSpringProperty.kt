@@ -6,8 +6,8 @@ import org.openrewrite.Option
 import org.openrewrite.Preconditions
 import org.openrewrite.TreeVisitor
 import org.openrewrite.yaml.search.FindProperty
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.properties.FindProperties
 
 public class FindSpringProperty(

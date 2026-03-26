@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.runtime.fake
+package pl.allegro.tech.allwrite.runtime.port.outgoing.fake
 
 import org.koin.core.annotation.Single
 import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem

@@ -9,8 +9,8 @@ import org.openrewrite.internal.NameCaseConvention.LOWER_CAMEL
 import org.openrewrite.internal.NameCaseConvention.LOWER_HYPHEN
 import org.openrewrite.properties.tree.Properties
 import org.openrewrite.yaml.tree.Yaml
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.util.FindAndReplace
 import java.util.regex.Pattern
 import org.openrewrite.java.spring.ChangeSpringPropertyKey as DefaultChangeSpringPropertyKey

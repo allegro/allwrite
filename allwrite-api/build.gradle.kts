@@ -4,11 +4,12 @@ plugins {
 }
 
 publishableLibrary {
-    name = "allwrite-spi"
-    description = "A service provider interface for implementing recipes aware of allwrite features (e.g. declaring friendly names)"
+    name = "allwrite-api"
+    description = "API for interacting with allwrite runtime (e.g. getting a recipe)"
 }
 
 dependencies {
     api(platform(libs.rewrite.bom))
     api(libs.rewrite.core)
+    api(libs.semver)
 }

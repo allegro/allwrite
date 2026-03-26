@@ -8,8 +8,8 @@ import org.openrewrite.SourceFile
 import org.openrewrite.Tree
 import org.openrewrite.TreeVisitor
 import org.openrewrite.text.PlainTextParser
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.INTERNAL
 
 public class UpdateGradleDependency(
     @Option

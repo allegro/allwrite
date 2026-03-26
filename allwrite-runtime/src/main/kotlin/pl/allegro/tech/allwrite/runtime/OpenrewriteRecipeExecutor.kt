@@ -8,13 +8,13 @@ import org.openrewrite.Recipe
 import org.openrewrite.RecipeRun
 import org.openrewrite.SourceFile
 import org.openrewrite.internal.InMemoryLargeSourceSet
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeExecutor
+import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
 import pl.allegro.tech.allwrite.runtime.port.outgoing.UserProblemReporter
-import pl.allegro.tech.allwrite.runtime.util.WORKDIR
-import pl.allegro.tech.allwrite.PostprocessingRecipe
-import pl.allegro.tech.allwrite.PostprocessingResult
+import pl.allegro.tech.allwrite.spi.PostprocessingRecipe
+import pl.allegro.tech.allwrite.spi.PostprocessingResult
 import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeText
@@ -93,5 +93,6 @@ internal class OpenrewriteRecipeExecutor(
 
     companion object {
         private val logger = KotlinLogging.logger { }
+        private val WORKDIR = Paths.get("")
     }
 }

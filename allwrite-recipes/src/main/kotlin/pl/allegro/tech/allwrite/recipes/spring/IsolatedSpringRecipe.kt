@@ -3,9 +3,9 @@ package pl.allegro.tech.allwrite.recipes.spring
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.openrewrite.Recipe
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.api.RecipeSource
 import kotlin.getValue
 
 /**

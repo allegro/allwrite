@@ -7,8 +7,8 @@ import org.openrewrite.TreeVisitor
 import org.openrewrite.properties.DeleteProperty
 import org.openrewrite.properties.tree.Properties
 import org.openrewrite.yaml.tree.Yaml
-import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
+import pl.allegro.tech.allwrite.spi.AllwriteRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.yaml.DeleteProperty as DeleteYamlProperty
 
 public class DeleteSpringProperty(public val propertyKey: String) : AllwriteRecipe(

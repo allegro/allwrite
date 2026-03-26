@@ -1,6 +1,6 @@
 package pl.allegro.tech.allwrite.runtime.fake
 
-import pl.allegro.tech.allwrite.ParsingAwareRecipe
+import pl.allegro.tech.allwrite.spi.ParsingAwareRecipe
 import java.nio.file.Path
 import kotlin.io.path.pathString
 

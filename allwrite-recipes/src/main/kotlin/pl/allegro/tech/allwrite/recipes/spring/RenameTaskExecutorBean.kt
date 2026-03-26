@@ -8,9 +8,9 @@ import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.JavaType
 import org.openrewrite.java.tree.Statement
 import org.openrewrite.java.tree.TypeUtils
-import pl.allegro.tech.allwrite.AllwriteScanningRecipe
-import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
+import pl.allegro.tech.allwrite.spi.AllwriteScanningRecipe
+import pl.allegro.tech.allwrite.spi.ClasspathAwareRecipe
+import pl.allegro.tech.allwrite.spi.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.spring.util.ANNOTATION_QUALIFIER
 import pl.allegro.tech.allwrite.recipes.spring.util.Variable
 import pl.allegro.tech.allwrite.recipes.spring.util.findArguments
