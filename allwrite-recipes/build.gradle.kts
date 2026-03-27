@@ -1,6 +1,6 @@
 plugins {
     `java-test-fixtures`
-    alias(libs.plugins.openrewrite.recipe.library.base)
+    id("conventions.openrewrite-recipe-library")
     id("conventions.kotlin")
     id("conventions.koin")
     id("conventions.publishable-library")

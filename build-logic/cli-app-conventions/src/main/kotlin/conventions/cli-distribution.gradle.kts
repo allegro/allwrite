@@ -10,7 +10,7 @@ import org.jreleaser.model.Active.ALWAYS
 
 /**
  * This convention configures the build for the CLI distributions as a self-contained platform-specific
- * archives. To achieve this, it has to download JDKs for each of the target platforms and then build
+ * archives. To achieve this, it has to fetch JDKs for each of the target platforms and then build
  * a custom JRE with jlink.
  *
  * The distribution files will be uploaded as GitHub Release assets and referenced in Homebrew formula.
@@ -63,7 +63,7 @@ jreleaser {
                     "jdk.crypto.cryptoki"
                 )
 
-                // For each downloaded JDK, configure it as a JLink target in JReleaser
+                // For each fetched JDK, configure it as a JLink target in JReleaser
                 rootProject.tasks.withType<ExtractJdkTask>().all {
                     val task = this
                     targetJdk {

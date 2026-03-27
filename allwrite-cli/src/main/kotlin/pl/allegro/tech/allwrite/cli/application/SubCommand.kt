@@ -15,7 +15,7 @@ import pl.allegro.tech.allwrite.cli.application.CommandExecutionResult.TimeMeasu
 import pl.allegro.tech.allwrite.cli.util.catchingMeasureTime
 import pl.allegro.tech.allwrite.cli.util.injectAll
 
-internal sealed class SubCommand(
+internal abstract class SubCommand(
     name: String,
     private val help: String
 ) : CliktCommand(name = name), KoinComponent {

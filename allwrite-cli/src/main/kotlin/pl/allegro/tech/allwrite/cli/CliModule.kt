@@ -1,11 +1,11 @@
 package pl.allegro.tech.allwrite.cli
 
 import org.koin.core.annotation.Module
-import pl.allegro.tech.allwrite.runtime.RuntimeModule
 import pl.allegro.tech.allwrite.cli.application.ApplicationModule
+import pl.allegro.tech.allwrite.cli.infrastructure.http.HttpModule
 import pl.allegro.tech.allwrite.cli.infrastructure.os.OperatingSystemModule
-import pl.allegro.tech.allwrite.cli.infrastructure.pullrequestmanager.PullRequestManagerModule
 import pl.allegro.tech.allwrite.cli.util.ClockModule
+import pl.allegro.tech.allwrite.runtime.RuntimeModule
 
 /**
  * This module aggregates all core modules required for the CLI to work correctly.
@@ -17,6 +17,6 @@ import pl.allegro.tech.allwrite.cli.util.ClockModule
     RuntimeModule::class,
     OperatingSystemModule::class,
     ClockModule::class,
-    PullRequestManagerModule::class,
+    HttpModule::class,
 ])
 public class CliModule

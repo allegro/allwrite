@@ -1,15 +1,21 @@
 package pl.allegro.tech.allwrite.runtime
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
+import org.openrewrite.RecipeException
 import org.openrewrite.config.Environment
 import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
 import pl.allegro.tech.allwrite.runtime.port.incoming.tagPropertyOrNull
+import pl.allegro.tech.allwrite.runtime.port.outgoing.ExternalRecipeProvider
 import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import java.net.URLClassLoader
 
 @Single
-internal class OpenrewriteRecipeSource : RecipeSource {
+internal class OpenrewriteRecipeSource(
+    private val externalRecipeProvider: ExternalRecipeProvider?
+) : RecipeSource {
 
     private val allwriteEnvironment = Environment.builder()
         .scanRuntimeClasspath(ALLWRITE_PACKAGE)
@@ -19,17 +25,45 @@ internal class OpenrewriteRecipeSource : RecipeSource {
         .scanRuntimeClasspath(OPEN_REWRITE_PACKAGE)
         .build()
 
-    override fun findAll(includeInternal: Boolean): List<RecipeDescriptor> =
-        listOf(allwriteEnvironment, openrewriteEnvironment)
+    private val externalEnvironment: Environment? by lazy { buildExternalEnvironment() }
+
+    override fun findAll(includeInternal: Boolean): List<RecipeDescriptor> {
+        val environments = listOfNotNull(allwriteEnvironment, openrewriteEnvironment, externalEnvironment)
+        return environments
             .flatMap(Environment::listRecipeDescriptors)
             .distinct()
             .filter { includeInternal || PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), ignoreCase = true) }
+    }
 
-    override fun get(recipe: String): Recipe =
-        if (recipe.startsWith(ALLWRITE_PACKAGE)) allwriteEnvironment.activateRecipes(recipe)
+    override fun get(recipe: String): Recipe {
+        externalEnvironment?.let {
+            try {
+                return it.activateRecipes(recipe)
+            } catch (_: RecipeException) {
+            }
+        }
+
+        return if (recipe.startsWith(ALLWRITE_PACKAGE)) allwriteEnvironment.activateRecipes(recipe)
         else openrewriteEnvironment.activateRecipes(recipe)
+    }
+
+    private fun buildExternalEnvironment(): Environment? {
+        val jarPaths = externalRecipeProvider?.get().orEmpty()
+        if (jarPaths.isEmpty()) return null
+
+        val jarUrls = jarPaths.map { it.toUri().toURL() }.toTypedArray()
+        val classLoader = URLClassLoader(jarUrls, Thread.currentThread().contextClassLoader)
+
+        val builder = Environment.builder()
+        jarPaths.forEach { jarPath ->
+            logger.debug { "Scanning external recipe JAR: $jarPath" }
+            builder.scanJar(jarPath, emptyList(), classLoader)
+        }
+        return builder.build()
+    }
 
     companion object {
+        private val logger = KotlinLogging.logger { }
         private const val ALLWRITE_PACKAGE = "pl.allegro.tech.allwrite.recipes"
         private const val OPEN_REWRITE_PACKAGE = "org.openrewrite"
     }
