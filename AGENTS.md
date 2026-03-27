@@ -63,8 +63,8 @@ allwrite/
 │   ├── src/main/kotlin/              CLI application (commands, infrastructure adapters)
 │   │   ├── runner/Main.kt            Entry point
 │   │   ├── runner/RunnerModule.kt
-│   │   ├── runner/application/       CLI commands, application logic
-│   │   ├── runner/infrastructure/    OS, GitHub, PR manager adapters
+│   │   ├── runner/application/       CLI commands (run, ls, add, update, rm, refresh), application logic
+│   │   ├── runner/infrastructure/    OS, GitHub, PR manager adapters (incl. external recipe store)
 │   │   └── runner/util/              Utility classes
 │   ├── src/main/resources/           logback.xml
 │   ├── src/test/kotlin/              Unit tests (Kotest FunSpec)
@@ -131,7 +131,7 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 
 ## Patterns
 
-- **Hexagonal Architecture:** Incoming ports (`RecipeExecutor`, `RecipeSource`, `AppEntrypoint`) and outgoing ports (`UserProblemReporter`, `InputFilesProvider`, `GitMetadata`, `PullRequestContext`, `TelemetryPublisher`, `SystemInfo`)
+- **Hexagonal Architecture:** Incoming ports (`RecipeExecutor`, `RecipeSource`, `AppEntrypoint`) and outgoing ports (`UserProblemReporter`, `InputFilesProvider`, `GitMetadata`, `PullRequestContext`, `TelemetryPublisher`, `SystemInfo`, `ExternalRecipeJarsProvider`)
 - **Koin + KSP DI:** Modules annotated with `@Module` and `@ComponentScan`, services with `@Single`
 - **Convention Plugins:** Shared build logic in `build-logic/` (`conventions.kotlin`, `conventions.koin`, `conventions.recipe-classpaths`, etc.)
 - **Template Method:** `SubCommand` sealed abstract class defines `run()` lifecycle; subclasses implement `runSubCommand()`
