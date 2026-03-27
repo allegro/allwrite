@@ -16,7 +16,9 @@ internal class MainCommand : CliktCommand(name = COMMAND_NAME), AppEntrypoint, K
     private val shutdownListeners: List<ShutdownListener> by injectAll()
 
     init {
-        subcommands(subCommands)
+        val topLevelSubCommands = subCommands.filterNot { it is ExternalSubCommand }
+        val externalCommand: ExternalCommand = getKoin().get()
+        subcommands(topLevelSubCommands + externalCommand)
     }
 
     override fun execute(args: Array<String>) {

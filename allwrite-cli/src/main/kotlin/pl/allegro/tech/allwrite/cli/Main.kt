@@ -13,7 +13,6 @@ public fun main(args: Array<String>) {
     startKoin {
         modules(CliModule().module)
 
-        // todo: migrate to a custom variable PULL_REQUEST_MANAGER=true
         if (env["GITHUB_ACTIONS"] == "true") {
             modules(GithubModule().module)
         }

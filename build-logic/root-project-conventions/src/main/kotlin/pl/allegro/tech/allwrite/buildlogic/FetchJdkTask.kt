@@ -49,7 +49,7 @@ abstract class FetchJdkTask : DefaultTask() {
         // the task is reported as not UP-TO-DATE everytime we edit any file in buildSrc
         // to mitigate this issue, we manaully check whether the file exists
         if (!destination.exists()) {
-            logger.lifecycle("Downloading $url -> $destination")
+            logger.lifecycle("Fetching $url -> $destination")
             Files.newOutputStream(destination).use { out ->
                 runBlocking { client.get(url).bodyAsChannel().copyTo(out) }
             }

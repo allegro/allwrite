@@ -19,6 +19,7 @@ rootProject.name = "build-logic"
 include("root-project-conventions")
 
 include("cli-app-conventions")
+include("openrewrite-recipe-library-conventions")
 include("publishable-library-conventions")
 include("kotlin-conventions")
 

@@ -63,8 +63,8 @@ allwrite/
 │   ├── src/main/kotlin/              CLI application (commands, infrastructure adapters)
 │   │   ├── runner/Main.kt            Entry point
 │   │   ├── runner/RunnerModule.kt
-│   │   ├── runner/application/       CLI commands, application logic
-│   │   ├── runner/infrastructure/    OS, GitHub, PR manager adapters
+│   │   ├── runner/application/       CLI commands (run, ls, external add/update/rm/ls), application logic
+│   │   ├── runner/infrastructure/    OS, GitHub, PR manager adapters (incl. external recipe store)
 │   │   └── runner/util/              Utility classes
 │   ├── src/main/resources/           logback.xml
 │   ├── src/test/kotlin/              Unit tests (Kotest FunSpec)
@@ -93,7 +93,7 @@ allwrite/
 │
 ├── build-logic/
 │   └── src/main/kotlin/
-│       ├── conventions/              Convention plugins (kotlin, koin, jreleaser, etc.)
+│       ├── conventions/              Convention plugins (kotlin, koin, openrewrite-recipe-library, jreleaser, etc.)
 │       └── *.kt                      Custom Gradle tasks (FetchJdkTask, etc.)
 │
 ├── gradle/
@@ -131,10 +131,10 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 
 ## Patterns
 
-- **Hexagonal Architecture:** Incoming ports (`RecipeExecutor`, `RecipeSource`, `AppEntrypoint`) and outgoing ports (`UserProblemReporter`, `InputFilesProvider`, `GitMetadata`, `PullRequestContext`, `TelemetryPublisher`, `SystemInfo`)
+- **Hexagonal Architecture:** Incoming ports (`RecipeExecutor`, `RecipeSource`, `AppEntrypoint`) and outgoing ports (`UserProblemReporter`, `InputFilesProvider`, `GitMetadata`, `PullRequestContext`, `TelemetryPublisher`, `SystemInfo`, `ExternalRecipeJarsProvider`)
 - **Koin + KSP DI:** Modules annotated with `@Module` and `@ComponentScan`, services with `@Single`
 - **Convention Plugins:** Shared build logic in `build-logic/` (`conventions.kotlin`, `conventions.koin`, `conventions.recipe-classpaths`, etc.)
-- **Template Method:** `SubCommand` sealed abstract class defines `run()` lifecycle; subclasses implement `runSubCommand()`
+- **Template Method:** `SubCommand` abstract class defines `run()` lifecycle; subclasses implement `runSubCommand()`. `ExternalSubCommand` extends `SubCommand` as a marker for commands nested under the `external` group. `ExternalCommand` is a Clikt group command that collects `ExternalSubCommand` instances as subcommands.
 - **Observer/Listener:** `CommandListener` instances notified after each command execution (telemetry)
 - **Recipe Strategy:** Recipes can implement `ParsingAwareRecipe` or `PostprocessingRecipe`. Base classes: `AllwriteRecipe`, `AllwriteScanningRecipe`
 - **Test Fakes over Mocks:** Heavy use of `Fake*` implementations for test isolation

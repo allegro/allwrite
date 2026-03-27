@@ -19,6 +19,9 @@ kotlin-logging = "6.0.9"
 mockk = "1.13.10"
 axion-release = "1.21.1"
 assertj = "3.26.0"
+lombok = "1.18.44"
+jsr305 = "3.0.2"
+jetbrains-annotations = "26.1.0"
 pgpainless = "1.7.6"
 ktor = "2.3.12"
 jreleaser = "1.23.0"
@@ -104,6 +107,11 @@ kotest-extensions-koin = { group = "io.kotest.extensions", name = "kotest-extens
 
 # AssertJ
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
+
+# Pinned transitive deps (overrides latest.release from OpenRewrite build plugin)
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305" }
+jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations" }
 
 # Mockk
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
