@@ -5,7 +5,7 @@ import org.koin.core.component.inject
 import org.openrewrite.Recipe
 import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
-import pl.allegro.tech.allwrite.common.port.incoming.RecipeSource
+import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
 import kotlin.getValue
 
 /**

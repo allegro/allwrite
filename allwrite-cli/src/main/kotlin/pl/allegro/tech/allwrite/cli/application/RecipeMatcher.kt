@@ -3,11 +3,11 @@ package pl.allegro.tech.allwrite.cli.application
 import com.github.zafarkhaja.semver.Version
 import org.koin.core.annotation.Single
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.common.port.incoming.RecipeCoordinates
-import pl.allegro.tech.allwrite.common.port.incoming.RecipeSource
-import pl.allegro.tech.allwrite.common.port.incoming.getFromVersion
-import pl.allegro.tech.allwrite.common.port.incoming.getToVersion
-import pl.allegro.tech.allwrite.common.port.incoming.tagPropertyOrNull
+import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeCoordinates
+import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
+import pl.allegro.tech.allwrite.runtime.port.incoming.getFromVersion
+import pl.allegro.tech.allwrite.runtime.port.incoming.getToVersion
+import pl.allegro.tech.allwrite.runtime.port.incoming.tagPropertyOrNull
 
 @Single
 internal class RecipeMatcher(

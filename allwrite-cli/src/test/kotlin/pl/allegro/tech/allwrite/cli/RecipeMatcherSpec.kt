@@ -5,11 +5,11 @@ import io.kotest.matchers.equals.shouldBeEqual
 import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.RecipeMatcher
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
-import pl.allegro.tech.allwrite.common.fake.FakeRecipe
-import pl.allegro.tech.allwrite.common.fake.FakeRecipeSource
-import pl.allegro.tech.allwrite.common.fake.FakeRuntimeModule
-import pl.allegro.tech.allwrite.common.port.incoming.RecipeCoordinates
-import pl.allegro.tech.allwrite.common.util.injectEagerly
+import pl.allegro.tech.allwrite.runtime.fake.FakeRecipe
+import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
+import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
+import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeCoordinates
+import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class RecipeMatcherSpec : BaseCliSpec() {
 

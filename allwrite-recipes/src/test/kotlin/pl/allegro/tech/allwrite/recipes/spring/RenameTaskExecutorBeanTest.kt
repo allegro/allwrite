@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.openrewrite.java.Assertions.srcMainJava
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
-import pl.allegro.tech.allwrite.common.util.withRecipeClasspath
+import pl.allegro.tech.allwrite.runtime.util.withRecipeClasspath
 import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
 
