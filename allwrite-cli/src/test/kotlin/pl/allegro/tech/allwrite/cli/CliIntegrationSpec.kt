@@ -7,6 +7,7 @@ import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.cli.fake.os.FakeOperatingSystemModule
 import pl.allegro.tech.allwrite.cli.fake.os.FakeSystemEnvironment
 import pl.allegro.tech.allwrite.cli.fake.recipes.FailingPostProcessingRecipe
+import pl.allegro.tech.allwrite.cli.infrastructure.bot.GithubBotModule
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 import java.nio.file.Files
 import java.nio.file.Path
@@ -23,6 +24,7 @@ class CliIntegrationSpec : BaseCliSpec() {
     private val fakeSystemEnvironment: FakeSystemEnvironment by injectEagerly()
 
     override fun additionalModules() = listOf(
+        GithubBotModule().module,
         FakeOperatingSystemModule().module
     )
 
@@ -30,7 +32,7 @@ class CliIntegrationSpec : BaseCliSpec() {
         test("should post a comment with summary from failing post-processing recipe") {
             // given
             val summaryCommentFile = createSummaryCommentFile()
-            fakeSystemEnvironment["PR_MANAGER_SUMMARY_COMMENT_FILE"] = summaryCommentFile.pathString
+            fakeSystemEnvironment["GH_BOT_SUMMARY_COMMENT_FILE"] = summaryCommentFile.pathString
 
             // when
             appEntrypoint.execute("run", "--recipe", FailingPostProcessingRecipe.name)

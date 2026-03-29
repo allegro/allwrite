@@ -40,7 +40,7 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
         test("should fail when incorrect dependabot payload provided") {
             shouldThrow<Exception> {
                 runWithDependabotCommand.test(
-                    envvars = mapOf("PR_MANAGER_EXTRA_PARAMS" to "test")
+                    envvars = mapOf("GH_BOT_EXTRA_PARAMS" to "test")
                 )
             }
         }
