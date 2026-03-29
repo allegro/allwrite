@@ -8,8 +8,8 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.PullRequestContext
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.cli.fake.github.FakeGithubModule
 import pl.allegro.tech.allwrite.cli.fake.github.FakePullRequestContext
-import pl.allegro.tech.allwrite.common.fake.FakeRecipe
-import pl.allegro.tech.allwrite.common.util.injectEagerly
+import pl.allegro.tech.allwrite.runtime.fake.FakeRecipe
+import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
 

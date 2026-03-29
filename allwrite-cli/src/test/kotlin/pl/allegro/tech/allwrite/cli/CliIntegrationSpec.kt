@@ -7,7 +7,7 @@ import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.cli.fake.os.FakeOperatingSystemModule
 import pl.allegro.tech.allwrite.cli.fake.os.FakeSystemEnvironment
 import pl.allegro.tech.allwrite.cli.fake.recipes.FailingPostProcessingRecipe
-import pl.allegro.tech.allwrite.common.util.injectEagerly
+import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.pathString

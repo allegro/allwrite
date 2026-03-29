@@ -10,9 +10,9 @@ import pl.allegro.tech.allwrite.cli.application.RunWithDependabotCommand
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.cli.fake.github.FakeGithubModule
 import pl.allegro.tech.allwrite.cli.fake.github.FakePullRequestContext
-import pl.allegro.tech.allwrite.common.fake.FakeRecipeExecutor
-import pl.allegro.tech.allwrite.common.fake.FakeRuntimeModule
-import pl.allegro.tech.allwrite.common.util.injectEagerly
+import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeExecutor
+import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
+import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class RunWithDependabotCommandSpec : BaseCliSpec() {
 

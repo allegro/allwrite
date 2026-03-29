@@ -11,10 +11,10 @@ import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.Messages
 import pl.allegro.tech.allwrite.cli.application.RunCommand
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
-import pl.allegro.tech.allwrite.common.fake.FakeRecipeExecutor
-import pl.allegro.tech.allwrite.common.fake.FakeRecipeSource
-import pl.allegro.tech.allwrite.common.fake.FakeRuntimeModule
-import pl.allegro.tech.allwrite.common.util.injectEagerly
+import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeExecutor
+import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
+import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
+import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class RunCommandSpec : BaseCliSpec() {
 

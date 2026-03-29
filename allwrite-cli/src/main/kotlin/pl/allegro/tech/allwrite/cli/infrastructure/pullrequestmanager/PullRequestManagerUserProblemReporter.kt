@@ -2,8 +2,8 @@ package pl.allegro.tech.allwrite.cli.infrastructure.pullrequestmanager
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.core.annotation.Single
-import pl.allegro.tech.allwrite.common.port.outgoing.Problem
-import pl.allegro.tech.allwrite.common.port.outgoing.UserProblemReporter
+import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
+import pl.allegro.tech.allwrite.runtime.port.outgoing.UserProblemReporter
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.ShutdownListener
 import pl.allegro.tech.allwrite.cli.infrastructure.os.port.incoming.SystemEnvironment
 import java.io.File

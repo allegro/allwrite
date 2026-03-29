@@ -15,8 +15,8 @@ import pl.allegro.tech.allwrite.cli.fake.external.FakeTelemetryPublisher
 import pl.allegro.tech.allwrite.cli.fake.os.FakeGitMetadata
 import pl.allegro.tech.allwrite.cli.fake.os.FakeOperatingSystemModule
 import pl.allegro.tech.allwrite.cli.fake.os.FakeSystemInfo
-import pl.allegro.tech.allwrite.common.fake.FakeRuntimeModule
-import pl.allegro.tech.allwrite.common.util.injectEagerly
+import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
+import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 import java.time.Instant
 import kotlin.time.Duration
 
