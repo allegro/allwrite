@@ -71,8 +71,6 @@ internal class SourceFilesParser {
 
         if (artifacts.isNotEmpty()) {
             logger.info { "Resolved recipe classpath: $artifacts" }
-        } else {
-            logger.info { "No recipe classpath resolved" }
         }
         return artifacts
     }
