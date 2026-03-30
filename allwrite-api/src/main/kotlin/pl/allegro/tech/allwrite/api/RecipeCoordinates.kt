@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.runtime.port.incoming
+package pl.allegro.tech.allwrite.api
 
 import com.github.zafarkhaja.semver.Version
 import org.openrewrite.config.RecipeDescriptor

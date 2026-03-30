@@ -37,9 +37,12 @@ Multi-module Gradle project using **Hexagonal Architecture (Ports & Adapters)**.
 ## Module Dependency Graph
 
 ```
-allwrite-cli  -->  allwrite-runtime  -->  allwrite-recipes
-      |                                            ^
-      +-----> allwrite-completions ----------------+
+allwrite-cli  -->  allwrite-runtime  -->  allwrite-api
+      |                  |                     ^
+      |                  v                     |
+      |            allwrite-recipes -----------+
+      |                  ^
+      +-----> allwrite-completions
                     (annotation processor)
       |
       +-----> allwrite-recipes (direct, for recipe classpath)
@@ -49,8 +52,9 @@ allwrite-cli  -->  allwrite-runtime  -->  allwrite-recipes
 
 | Module | Role |
 |---|---|
-| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. |
-| `allwrite-runtime` | Domain layer. Port interfaces and OpenRewrite-backed implementations. |
+| `allwrite-api` | Public API layer. Incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`). Published as a Maven artifact. |
+| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api`. |
+| `allwrite-runtime` | Domain layer. Outgoing port interfaces and OpenRewrite-backed implementations. Depends on `allwrite-api`. |
 | `allwrite-cli` | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring. |
 | `allwrite-completions` | Build-time annotation processor for shell completion generation. |
 | `build-logic` | Gradle composite build with convention plugins and custom tasks. |
@@ -59,6 +63,9 @@ allwrite-cli  -->  allwrite-runtime  -->  allwrite-recipes
 
 ```
 allwrite/
+├── allwrite-api/
+│   └── src/main/kotlin/              Incoming port interfaces (RecipeExecutor, RecipeSource, RecipeCoordinates)
+│
 ├── allwrite-cli/
 │   ├── src/main/kotlin/              CLI application (commands, infrastructure adapters)
 │   │   ├── runner/Main.kt            Entry point
@@ -71,7 +78,7 @@ allwrite/
 │   └── src/e2e/kotlin/              End-to-end tests
 │
 ├── allwrite-runtime/
-│   ├── src/main/kotlin/              Ports, recipe executor, source file parser
+│   ├── src/main/kotlin/              Outgoing ports, recipe executor, source file parser
 │   ├── src/test/kotlin/              Unit tests (Kotest FunSpec)
 │   └── src/testFixtures/kotlin/      Shared test fakes/fixtures
 │
@@ -126,7 +133,8 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 - Test files: `*Spec.kt` (Kotest) or `*Test.kt` (JUnit)
 - Packages: `pl.allegro.tech.allwrite.*`
 - Koin modules: `*Module.kt`
-- Port interfaces: under `port/incoming/` and `port/outgoing/`
+- Incoming port interfaces: in `pl.allegro.tech.allwrite.api` package (`allwrite-api` module)
+- Outgoing port interfaces: under `port/outgoing/` in `allwrite-runtime`
 - Fake test implementations: `Fake*` prefix
 
 ## Patterns
