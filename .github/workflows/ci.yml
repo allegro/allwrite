@@ -3,6 +3,14 @@ name: CI
 on:
   pull_request:
   workflow_dispatch:
+    inputs:
+      build-cache:
+        description: Build Cache
+        type: choice
+        default: enabled
+        options:
+          - enabled
+          - disabled
   push:
     branches:
       - main
@@ -30,7 +38,7 @@ jobs:
         with:
           cache-read-only: false
 
-      - run: ./gradlew check
+      - run: ./gradlew check ${{ inputs.build-cache == 'disabled' && '--no-build-cache' || '' }}
 
       - uses: mikepenz/action-junit-report@v6
         if: success() || failure()

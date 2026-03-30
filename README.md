@@ -19,7 +19,7 @@ brew install allwrite
 Run a recipe by friendly name:
 
 ```bash
-allwrite run springBoot/upgrade 3 4
+allwrite run springBoot/upgrade 3.5 4.0
 ```
 
 Run a recipe by fully-qualified name:
@@ -51,7 +51,7 @@ we would love to see your contribution! ❤️
 
 ## External recipes
 
-You can register external recipe JARs to extend `allwrite` with additional recipes from any URL.
+You can register external JARs to extend `allwrite` with additional recipes from any URL.
 
 Add an external recipe JAR:
 ```bash
