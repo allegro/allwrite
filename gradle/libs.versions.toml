@@ -10,7 +10,7 @@ openrewrite-build-plugins = "2.11.3"
 test-logger = "4.0.0"
 slf4j = { strictly = "2.0.17" }
 logback = "1.5.32"
-koin = "4.0.0"
+koin = "4.2.0"
 koin-annotations = "2.0.0"
 clikt = "5.1.0"
 kotest = "5.9.1"
