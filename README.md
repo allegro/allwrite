@@ -19,7 +19,7 @@ brew install allwrite
 Run a recipe by friendly name:
 
 ```bash
-allwrite run springBoot/upgrade 3 4
+allwrite run springBoot/upgrade 3.5 4.0
 ```
 
 Run a recipe by fully-qualified name:
@@ -48,3 +48,32 @@ In addition, it provides a collection of custom recipes that aim to fill the gap
 
 If you're a library maintainer and want to automate the migration process for your users (or just have prepared a recipe that may be useful for others),
 we would love to see your contribution! ❤️
+
+## External recipes
+
+You can register external JARs to extend `allwrite` with additional recipes from any URL.
+
+Add an external recipe JAR:
+```bash
+allwrite external add custom-recipes https://repo.com/custom-recipes-1.0.0.jar
+```
+
+Update an external recipe JAR with a new URL:
+```bash
+allwrite external update custom-recipes https://repo.com/custom-recipes-2.0.0.jar
+```
+
+Re-fetch an external recipe JAR from its stored URL:
+```bash
+allwrite external update custom-recipes
+```
+
+List all registered external recipe JARs:
+```bash
+allwrite external ls
+```
+
+Remove an external recipe JAR:
+```bash
+allwrite external rm custom-recipes
+```

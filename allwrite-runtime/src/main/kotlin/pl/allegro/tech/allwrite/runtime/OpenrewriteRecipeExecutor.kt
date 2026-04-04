@@ -22,7 +22,7 @@ import kotlin.io.path.writeText
 @Single
 internal class OpenrewriteRecipeExecutor(
     private val sourceFilesParser: SourceFilesParser,
-    private val userProblemReporter: UserProblemReporter,
+    private val userProblemReporter: UserProblemReporter?,
 ) : RecipeExecutor {
 
     override fun execute(recipe: Recipe, inputFiles: List<Path>, failOnError: Boolean) {
@@ -77,7 +77,7 @@ internal class OpenrewriteRecipeExecutor(
                 postprocessingRecipe.postprocess()
             }
             .filterIsInstance<PostprocessingResult.Failure>()
-            .forEach { result -> userProblemReporter.reportProblem(Problem(result.errorMessage)) }
+            .forEach { result -> userProblemReporter?.reportProblem(Problem(result.errorMessage)) }
     }
 
     private fun allRecipes(recipe: Recipe): List<Recipe> =

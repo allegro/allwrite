@@ -84,7 +84,7 @@ internal class RunWithDependabotCommand(
 
     companion object {
 
-        const val ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME: String = "PR_MANAGER_EXTRA_PARAMS"
+        const val ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME: String = "GH_BOT_EXTRA_PARAMS"
         const val COMMAND_NAME: String = "run-dependabot"
     }
 }

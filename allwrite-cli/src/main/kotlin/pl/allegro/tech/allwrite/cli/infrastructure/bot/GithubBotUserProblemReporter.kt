@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.cli.infrastructure.pullrequestmanager
+package pl.allegro.tech.allwrite.cli.infrastructure.bot
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.core.annotation.Single
@@ -10,7 +10,7 @@ import java.io.File
 import java.io.PrintStream
 
 @Single
-internal class PullRequestManagerUserProblemReporter(
+internal class GithubBotUserProblemReporter(
     private val systemEnvironment: SystemEnvironment,
 ) : UserProblemReporter, ShutdownListener {
 
@@ -22,7 +22,7 @@ internal class PullRequestManagerUserProblemReporter(
 
     override fun onAppShutdown() {
         if (issues.isNotEmpty()) {
-            val commentOutput = systemEnvironment["PR_MANAGER_SUMMARY_COMMENT_FILE"]
+            val commentOutput = systemEnvironment["GH_BOT_SUMMARY_COMMENT_FILE"]
                 ?.let(::File)
                 ?.printWriter()
                 ?: fallbackOutput()
