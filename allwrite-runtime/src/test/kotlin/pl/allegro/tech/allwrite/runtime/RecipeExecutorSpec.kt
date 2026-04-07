@@ -14,7 +14,7 @@ import pl.allegro.tech.allwrite.runtime.fake.FakePostProcessingRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeThrowingRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeUserProblemReporter
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeExecutor
+import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 import java.nio.file.Path

@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.runtime.port.incoming
+package pl.allegro.tech.allwrite.api
 
 import org.openrewrite.Recipe
 import java.nio.file.Path

@@ -2,7 +2,7 @@ package pl.allegro.tech.allwrite.cli.application
 
 import com.github.zafarkhaja.semver.Version as DomainVersion
 import kotlinx.serialization.Serializable
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeCoordinates
+import pl.allegro.tech.allwrite.api.RecipeCoordinates
 
 private val GROUPS_BY_ARTIFACT = mapOf<String, String>()
 

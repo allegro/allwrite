@@ -4,7 +4,7 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotContainAnyOf
 import org.koin.test.inject
 import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeSource
+import pl.allegro.tech.allwrite.api.RecipeSource
 
 class RecipeSourceSpec : BaseRuntimeSpec() {
     init {

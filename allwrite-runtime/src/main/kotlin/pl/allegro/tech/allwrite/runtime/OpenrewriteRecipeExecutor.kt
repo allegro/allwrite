@@ -8,7 +8,7 @@ import org.openrewrite.Recipe
 import org.openrewrite.RecipeRun
 import org.openrewrite.SourceFile
 import org.openrewrite.internal.InMemoryLargeSourceSet
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeExecutor
+import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
 import pl.allegro.tech.allwrite.runtime.port.outgoing.UserProblemReporter
 import pl.allegro.tech.allwrite.runtime.util.WORKDIR

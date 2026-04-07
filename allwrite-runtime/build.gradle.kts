@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+    api(projects.allwriteApi)
     api(projects.allwriteSpi)
 
     // OpenRewrite

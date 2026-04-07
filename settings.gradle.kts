@@ -13,6 +13,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "allwrite"
 
+include("allwrite-api")
 include("allwrite-completions")
 include("allwrite-runtime")
 include("allwrite-recipes")
