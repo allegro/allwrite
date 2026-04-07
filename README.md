@@ -51,29 +51,37 @@ we would love to see your contribution! ❤️
 
 ## External recipes
 
-You can register external JARs to extend `allwrite` with additional recipes from any URL.
+You can add external recipes to your local `allwrite`, they can be closed-source and stored in a private artifact repository.
 
-Add an external recipe JAR:
+All you need to do: 
+- package your recipes to a JAR file
+- publish it somewhere
+- grab the URL to the published JAR
+- register that URL via `allwrite external add ...`
+
+### Commands for external recipes
+
+Add an external recipes JAR:
 ```bash
 allwrite external add custom-recipes https://repo.com/custom-recipes-1.0.0.jar
 ```
 
-Update an external recipe JAR with a new URL:
+Update an external recipes JAR with a new URL:
 ```bash
 allwrite external update custom-recipes https://repo.com/custom-recipes-2.0.0.jar
 ```
 
-Re-fetch an external recipe JAR from its stored URL:
+Re-fetch an external recipes JAR (useful for SNAPSHOT versions):
 ```bash
 allwrite external update custom-recipes
 ```
 
-List all registered external recipe JARs:
+List external recipes JARs:
 ```bash
 allwrite external ls
 ```
 
-Remove an external recipe JAR:
+Remove an external recipes JAR:
 ```bash
 allwrite external rm custom-recipes
 ```
