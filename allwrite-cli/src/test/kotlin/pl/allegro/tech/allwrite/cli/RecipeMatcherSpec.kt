@@ -8,7 +8,7 @@ import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
 import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeCoordinates
+import pl.allegro.tech.allwrite.api.RecipeCoordinates
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class RecipeMatcherSpec : BaseCliSpec() {

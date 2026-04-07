@@ -11,8 +11,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.zafarkhaja.semver.Version
 import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeCoordinates
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeExecutor
+import pl.allegro.tech.allwrite.api.RecipeCoordinates
+import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.cli.application.CommandExecutionResult.ExecutionResult
 import pl.allegro.tech.allwrite.cli.application.Messages.LIST_RECIPES_HINT
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.InputFilesProvider

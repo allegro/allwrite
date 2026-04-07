@@ -2,7 +2,7 @@ package pl.allegro.tech.allwrite.runtime.fake
 
 import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeExecutor
+import pl.allegro.tech.allwrite.api.RecipeExecutor
 import java.nio.file.Path
 
 @Single

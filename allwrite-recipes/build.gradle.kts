@@ -26,7 +26,7 @@ recipeDependencies {
 
 dependencies {
     api(projects.allwriteSpi)
-    implementation(projects.allwriteRuntime)
+    implementation(projects.allwriteApi)
 
     implementation(platform(libs.rewrite.bom))
     implementation(libs.rewrite.java)

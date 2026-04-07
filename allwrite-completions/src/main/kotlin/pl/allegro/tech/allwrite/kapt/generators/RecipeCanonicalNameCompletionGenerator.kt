@@ -6,8 +6,8 @@ import com.squareup.kotlinpoet.SET
 import com.squareup.kotlinpoet.STRING
 import org.koin.core.annotation.Single
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.runtime.port.incoming.RecipeCoordinates
-import pl.allegro.tech.allwrite.runtime.port.incoming.toRecipeCoordinatesOrNull
+import pl.allegro.tech.allwrite.api.RecipeCoordinates
+import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
 
 @Single
 internal class RecipeCanonicalNameCompletionGenerator : CompletionGenerator {
