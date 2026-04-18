@@ -11,14 +11,18 @@ import kotlin.getValue
 /**
  * A recipe that performs migration e.g. from Java 21 to Java 25 (without previous migrations like 17->21, 11->17, etc.)
  */
-public abstract class IsolatedJavaRecipe(from: Int, to: Int) : AllwriteRecipe(
+public abstract class IsolatedJavaRecipe(
+    from: Int,
+    to: Int,
+) : AllwriteRecipe(
     displayName = "Migrate from Java $from to Java $to",
     visibility = PUBLIC,
     group = "java",
     action = "upgrade",
     from = from.toString(),
     to = to.toString(),
-), KoinComponent {
+),
+    KoinComponent {
 
     private val recipeSource: RecipeSource by inject()
 

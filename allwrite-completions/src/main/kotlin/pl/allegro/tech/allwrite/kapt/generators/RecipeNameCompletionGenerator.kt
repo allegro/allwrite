@@ -15,7 +15,8 @@ internal class RecipeNameCompletionGenerator : CompletionGenerator {
         return PropertySpec.builder("recipeIdOptions", SET.parameterizedBy(STRING))
             .initializer(
                 "%L",
-                recipes.joinToString(prefix = "setOf(", postfix = ")", separator = ", ") { "\"$it\"" })
+                recipes.joinToString(prefix = "setOf(", postfix = ")", separator = ", ") { "\"$it\"" },
+            )
             .build()
     }
 }

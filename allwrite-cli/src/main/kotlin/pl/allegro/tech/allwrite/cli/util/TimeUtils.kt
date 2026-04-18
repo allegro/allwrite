@@ -19,6 +19,6 @@ internal fun catchingMeasureTime(block: () -> ExecutionResult): TimeMeasuredExec
     return TimeMeasuredExecutionResult(
         executedRecipes = executionResult.executedRecipes,
         executionTime = measuredTime,
-        throwable = throwable
+        throwable = throwable,
     )
 }

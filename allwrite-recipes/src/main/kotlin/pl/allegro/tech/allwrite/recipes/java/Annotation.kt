@@ -10,23 +10,24 @@ import org.openrewrite.java.tree.Space
 import org.openrewrite.marker.Markers
 import pl.allegro.tech.allwrite.recipes.util.JavaStringLiteral
 
-internal fun annotation(prefix: Space = Space.EMPTY, type: JavaType.FullyQualified, params: Map<String, Expression>): J.Annotation = J.Annotation(
-    Tree.randomId(),
-    prefix,
-    Markers.EMPTY,
-    J.Identifier(
+internal fun annotation(prefix: Space = Space.EMPTY, type: JavaType.FullyQualified, params: Map<String, Expression>): J.Annotation =
+    J.Annotation(
         Tree.randomId(),
-        Space.EMPTY,
+        prefix,
         Markers.EMPTY,
-        mutableListOf<J.Annotation>(),
-        type.fullyQualifiedName.substringAfterLast("."),
-        type,
-        null
-    ),
-    JContainer.build(
-        prepareParams(params)
+        J.Identifier(
+            Tree.randomId(),
+            Space.EMPTY,
+            Markers.EMPTY,
+            mutableListOf<J.Annotation>(),
+            type.fullyQualifiedName.substringAfterLast("."),
+            type,
+            null,
+        ),
+        JContainer.build(
+            prepareParams(params),
+        ),
     )
-)
 
 /**
  * Creates an annotation of type `type` with a single parameter, assigned to the default attribute
@@ -44,13 +45,12 @@ private fun prepareParams(params: Map<String, Expression>): List<JRightPadded<Ex
     if (params.size == 1 && params.keys.first() == DEFAULT_ANNOTATION_ARGUMENT_NAME) {
         val valueParameter = params.getValue(DEFAULT_ANNOTATION_ARGUMENT_NAME)
         return mutableListOf( // arguments
-            JRightPadded.build(valueParameter)
+            JRightPadded.build(valueParameter),
         )
     }
     return params.map { (name, j) ->
         JRightPadded.build(
-            assignment(name, j)
+            assignment(name, j),
         )
     }
 }
-

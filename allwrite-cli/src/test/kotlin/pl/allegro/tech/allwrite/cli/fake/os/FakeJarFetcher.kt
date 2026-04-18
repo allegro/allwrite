@@ -16,5 +16,8 @@ internal class FakeJarFetcher : JarFetcher {
         destination.toFile().writeBytes(ByteArray(0))
     }
 
-    data class FetchedJar(val url: String, val destination: Path)
+    data class FetchedJar(
+        val url: String,
+        val destination: Path,
+    )
 }

@@ -10,7 +10,7 @@ open class FakeRecipe(
     private val id: String = "pl.allegro.tech.allwrite.recipes.fake",
     private val displayName: String = "Fake recipe",
     private val description: String = "Fake recipe description.",
-    private val tags: Set<String> = emptySet()
+    private val tags: Set<String> = emptySet(),
 ) : Recipe() {
 
     val visitedSourceFiles = mutableListOf<SourceFile>()

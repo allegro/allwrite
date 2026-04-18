@@ -17,14 +17,10 @@ import java.net.URI
 @ComponentScan
 public class GithubModule {
     @Single
-    internal fun githubClient() =
-        GitHubClient.create(URI.create("https://api.github.com/"), System.getenv("GITHUB_TOKEN"))
+    internal fun githubClient() = GitHubClient.create(URI.create("https://api.github.com/"), System.getenv("GITHUB_TOKEN"))
 
     @Single
-    internal fun pullRequestContext(
-        gitHubClient: GitHubClient,
-        systemEnvironment: SystemEnvironment,
-    ): PullRequestContext {
+    internal fun pullRequestContext(gitHubClient: GitHubClient, systemEnvironment: SystemEnvironment): PullRequestContext {
         val envRepository = systemEnvironment["REWRITE_REPOSITORY"]
         val envPrNumber = systemEnvironment["REWRITE_PR_NUMBER"]
         if (envRepository == null || envPrNumber == null) return NoPullRequestContext()

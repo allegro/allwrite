@@ -15,7 +15,10 @@ private val SPRING_COMPONENT_ANNOTATION_TYPES = setOf(
     ANNOTATION_CONFIGURATION,
 )
 
-internal data class SpringComponentAnnotation(val name: String, val annotation: J.Annotation)
+internal data class SpringComponentAnnotation(
+    val name: String,
+    val annotation: J.Annotation,
+)
 
 /**
  * Returns a non-null [SpringComponentAnnotation] if the class is marked with Spring
@@ -59,7 +62,10 @@ internal fun J.ClassDeclaration.hasConfigurationAnnotation(): Boolean = leadingA
 /**
  * Contains a @Bean annotation and a method, marked with this annotation
  */
-internal data class BeanMethodDeclaration(val annotation: J.Annotation, val method: J.MethodDeclaration) {
+internal data class BeanMethodDeclaration(
+    val annotation: J.Annotation,
+    val method: J.MethodDeclaration,
+) {
 
     /**
      * Returns a qualified name from @Bean annotation if present, or an implicit bean name
@@ -73,16 +79,18 @@ internal data class BeanMethodDeclaration(val annotation: J.Annotation, val meth
 /**
  * Returns list of [BeanMethodDeclaration] retrieved from the class methods marked with @Bean annotation
  */
-internal fun J.ClassDeclaration.getBeanMethodDeclarations(): List<BeanMethodDeclaration> = body.statements
-    .filterIsInstance<J.MethodDeclaration>()
-    .mapNotNull { m ->
-        val beanAnnotation = m.leadingAnnotations.find { TypeUtils.isAssignableTo(ANNOTATION_BEAN, it.type) }
-        beanAnnotation?.let { BeanMethodDeclaration(beanAnnotation, m) }
-    }
+internal fun J.ClassDeclaration.getBeanMethodDeclarations(): List<BeanMethodDeclaration> =
+    body.statements
+        .filterIsInstance<J.MethodDeclaration>()
+        .mapNotNull { m ->
+            val beanAnnotation = m.leadingAnnotations.find { TypeUtils.isAssignableTo(ANNOTATION_BEAN, it.type) }
+            beanAnnotation?.let { BeanMethodDeclaration(beanAnnotation, m) }
+        }
 
 /**
  * Returns list of [Variable] retrieved from class fields marked with @Autowired, @Resource or @Inject annotations
  */
-internal fun J.ClassDeclaration.getAutowiredFields(): List<Variable> = body.statements.filterIsInstance<J.VariableDeclarations>()
-    .filter { it.isAutowired() }
-    .flatMap { it.variables() }
+internal fun J.ClassDeclaration.getAutowiredFields(): List<Variable> =
+    body.statements.filterIsInstance<J.VariableDeclarations>()
+        .filter { it.isAutowired() }
+        .flatMap { it.variables() }

@@ -12,9 +12,10 @@ class ListRecipesCommandSpec : BaseCliSpec() {
 
     private val listRecipesCommand: ListRecipesCommand by injectEagerly()
 
-    override fun additionalModules() = listOf(
-        FakeRuntimeModule().module
-    )
+    override fun additionalModules() =
+        listOf(
+            FakeRuntimeModule().module,
+        )
 
     init {
         test("should list recipes") {

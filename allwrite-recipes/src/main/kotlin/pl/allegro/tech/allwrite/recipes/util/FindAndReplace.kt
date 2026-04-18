@@ -20,5 +20,5 @@ internal fun FindAndReplace(
     multiline,
     dotAll,
     filePattern,
-    plaintextOnly
+    plaintextOnly,
 )

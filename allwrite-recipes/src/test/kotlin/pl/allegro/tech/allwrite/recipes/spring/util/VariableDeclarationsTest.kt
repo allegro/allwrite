@@ -28,7 +28,8 @@ class VariableDeclarationsTest : ParsingTest() {
             class Example1 {
               @Named @Qualifier @Resource int x;
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.VariableDeclarations
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.VariableDeclarations
 
         // then
         assertTrue(j.hasNamedAnnotation())
@@ -50,7 +51,8 @@ class VariableDeclarationsTest : ParsingTest() {
             class Example2 {
               @Autowired @Inject int x;
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.VariableDeclarations
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.VariableDeclarations
 
         // then
         assertTrue(j.hasInjectAnnotation())
@@ -70,7 +72,8 @@ class VariableDeclarationsTest : ParsingTest() {
             class Example3 {
               int x;
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.VariableDeclarations
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.VariableDeclarations
 
         // then
         assertFalse(j.hasInjectAnnotation())
@@ -93,7 +96,8 @@ class VariableDeclarationsTest : ParsingTest() {
             class Example1 {
               @Named("n") @Qualifier("q") @Resource(name = "r") int x;
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.VariableDeclarations
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.VariableDeclarations
 
         // then
         assertThat(j.qualifiedName()).isEqualTo("r")
@@ -107,7 +111,8 @@ class VariableDeclarationsTest : ParsingTest() {
             class Example2 {
               @Named("n") @Qualifier("q") int x;
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.VariableDeclarations
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.VariableDeclarations
 
         // then
         assertThat(j.qualifiedName()).isEqualTo("q")
@@ -120,7 +125,8 @@ class VariableDeclarationsTest : ParsingTest() {
             class Example3 {
               @Named("n") int x;
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.VariableDeclarations
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.VariableDeclarations
 
         // then
         assertThat(j.qualifiedName()).isEqualTo("n")
@@ -143,7 +149,8 @@ class VariableDeclarationsTest : ParsingTest() {
             class Example1 {
               @Named("n") @Qualifier("q") @Resource(name = "r") int x, y;
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.VariableDeclarations
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.VariableDeclarations
 
         // when
         val foundBySimpleName = j.findVariableBy("x")
@@ -167,7 +174,8 @@ class VariableDeclarationsTest : ParsingTest() {
             class Example1 {
               @Named("n") @Qualifier("q") @Resource(name = "r") int x, y;
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.VariableDeclarations
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.VariableDeclarations
 
         // when
         val result = j.variables()

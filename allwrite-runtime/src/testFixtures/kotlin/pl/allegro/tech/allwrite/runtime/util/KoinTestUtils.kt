@@ -17,10 +17,9 @@ import kotlin.reflect.full.superclasses
  * Creates Kotest extension for Koin with Mockk as mockProvider
  */
 @Suppress("TestFunctionName")
-fun KoinMockkExtension(vararg modules: Module) =
-    KoinMockkExtension(modules.toList())
+fun KoinMockkExtension(vararg modules: Module) = KoinMockkExtension(modules.toList())
 
-@Suppress("TestFunctionName")
+@Suppress("TestFunctionName", "ktlint:standard:function-naming")
 fun KoinMockkExtension(modules: List<Module>) =
     KoinExtension(
         modules = modules.toList(),
@@ -36,7 +35,7 @@ inline fun <reified T> KoinTest.declareFake(instance: T) {
     getKoin().declare(
         instance = instance,
         secondaryTypes = T::class.superclasses.filter { it != Any::class },
-        allowOverride = true
+        allowOverride = true,
     )
 }
 
@@ -45,19 +44,14 @@ inline fun <reified T> KoinTest.declareFake(instance: T) {
  * It is useful in tests, because every Kotest leaf test starts new Koin context,
  * so with inject() you may end up with one bean from previous context, and another from the current one.
  */
-inline fun <reified T : Any> KoinComponent.injectEagerly(
-    qualifier: Qualifier? = null,
-    noinline parameters: ParametersDefinition? = null,
-) =
+inline fun <reified T : Any> KoinComponent.injectEagerly(qualifier: Qualifier? = null, noinline parameters: ParametersDefinition? = null) =
     InjectDelegate(T::class, this, qualifier, parameters)
 
 class InjectDelegate<T : Any>(
     private val clazz: KClass<T>,
     private val koinComponent: KoinComponent,
     private val qualifier: Qualifier?,
-    private val parameters: ParametersDefinition?
+    private val parameters: ParametersDefinition?,
 ) {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return koinComponent.getKoin().get(clazz, qualifier, parameters)
-    }
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = koinComponent.getKoin().get(clazz, qualifier, parameters)
 }

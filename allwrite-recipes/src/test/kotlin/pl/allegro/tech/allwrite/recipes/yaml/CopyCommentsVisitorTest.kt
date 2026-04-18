@@ -22,7 +22,7 @@ class CopyCommentsVisitorTest : YamlTest {
             prop1: 1
             # comment
             prop2: 2
-            """.trimIndent()
+        """.trimIndent()
         val docs = parse(yaml)
         val visitor = CopyCommentsVisitor(docs)
         val docBeforeVisitor = docs.removeTopLevelEntriesPrefix()
@@ -74,7 +74,7 @@ class CopyCommentsVisitorTest : YamlTest {
             """
             prop2: 2 # 2
             prop1: 1
-            """.trimIndent()
+            """.trimIndent(),
         )
     }
 
@@ -188,7 +188,7 @@ class CopyCommentsVisitorTest : YamlTest {
             prop3: [2] # comm2
             prop1:
               sequence: [1] # comm
-            """.trimIndent()
+            """.trimIndent(),
         )
     }
 
@@ -199,7 +199,7 @@ class CopyCommentsVisitorTest : YamlTest {
             # comment line 1
             # comment line 2
             prop2: 2
-            """.trimIndent()
+        """.trimIndent()
         val docs = parse(yaml)
         val visitor = CopyCommentsVisitor(docs)
         val docBeforeVisitor = docs.removeTopLevelEntriesPrefix()
@@ -226,7 +226,7 @@ class CopyCommentsVisitorTest : YamlTest {
             prop1: 1
             prop3: 3
             prop2: 2
-            """.trimIndent()
+            """.trimIndent(),
         )
         val visitor = CopyCommentsVisitor(original)
 
@@ -255,14 +255,14 @@ class CopyCommentsVisitorTest : YamlTest {
                 # pretty nested already
                 path:
                   value: 1
-            """.trimIndent()
+        """.trimIndent()
         val yamlWithoutComments = """
             prop1: 1
             prop:
               long:
                 path:
                   value: 1
-            """.trimIndent()
+        """.trimIndent()
         val original = parse(yamlWithComments)
         var beforeVisit = parse(yamlWithoutComments)
 
@@ -290,7 +290,7 @@ class CopyCommentsVisitorTest : YamlTest {
                 # should be two
                 two: 3 # two does not work, fix later
                 three: 3 # three
-            """.trimIndent()
+        """.trimIndent()
         val yamlWithoutComments = """
             prop1: 1
             prop:
@@ -298,7 +298,7 @@ class CopyCommentsVisitorTest : YamlTest {
                 two: 3
                 three: 3
                 one: 1
-            """.trimIndent()
+        """.trimIndent()
         val original = parse(yamlWithComments)
         var beforeVisit = parse(yamlWithoutComments)
 
@@ -322,7 +322,7 @@ class CopyCommentsVisitorTest : YamlTest {
                 three: 3 # three
                 # should be one
                 one: 1 # one
-            """.trimIndent()
+            """.trimIndent(),
         )
     }
 
@@ -333,13 +333,13 @@ class CopyCommentsVisitorTest : YamlTest {
             prop:
              - 1 # this is one
              - 2 # this is two
-            """.trimIndent()
+        """.trimIndent()
         val yamlWithoutComments = """
             prop1: 1
             prop:
              - 1
              - 2
-            """.trimIndent()
+        """.trimIndent()
         val original = parse(yamlWithComments)
         var beforeVisit = parse(yamlWithoutComments)
 
@@ -370,7 +370,7 @@ class CopyCommentsVisitorTest : YamlTest {
             ---
             prop1: 0
             prop2: 3
-            """.trimIndent()
+        """.trimIndent()
         val docs = parse(yaml)
         val visitor = CopyCommentsVisitor(docs)
         val docBeforeVisitor = docs.removeTopLevelEntriesPrefix()
@@ -394,7 +394,7 @@ class CopyCommentsVisitorTest : YamlTest {
             """
             prop1.new: 0
             prop2.new: 1
-            """.trimIndent()
+            """.trimIndent(),
         )
         val visitor = CopyCommentsVisitor(original) { YamlPath(it.path.substringBeforeLast(".")) }
 
@@ -408,7 +408,7 @@ class CopyCommentsVisitorTest : YamlTest {
             prop1.new: 0
             # comment
             prop2.new: 1
-            """.trimIndent()
+            """.trimIndent(),
         )
     }
 
@@ -432,7 +432,7 @@ class CopyCommentsVisitorTest : YamlTest {
             prop2:
               <<: *ANCHOR
             prop3: 3
-            """.trimIndent()
+            """.trimIndent(),
         )
         val visitor = CopyCommentsVisitor(original)
 
@@ -451,15 +451,16 @@ class CopyCommentsVisitorTest : YamlTest {
               # just duplicate
               <<: *ANCHOR # reference to the prop1
             prop3: 3
-            """.trimIndent()
+            """.trimIndent(),
         )
     }
 
-    private fun Yaml.Documents.removeTopLevelEntriesPrefix() = this.mapDocuments {
-        it.mapBlock<Yaml.Mapping> {
-            it.mapEntries {
-                it.withPrefix("\n")
+    private fun Yaml.Documents.removeTopLevelEntriesPrefix() =
+        this.mapDocuments {
+            it.mapBlock<Yaml.Mapping> {
+                it.mapEntries {
+                    it.withPrefix("\n")
+                }
             }
         }
-    }
 }

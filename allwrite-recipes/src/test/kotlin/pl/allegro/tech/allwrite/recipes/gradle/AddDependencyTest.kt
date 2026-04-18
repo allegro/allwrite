@@ -2,8 +2,6 @@ package pl.allegro.tech.allwrite.recipes.gradle
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.openrewrite.SourceFile
-import org.openrewrite.gradle.marker.GradleProject
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
 import pl.allegro.tech.allwrite.recipes.buildGradle
@@ -13,7 +11,14 @@ import pl.allegro.tech.allwrite.recipes.toml
 class AddDependencyTest : RewriteTest {
 
     override fun defaults(spec: RecipeSpec) {
-        spec.recipe(AddGradleDependency(configuration = "testRuntimeOnly", groupId = "org.junit.platform", artifactId = "junit-platform-launcher", versionCatalogName = "junit-platform-launcher"))
+        spec.recipe(
+            AddGradleDependency(
+                configuration = "testRuntimeOnly",
+                groupId = "org.junit.platform",
+                artifactId = "junit-platform-launcher",
+                versionCatalogName = "junit-platform-launcher",
+            ),
+        )
             .validateRecipeSerialization(false)
     }
 
@@ -23,7 +28,8 @@ class AddDependencyTest : RewriteTest {
         @Test
         fun `should add an entry to version catalog and build manifest when it does not exist`() {
             rewriteRun(
-                toml("""
+                toml(
+                    """
                     [versions]
                     mylib = "9.1.0"
                     
@@ -46,7 +52,8 @@ class AddDependencyTest : RewriteTest {
                     [plugins]
                     kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.1.10" }
                     """.trimIndent(),
-                    { path("gradle/libs.versions.toml") }),
+                    { path("gradle/libs.versions.toml") },
+                ),
                 buildGradle(
                     before = """
                     dependencies {
@@ -58,7 +65,7 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test:1.2.3")
                         testRuntimeOnly(libs.junit.platform.launcher)
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule1/build.gradle") },
                 buildGradleKts(
                     before = """
@@ -71,7 +78,7 @@ class AddDependencyTest : RewriteTest {
                         implementation(libs.test)
                         testRuntimeOnly(libs.junit.platform.launcher)
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule2/build.gradle.kts") },
             )
         }
@@ -79,7 +86,8 @@ class AddDependencyTest : RewriteTest {
         @Test
         fun `should add an entry to build manifest when dependency exists in version catalog already`() {
             rewriteRun(
-                toml(beforeAndAfter = """
+                toml(
+                    beforeAndAfter = """
                 [versions]
                 mylib = "9.1.0"
                 
@@ -90,7 +98,9 @@ class AddDependencyTest : RewriteTest {
                 
                 [plugins]
                 kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.1.10" }
-                """.trimIndent(), {path("gradle/libs.versions.toml")}),
+                    """.trimIndent(),
+                    { path("gradle/libs.versions.toml") },
+                ),
                 buildGradle(
                     before = """
                     dependencies {
@@ -102,7 +112,7 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test:1.2.3")
                         testRuntimeOnly(libs.junit.launcher)
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule1/build.gradle") },
                 buildGradleKts(
                     before = """
@@ -115,15 +125,16 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test:1.2.3")
                         testRuntimeOnly(libs.junit.launcher)
                     }
-                    """.trimIndent()
-                ) { path("submodule2/build.gradle.kts") }
+                    """.trimIndent(),
+                ) { path("submodule2/build.gradle.kts") },
             )
         }
 
         @Test
         fun `should not add an entry to build manifest when dependency exists in version catalog and build manifest, but for a different configuration`() {
             rewriteRun(
-                toml(beforeAndAfter = """
+                toml(
+                    beforeAndAfter = """
                 [versions]
                 mylib = "9.1.0"
                 
@@ -134,7 +145,9 @@ class AddDependencyTest : RewriteTest {
                 
                 [plugins]
                 kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.1.10" }
-                """.trimIndent(), {path("gradle/libs.versions.toml")}),
+                    """.trimIndent(),
+                    { path("gradle/libs.versions.toml") },
+                ),
                 buildGradle(
                     beforeAndAfter = """
                     dependencies {
@@ -142,7 +155,8 @@ class AddDependencyTest : RewriteTest {
                         implementation(libs.junit.platform.launcher)
                     }
                     """.trimIndent(),
-                    { path("submodule1/build.gradle") }),
+                    { path("submodule1/build.gradle") },
+                ),
                 buildGradle(
                     beforeAndAfter = """
                     dependencies {
@@ -150,14 +164,16 @@ class AddDependencyTest : RewriteTest {
                         implementation(libs.junit.platform.launcher)
                     }
                     """.trimIndent(),
-                    { path("submodule1/build.gradle") }),
+                    { path("submodule1/build.gradle") },
+                ),
             )
         }
 
         @Test
         fun `should be noop when module has a reference to version catalog entry already`() {
             rewriteRun(
-                toml(beforeAndAfter = """
+                toml(
+                    beforeAndAfter = """
                 [versions]
                 mylib = "9.1.0"
                 
@@ -168,7 +184,9 @@ class AddDependencyTest : RewriteTest {
                 
                 [plugins]
                 kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.1.10" }
-                """.trimIndent(), {path("gradle/libs.versions.toml")}),
+                    """.trimIndent(),
+                    { path("gradle/libs.versions.toml") },
+                ),
                 buildGradle(
                     beforeAndAfter = """
                     dependencies {
@@ -176,7 +194,8 @@ class AddDependencyTest : RewriteTest {
                         testRuntimeOnly(libs.junit.platform.launcher)
                     }
                     """.trimIndent(),
-                    { path("build.gradle") }),
+                    { path("build.gradle") },
+                ),
                 buildGradleKts(
                     beforeAndAfter = """
                     dependencies {
@@ -184,14 +203,16 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test:1.2.3")
                     }
                     """.trimIndent(),
-                    { path("build.gradle.kts") }),
+                    { path("build.gradle.kts") },
+                ),
             )
         }
 
         @Test
         fun `should be noop when module has an explicit dependency already`() {
             rewriteRun(
-                toml(beforeAndAfter = """
+                toml(
+                    beforeAndAfter = """
                 [versions]
                 mylib = "9.1.0"
                 
@@ -202,7 +223,9 @@ class AddDependencyTest : RewriteTest {
                 
                 [plugins]
                 kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.1.10" }
-                """.trimIndent(), {path("gradle/libs.versions.toml")}),
+                    """.trimIndent(),
+                    { path("gradle/libs.versions.toml") },
+                ),
                 buildGradle(
                     beforeAndAfter = """
                     dependencies {
@@ -210,7 +233,8 @@ class AddDependencyTest : RewriteTest {
                         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
                     }
                     """.trimIndent(),
-                    { path("build.gradle") }),
+                    { path("build.gradle") },
+                ),
                 buildGradleKts(
                     beforeAndAfter = """
                     dependencies {
@@ -218,14 +242,16 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test:1.2.3")
                     }
                     """.trimIndent(),
-                    { path("build.gradle.kts") }),
+                    { path("build.gradle.kts") },
+                ),
             )
         }
 
         @Test
         fun `should add dependency if dependency block is missing`() {
             rewriteRun(
-                toml(beforeAndAfter = """
+                toml(
+                    beforeAndAfter = """
                 [versions]
                 mylib = "9.1.0"
                 
@@ -236,7 +262,9 @@ class AddDependencyTest : RewriteTest {
                 
                 [plugins]
                 kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.1.10" }
-                """.trimIndent(), {path("gradle/libs.versions.toml")}),
+                    """.trimIndent(),
+                    { path("gradle/libs.versions.toml") },
+                ),
                 buildGradle(
                     before = "",
                     after = """
@@ -244,7 +272,8 @@ class AddDependencyTest : RewriteTest {
                         testRuntimeOnly(libs.junit.platform.launcher)
                     }
                     """.trimIndent(),
-                    { path("build.gradle") }),
+                    { path("build.gradle") },
+                ),
                 buildGradleKts(
                     before = "",
                     after = """
@@ -252,7 +281,8 @@ class AddDependencyTest : RewriteTest {
                         testRuntimeOnly(libs.junit.platform.launcher)
                     }
                     """.trimIndent(),
-                    { path("build.gradle.kts") }),
+                    { path("build.gradle.kts") },
+                ),
             )
         }
     }
@@ -273,7 +303,7 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test:1.2.3")
                         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule1/build.gradle") },
                 buildGradleKts(
                     before = """
@@ -286,7 +316,7 @@ class AddDependencyTest : RewriteTest {
                         implementation(libs.test)
                         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule2/build.gradle.kts") },
             )
         }
@@ -308,7 +338,7 @@ class AddDependencyTest : RewriteTest {
                         implementation(libs.test)
                         implementation("org.junit.platform:junit-platform-launcher")
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule2/build.gradle.kts") },
             )
         }
@@ -322,7 +352,7 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test:1.2.3")
                         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule1/build.gradle") },
                 buildGradleKts(
                     beforeAndAfter = """
@@ -330,7 +360,7 @@ class AddDependencyTest : RewriteTest {
                         implementation(libs.test)
                         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule2/build.gradle.kts") },
             )
         }
@@ -377,7 +407,7 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test2:1.2.3")
                       }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule1/build.gradle") },
                 buildGradleKts(
                     before = """
@@ -418,7 +448,7 @@ class AddDependencyTest : RewriteTest {
                         implementation("com.test:test2:1.2.3")
                       }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ) { path("submodule2/build.gradle.kts") },
             )
         }

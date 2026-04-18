@@ -20,14 +20,14 @@ class FindPropertiesTest : RewriteTest {
                     server.enabled: true
                     server.port: 8080
                     server-compression.enabled: true
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     server.enabled: true
                     server.port: 8080
                     server-compression.enabled: ~~>true
-                    """.trimIndent(),
+                """.trimIndent(),
                 spec = { path("application.properties") },
-            )
+            ),
         )
     }
 
@@ -39,36 +39,36 @@ class FindPropertiesTest : RewriteTest {
                     server.enabled: true
                     server.port: 8080
                     serverCompression.enabled: true
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     server.enabled: true
                     server.port: 8080
                     serverCompression.enabled: ~~>true
-                    """.trimIndent(),
+                """.trimIndent(),
                 spec = { path("application.properties") },
-            )
+            ),
         )
     }
 
     @Test
     fun `should find with glob pattern`() {
         rewriteRun(
-            {
-                spec -> spec.recipe(FindProperties("server*", "true"))
+            { spec ->
+                spec.recipe(FindProperties("server*", "true"))
             },
             properties(
                 before = """
                     server.enabled: true
                     server.port: 8080
                     server.compression.enabled: true
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     server.enabled: ~~>true
                     server.port: 8080
                     server.compression.enabled: ~~>true
-                    """.trimIndent(),
+                """.trimIndent(),
                 spec = { path("application.properties") },
-            )
+            ),
         )
     }
 }

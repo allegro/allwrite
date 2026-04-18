@@ -63,8 +63,7 @@ internal class SourceFilesParser {
             .map { handleParseError(it) }
     }
 
-    private fun selectFilesToParse(recipe: Recipe, files: List<Path>) =
-        (recipe as? ParsingAwareRecipe)?.selectFilesToParse(files) ?: files
+    private fun selectFilesToParse(recipe: Recipe, files: List<Path>) = (recipe as? ParsingAwareRecipe)?.selectFilesToParse(files) ?: files
 
     private fun resolveClasspath(recipe: Recipe): List<String> {
         val artifacts = (recipe as? ClasspathAwareRecipe)?.requireOnClasspath() ?: emptyList()
@@ -75,8 +74,8 @@ internal class SourceFilesParser {
         return artifacts
     }
 
-    private fun createParsers(classpath: List<String>, ctx: ExecutionContext): List<Parser> {
-        return listOf(
+    private fun createParsers(classpath: List<String>, ctx: ExecutionContext): List<Parser> =
+        listOf(
             GradleParser.builder().build(),
             KotlinParser.builder().classpathFromResources(ctx, *classpath.toTypedArray()).build(),
             GroovyParser.builder().classpathFromResource(ctx, *classpath.toTypedArray()).build(),
@@ -85,9 +84,8 @@ internal class SourceFilesParser {
             TomlParser.builder().build(),
             PropertiesParser.builder().build(),
             PlainTextParser.builder().plainTextMasks(Paths.get("."), PLAIN_TEXT_MASKS).build(),
-            QuarkParser.builder().build()
+            QuarkParser.builder().build(),
         )
-    }
 
     private fun checkThatNoFilesWereParsedMoreThanOnce(parsedFiles: List<SourceFile>, files: List<Path>) {
         if (parsedFiles.size > files.size) {
@@ -118,6 +116,7 @@ internal class SourceFilesParser {
     }
 
     companion object {
+
         private val logger = KotlinLogging.logger { }
 
         private val PLAIN_TEXT_MASKS: List<String> = listOf(
@@ -157,5 +156,8 @@ internal class SourceFilesParser {
 
 private val Parser.name: String
     get() =
-        if (javaClass.isAnonymousClass) javaClass.superclass.simpleName
-        else javaClass.simpleName
+        if (javaClass.isAnonymousClass) {
+            javaClass.superclass.simpleName
+        } else {
+            javaClass.simpleName
+        }

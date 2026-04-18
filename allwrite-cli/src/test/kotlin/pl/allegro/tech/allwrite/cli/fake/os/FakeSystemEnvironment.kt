@@ -5,5 +5,6 @@ import pl.allegro.tech.allwrite.cli.infrastructure.os.port.incoming.SystemEnviro
 
 @Single
 class FakeSystemEnvironment(
-    private val env: MutableMap<String, String> = mutableMapOf()
-) : SystemEnvironment, MutableMap<String, String> by env
+    private val env: MutableMap<String, String> = mutableMapOf(),
+) : SystemEnvironment,
+    MutableMap<String, String> by env

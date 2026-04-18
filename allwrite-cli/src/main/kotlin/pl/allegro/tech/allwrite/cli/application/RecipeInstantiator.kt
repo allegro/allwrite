@@ -13,7 +13,7 @@ import java.io.FileNotFoundException
 
 @Single
 internal class RecipeInstantiator(
-    private val recipeSource: RecipeSource
+    private val recipeSource: RecipeSource,
 ) {
 
     fun instantiate(recipeName: String): Recipe =
@@ -50,4 +50,6 @@ internal class RecipeInstantiator(
 }
 
 @Serializable
-private data class RecipeSet(val recipes: List<String>)
+private data class RecipeSet(
+    val recipes: List<String>,
+)

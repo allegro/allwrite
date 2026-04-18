@@ -76,4 +76,3 @@ tasks {
         into(layout.buildDirectory.dir("installation"))
     }
 }
-

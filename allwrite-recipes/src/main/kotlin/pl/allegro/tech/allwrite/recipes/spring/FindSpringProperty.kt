@@ -21,7 +21,7 @@ public class FindSpringProperty(
     @Option(
         displayName = "Expected property value",
         description = "The property value to look for. If `null`, then matches any value",
-        example = "8080"
+        example = "8080",
     )
     public val expectedValue: String?,
 
@@ -35,22 +35,22 @@ public class FindSpringProperty(
 ) : AllwriteRecipe(
     displayName = "Find spring property",
     description = "Find spring property with the given key and value, with respect to profile.",
-    visibility = INTERNAL
+    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
         val fileNameSuffix = fileNameSuffix ?: ""
         val fileNameCondition = Preconditions.or(
-                FindSourceFiles("**/application${fileNameSuffix}.properties").visitor,
-                FindSourceFiles("**/application${fileNameSuffix}.yml").visitor,
-                FindSourceFiles("**/application${fileNameSuffix}.yaml").visitor
+            FindSourceFiles("**/application$fileNameSuffix.properties").visitor,
+            FindSourceFiles("**/application$fileNameSuffix.yml").visitor,
+            FindSourceFiles("**/application$fileNameSuffix.yaml").visitor,
         )
         val contentCondition = Preconditions.or(
             FindProperties(propertyKey, expectedValue).visitor,
-            FindProperty(propertyKey, false, expectedValue).visitor
+            FindProperty(propertyKey, false, expectedValue).visitor,
         )
         return Preconditions.and(
             fileNameCondition,
-            contentCondition
+            contentCondition,
         )
     }
 }

@@ -11,7 +11,6 @@ import pl.allegro.tech.allwrite.recipes.yaml.asPrefixParts
 import pl.allegro.tech.allwrite.recipes.yaml.prefixParts
 import java.util.*
 
-
 /**
  * Traverses the original document and captures comments for the entries. Then, when visiting
  * the actual document applies comments to the same entries based on [YamlPath]
@@ -22,7 +21,7 @@ import java.util.*
  */
 internal class CopyCommentsVisitor(
     original: Yaml.Documents,
-    private val keyMapper: (YamlPath) -> YamlPath = { it }
+    private val keyMapper: (YamlPath) -> YamlPath = { it },
 ) : YamlIsoVisitor<ExecutionContext>() {
 
     private val originalCommentsByDocument = original.documents.associate { doc ->
@@ -68,7 +67,7 @@ internal class CopyCommentsVisitor(
         return super.visitSequenceEntry(e, p)
     }
 
-    private fun <Y: Yaml> visitInternal(yaml: Y, ctx: ExecutionContext, commentSetter: (Y, String) -> Y): Y {
+    private fun <Y : Yaml> visitInternal(yaml: Y, ctx: ExecutionContext, commentSetter: (Y, String) -> Y): Y {
         var y = yaml
         val key = keyMapper(cursor.toYamlPath())
         val doc = cursor.firstEnclosing(Yaml.Document::class.java)
@@ -103,8 +102,8 @@ internal class CopyCommentsVisitor(
      * For each [YamlPath] comments are separated into [prefixComments] and [postfixComments].
      */
     private class CaptureOriginalCommentsVisitor(
-        private val keyMapper: (YamlPath) -> YamlPath
-    ): YamlIsoVisitor<ExecutionContext>() {
+        private val keyMapper: (YamlPath) -> YamlPath,
+    ) : YamlIsoVisitor<ExecutionContext>() {
         val prefixComments: MutableMap<YamlPath, String> = HashMap()
         val postfixComments: MutableMap<YamlPath, String> = HashMap()
 
@@ -132,7 +131,7 @@ internal class CopyCommentsVisitor(
             return super.visitSequenceEntry(entry, p)
         }
 
-        private fun <Y: Yaml> capture(yaml: Y) {
+        private fun <Y : Yaml> capture(yaml: Y) {
             var y = yaml
             val key = keyMapper(cursor.toYamlPath())
             val (previousSuffix, currentPrefix, currentIndent) = y.prefixParts()
@@ -144,4 +143,3 @@ internal class CopyCommentsVisitor(
         }
     }
 }
-

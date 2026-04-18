@@ -3,7 +3,6 @@ package pl.allegro.tech.allwrite.recipes.gradle
 import org.openrewrite.Cursor
 import org.openrewrite.ExecutionContext
 import org.openrewrite.Parser
-import org.openrewrite.SourceFile
 import org.openrewrite.gradle.GradleParser
 import org.openrewrite.groovy.GroovyIsoVisitor
 import org.openrewrite.groovy.tree.G
@@ -42,7 +41,7 @@ private class KotlinAddVersionCatalogDependencyReference(
     val configuration: String,
     val library: Library,
     val versionCatalogAlias: String? = null,
-): KotlinIsoVisitor<ExecutionContext>() {
+) : KotlinIsoVisitor<ExecutionContext>() {
 
     override fun visitCompilationUnit(cu: K.CompilationUnit, p: ExecutionContext): K.CompilationUnit {
         if (!cu.sourcePath.toString().endsWith(".gradle.kts")) return cu
@@ -62,16 +61,15 @@ private class KotlinAddVersionCatalogDependencyReference(
         var dependencies = GRADLE_PARSER.parseInputs(
             listOf(Parser.Input(Paths.get("build.gradle.kts")) { ByteArrayInputStream("$DEPENDENCIES {}".toByteArray(StandardCharsets.UTF_8)) }),
             null,
-            ctx
+            ctx,
         )
             .findFirst().getOrNull()
             ?.let { it as? K.CompilationUnit }
             ?.statements?.firstOrNull()
-            ?.let {it as? J.Block }
+            ?.let { it as? J.Block }
             ?.statements?.firstOrNull()
             ?.let { it as? J.MethodInvocation }
             ?: return cu
-
 
         if (block.statements.isNotEmpty()) {
             dependencies = dependencies.withPrefix(dependencies.prefix.let { it.withWhitespace("\n" + it.whitespace) })
@@ -83,17 +81,18 @@ private class KotlinAddVersionCatalogDependencyReference(
     }
 
     override fun visitMethodInvocation(method: J.MethodInvocation, p: ExecutionContext): J.MethodInvocation =
-        if (cursor.getNearestMessage<Any>(MESSAGE_TARGET) == method)
+        if (cursor.getNearestMessage<Any>(MESSAGE_TARGET) == method) {
             DependenciesVisitor(configuration, library, versionCatalogAlias).visit(method, p, cursor.parent!!) as J.MethodInvocation
-        else
+        } else {
             super.visitMethodInvocation(method, p)
+        }
 }
 
 private class GroovyAddVersionCatalogDependencyReference(
     val configuration: String,
     val library: Library,
     val versionCatalogAlias: String? = null,
-): GroovyIsoVisitor<ExecutionContext>() {
+) : GroovyIsoVisitor<ExecutionContext>() {
 
     override fun visitCompilationUnit(cu: G.CompilationUnit, p: ExecutionContext): G.CompilationUnit {
         if (!cu.sourcePath.toString().endsWith(".gradle")) return cu
@@ -121,10 +120,11 @@ private class GroovyAddVersionCatalogDependencyReference(
     }
 
     override fun visitStatement(statement: Statement, p: ExecutionContext) =
-        if (cursor.getNearestMessage<Any>(MESSAGE_TARGET) == statement)
+        if (cursor.getNearestMessage<Any>(MESSAGE_TARGET) == statement) {
             DependenciesVisitor(configuration, library, versionCatalogAlias).visit(statement, p, cursor.parent!!) as Statement
-        else
+        } else {
             super.visitStatement(statement, p)
+        }
 }
 
 private class DependenciesVisitor(
@@ -140,12 +140,12 @@ private class DependenciesVisitor(
         val lambda = cursor.firstEnclosing(J.Lambda::class.java)
         if (methodInvocation?.simpleName == DEPENDENCIES && lambda?.body == block && methodInvocation.arguments.any { it == lambda }) {
             val existing = block.statements.mapNotNull {
-                    when (it) {
-                        is J.MethodInvocation -> it
-                        is J.Return -> it.expression as? J.MethodInvocation
-                        else -> null
-                    }
+                when (it) {
+                    is J.MethodInvocation -> it
+                    is J.Return -> it.expression as? J.MethodInvocation
+                    else -> null
                 }
+            }
                 .firstOrNull { it.declaresTargetLibrary() }
 
             if (existing != null) return result
@@ -178,12 +178,14 @@ private class DependenciesVisitor(
     }
 
     private fun getDependencyCoordinates(): String {
-        if (versionCatalogAlias == null) return buildString {
-            append('"')
-            append(library.group)
-            append(":").append(library.name)
-            if (library.version != null) append(":").append(library.version)
-            append('"')
+        if (versionCatalogAlias == null) {
+            return buildString {
+                append('"')
+                append(library.group)
+                append(":").append(library.name)
+                if (library.version != null) append(":").append(library.version)
+                append('"')
+            }
         }
 
         val targetName = versionCatalogAlias.toVersionCatalogReference()
@@ -191,10 +193,14 @@ private class DependenciesVisitor(
     }
 
     private fun J.MethodInvocation.declaresTargetLibrary(): Boolean =
-        declaresDependencyAsVersionCatalogReference() || declaresDependencyAsGroovyMap() || declaresDependencyAsKotlinNamedArgs() || declaredDependencyInStringNotation()
+        declaresDependencyAsVersionCatalogReference() ||
+            declaresDependencyAsGroovyMap() ||
+            declaresDependencyAsKotlinNamedArgs() ||
+            declaredDependencyInStringNotation()
 
     private fun J.MethodInvocation.declaresDependencyAsVersionCatalogReference(): Boolean =
-        versionCatalogAlias != null && (arguments.firstOrNull() as? J.FieldAccess)?.toString()?.contains(versionCatalogAlias.toVersionCatalogReference()) ?: false
+        versionCatalogAlias != null &&
+            (arguments.firstOrNull() as? J.FieldAccess)?.toString()?.contains(versionCatalogAlias.toVersionCatalogReference()) ?: false
 
     private fun J.MethodInvocation.declaredDependencyInStringNotation(): Boolean {
         val str = (arguments.firstOrNull() as? J.Literal)?.value?.toString() ?: return false

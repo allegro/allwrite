@@ -6,5 +6,7 @@ public interface PostprocessingRecipe {
 
 public sealed interface PostprocessingResult {
     public data object Success : PostprocessingResult
-    public data class Failure(val errorMessage: String) : PostprocessingResult
+    public data class Failure(
+        val errorMessage: String,
+    ) : PostprocessingResult
 }

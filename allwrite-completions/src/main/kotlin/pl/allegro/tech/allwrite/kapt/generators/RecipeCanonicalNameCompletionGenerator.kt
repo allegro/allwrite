@@ -13,7 +13,6 @@ import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
 internal class RecipeCanonicalNameCompletionGenerator : CompletionGenerator {
 
     override fun generate(recipeDescriptors: List<RecipeDescriptor>): PropertySpec {
-
         val recipeCanonicalNames = recipeDescriptors
             .mapNotNull(RecipeDescriptor::toRecipeCoordinatesOrNull)
             .map(RecipeCoordinates::canonicalName)
@@ -22,7 +21,8 @@ internal class RecipeCanonicalNameCompletionGenerator : CompletionGenerator {
         return PropertySpec.builder("recipeCanonicalNameOptions", SET.parameterizedBy(STRING))
             .initializer(
                 "%L",
-                recipeCanonicalNames.joinToString(prefix = "setOf(", postfix = ")", separator = ", ") { "\"$it\"" })
+                recipeCanonicalNames.joinToString(prefix = "setOf(", postfix = ")", separator = ", ") { "\"$it\"" },
+            )
             .build()
     }
 }

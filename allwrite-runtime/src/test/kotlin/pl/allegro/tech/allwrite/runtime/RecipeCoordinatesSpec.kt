@@ -18,7 +18,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 group = "test",
                 action = "example",
                 fromVersion = null,
-                toVersion = null
+                toVersion = null,
             ).toString() shouldBeEqual "test/example"
         }
 
@@ -27,7 +27,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 group = "test",
                 action = "example",
                 fromVersion = null,
-                toVersion = Version.of(1L)
+                toVersion = Version.of(1L),
             ).toString() shouldBeEqual "test/example"
         }
 
@@ -36,7 +36,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 group = "test",
                 action = "example",
                 fromVersion = Version.of(1L, 2L),
-                toVersion = null
+                toVersion = null,
             ).toString() shouldBeEqual "test/example 1.2"
         }
 
@@ -45,7 +45,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 group = "test",
                 action = "example",
                 fromVersion = Version.of(1L, 2L),
-                toVersion = Version.of(3L, 4L, 5L)
+                toVersion = Version.of(3L, 4L, 5L),
             ).toString() shouldBeEqual "test/example 1.2 3.4.5"
         }
 
@@ -57,7 +57,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                     "action:some-action",
                     "from:1.0.0",
                     "to:2.0.0",
-                )
+                ),
             )
 
             // when
@@ -68,7 +68,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 group = "some-group",
                 action = "some-action",
                 fromVersion = Version.parse("1.0.0", false),
-                toVersion = Version.parse("2.0.0", false)
+                toVersion = Version.parse("2.0.0", false),
             )
         }
 
@@ -78,7 +78,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 tags = setOf(
                     "group:some-group",
                     "action:some-action",
-                )
+                ),
             )
 
             // when
@@ -89,7 +89,7 @@ class RecipeCoordinatesSpec : FunSpec() {
                 group = "some-group",
                 action = "some-action",
                 fromVersion = null,
-                toVersion = null
+                toVersion = null,
             )
         }
 
@@ -98,7 +98,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "group:some-group",
-                )
+                ),
             )
 
             // when
@@ -113,7 +113,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "action:some-action",
-                )
+                ),
             )
 
             // when
@@ -128,7 +128,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "from:1.0.0",
-                )
+                ),
             )
 
             // when
@@ -143,7 +143,7 @@ class RecipeCoordinatesSpec : FunSpec() {
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "to:2.0.0",
-                )
+                ),
             )
 
             // when
@@ -170,5 +170,5 @@ private fun RecipeDescriptor(tags: Set<String>) =
         emptyList(),
         emptyList(),
         emptyList(),
-        URI("file:///not-used")
+        URI("file:///not-used"),
     )

@@ -3,14 +3,14 @@ package pl.allegro.tech.allwrite.recipes.gradle
 import org.openrewrite.ExecutionContext
 import org.openrewrite.toml.TomlVisitor
 import org.openrewrite.toml.tree.Toml
-import pl.allegro.tech.allwrite.recipes.toml.asString
-import pl.allegro.tech.allwrite.recipes.toml.findLiteralValue
 import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 import pl.allegro.tech.allwrite.recipes.toml.stringValue
 
 // TODO: support bundles
-internal class ParseTomlVersionCatalog(val versionCatalog: VersionCatalog = VersionCatalog()) : TomlVisitor<ExecutionContext>() {
+internal class ParseTomlVersionCatalog(
+    val versionCatalog: VersionCatalog = VersionCatalog(),
+) : TomlVisitor<ExecutionContext>() {
 
     override fun visitKeyValue(keyValue: Toml.KeyValue, p: ExecutionContext): Toml {
         val key = keyValue.stringKey() ?: return keyValue

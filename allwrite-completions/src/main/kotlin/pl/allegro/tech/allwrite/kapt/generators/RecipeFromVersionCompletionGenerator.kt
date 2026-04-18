@@ -15,9 +15,8 @@ internal class RecipeFromVersionCompletionGenerator : CompletionGenerator {
         const val TEMPLATE_NAME = "/from-version-completion.mustache"
     }
 
-    private val mustache: Mustache = resourceTemplate(TEMPLATE_NAME) ?:
-        throw RuntimeException("Resource $TEMPLATE_NAME can't be read")
-
+    private val mustache: Mustache = resourceTemplate(TEMPLATE_NAME)
+        ?: throw RuntimeException("Resource $TEMPLATE_NAME can't be read")
 
     override fun generate(recipeDescriptors: List<RecipeDescriptor>): PropertySpec {
         val options = generateFromTemplate(recipeDescriptors)

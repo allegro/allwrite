@@ -17,12 +17,12 @@ open class FakeSystemInfo : SystemInfo {
     )
 
     override val cpu = SystemCpuInfo(
-        cores = 16
+        cores = 16,
     )
 
     override val memory = SystemMemoryInfo(
         total = 1024,
-        free = 256
+        free = 256,
     )
 
     companion object : FakeSystemInfo()

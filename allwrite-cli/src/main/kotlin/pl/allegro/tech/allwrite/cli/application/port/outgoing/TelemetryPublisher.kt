@@ -26,37 +26,37 @@ public data class Telemetry(
     val hardware: Hardware,
     val context: Map<String, String>,
     val timestamp: Instant,
-    val jobUrl: String?
+    val jobUrl: String?,
 ) {
     public enum class CommandOutcome {
         SUCCESS,
-        FAILURE
+        FAILURE,
     }
 
     public data class Failure(
         val exceptionName: String?,
-        val messageMessage: String?
+        val messageMessage: String?,
     ) {
-        public constructor(throwable: Throwable)
-            : this(throwable.javaClass.simpleName, throwable.message)
+        public constructor(throwable: Throwable) :
+            this(throwable.javaClass.simpleName, throwable.message)
     }
 
     public data class Git(
         val branch: String,
         val repoOwner: String,
-        val repoName: String
+        val repoName: String,
     )
 
     public data class OperatingSystem(
         val name: String,
         val version: String,
         val arch: String,
-        val username: String
+        val username: String,
     )
 
     public data class Hardware(
         val cpus: Int,
         val memoryUsed: Long,
-        val memoryTotal: Long
+        val memoryTotal: Long,
     )
 }

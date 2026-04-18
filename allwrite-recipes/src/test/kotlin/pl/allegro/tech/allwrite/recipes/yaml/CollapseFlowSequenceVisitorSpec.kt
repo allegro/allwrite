@@ -7,7 +7,9 @@ import org.openrewrite.test.RewriteTest
 import org.openrewrite.yaml.tree.Yaml
 import pl.allegro.tech.allwrite.recipes.yaml.visitor.CollapseFlowSequenceVisitor
 
-class CollapseFlowSequenceVisitorSpec : RewriteTest, YamlTest {
+class CollapseFlowSequenceVisitorSpec :
+    RewriteTest,
+    YamlTest {
 
     @Test
     fun `should collapse flow sequence when original is collapsed`() {
@@ -66,7 +68,8 @@ class CollapseFlowSequenceVisitorSpec : RewriteTest, YamlTest {
             ]
             ---
             seq: [3, 4]
-            """.trimIndent())
+            """.trimIndent(),
+        )
 
         val visitor = CollapseFlowSequenceVisitor(original)
 
@@ -79,7 +82,7 @@ class CollapseFlowSequenceVisitorSpec : RewriteTest, YamlTest {
             seq: [1, 2]
             ---
             seq: [3, 4]
-            """.trimIndent()
+            """.trimIndent(),
         )
     }
 }

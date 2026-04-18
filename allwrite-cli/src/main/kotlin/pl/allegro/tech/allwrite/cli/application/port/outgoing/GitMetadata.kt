@@ -7,5 +7,5 @@ public interface GitMetadata {
 
 public data class GitRepo(
     val owner: String,
-    val name: String
+    val name: String,
 )

@@ -24,7 +24,6 @@ internal class GitManagedInputFilesProvider(
             logger.info { "Found ${inputFiles.size} input files" }
 
             return inputFiles
-
         } catch (e: Exception) {
             val message = "Not a git repository or git is not installed, falling back to processing all files"
 

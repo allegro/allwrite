@@ -9,7 +9,7 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.ExternalRecipeStor
 
 @Single
 internal class UpdateExternalRecipeCommand(
-    private val externalRecipeStore: ExternalRecipeStore
+    private val externalRecipeStore: ExternalRecipeStore,
 ) : ExternalSubCommand(name = COMMAND_NAME, help = "Updates an external recipe JAR. Re-fetches from a new URL, or from the stored URL if omitted") {
 
     private val name: String by argument(help = "Name of the external recipe source to update")

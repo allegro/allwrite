@@ -33,33 +33,33 @@ internal class RunCommand(
     private val recipeMatcher: RecipeMatcher,
     private val recipeInstantiator: RecipeInstantiator,
     private val inputFilesProvider: InputFilesProvider,
-    private val recipeExecutor: RecipeExecutor
+    private val recipeExecutor: RecipeExecutor,
 ) : SubCommand(
     name = COMMAND_NAME,
-    help = "Runs a recipe. Supports positional arguments <group>/<action> [<from> <to>], --recipe <id>, or --file <path>"
+    help = "Runs a recipe. Supports positional arguments <group>/<action> [<from> <to>], --recipe <id>, or --file <path>",
 ) {
 
     private val recipeFriendlyName: String? by argument(
         name = "recipe",
-        completionCandidates = RECIPE_CANONICAL_NAME_COMPLETION
+        completionCandidates = RECIPE_CANONICAL_NAME_COMPLETION,
     ).optional()
 
     private val recipeId: String? by option(
         names = arrayOf("--recipe"),
-        completionCandidates = RECIPE_ID_COMPLETION
+        completionCandidates = RECIPE_ID_COMPLETION,
     )
 
     private val file: File? by option(
         names = arrayOf("--file"),
         help = "Path to a json file with list of recipes. JSON object should contain a single " +
             "array-of-strings field called `recipes`",
-        completionCandidates = CompletionCandidates.Path
+        completionCandidates = CompletionCandidates.Path,
     ).convert { File(it) }
 
     private val failOnError: Boolean by option(
         names = arrayOf("--fail-on-error"),
         help = "Fail the execution if an error occurs. Default behavior is to continue running visitors after an error in one.",
-        completionCandidates = CompletionCandidates.None
+        completionCandidates = CompletionCandidates.None,
     ).flag("--continue-on-error", default = false)
 
     private val fromVersion: Version? by argument(name = "from-version", completionCandidates = FROM_VERSION_COMPLETION)
@@ -99,7 +99,7 @@ internal class RunCommand(
         if (matching.isEmpty()) {
             throw PrintMessage(
                 message = "No matching recipes found. $LIST_RECIPES_HINT",
-                statusCode = 1
+                statusCode = 1,
             )
         }
         val recipes = recipeInstantiator.instantiateAll(matching)
@@ -127,7 +127,7 @@ internal class RunCommand(
     private fun decomposeCanonicalName(canonicalName: String?): Pair<String?, String?> =
         Pair(
             canonicalName?.substringBeforeLast('/'),
-            canonicalName?.substringAfterLast('/', missingDelimiterValue = "")
+            canonicalName?.substringAfterLast('/', missingDelimiterValue = ""),
         )
 
     companion object {

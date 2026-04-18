@@ -20,10 +20,11 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
     private val fakeRecipeExecutor: FakeRecipeExecutor by injectEagerly()
     private val fakePullRequestContext: FakePullRequestContext by injectEagerly()
 
-    override fun additionalModules() = listOf(
-        FakeRuntimeModule().module,
-        FakeGithubModule().module,
-    )
+    override fun additionalModules() =
+        listOf(
+            FakeRuntimeModule().module,
+            FakeGithubModule().module,
+        )
 
     init {
         test("should fail when no arguments provided") {
@@ -40,7 +41,7 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
         test("should fail when incorrect dependabot payload provided") {
             shouldThrow<Exception> {
                 runWithDependabotCommand.test(
-                    envvars = mapOf("GH_BOT_EXTRA_PARAMS" to "test")
+                    envvars = mapOf("GH_BOT_EXTRA_PARAMS" to "test"),
                 )
             }
         }
@@ -58,8 +59,8 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
                              }
                           ]
                         }
-                        """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
 
             result.statusCode shouldBe 0

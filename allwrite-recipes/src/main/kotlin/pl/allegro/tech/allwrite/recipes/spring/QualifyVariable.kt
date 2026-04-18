@@ -22,7 +22,7 @@ import pl.allegro.tech.allwrite.recipes.util.mapFirst
  */
 internal class QualifyVariable(
     val variable: Variable,
-    val newName: String
+    val newName: String,
 ) : JavaIsoVisitor<ExecutionContext>() {
 
     override fun visitVariableDeclarations(tree: J.VariableDeclarations, p: ExecutionContext): J.VariableDeclarations {
@@ -34,14 +34,22 @@ internal class QualifyVariable(
             val originalPrefixes = tree.leadingAnnotations.associate { it.id to it.prefix }
             var jtree = AddOrUpdateAnnotationAttribute(annotationType = ANNOTATION_QUALIFIER, oldAttributeValue = qualifiedName, attributeValue = newName)
                 .visitor.visit(tree, p, cursor.parent!!) as J
-            jtree = AddOrUpdateAnnotationAttribute(annotationType = ANNOTATION_RESOURCE, oldAttributeValue = qualifiedName, attributeName = "name", attributeValue = newName)
-                .visitor.visit(jtree, p, cursor.parent!!) as J
+            jtree =
+                AddOrUpdateAnnotationAttribute(
+                    annotationType = ANNOTATION_RESOURCE,
+                    oldAttributeValue = qualifiedName,
+                    attributeName = "name",
+                    attributeValue = newName,
+                )
+                    .visitor.visit(jtree, p, cursor.parent!!) as J
             jtree = AddOrUpdateAnnotationAttribute(annotationType = ANNOTATION_NAMED, oldAttributeValue = qualifiedName, attributeValue = newName)
                 .visitor.visit(jtree, p, cursor.parent!!) as J
             val result = jtree as J.VariableDeclarations
-            return result.withLeadingAnnotations(result.leadingAnnotations.map { ann ->
-                originalPrefixes[ann.id]?.let { prefix -> ann.withPrefix(prefix) } ?: ann
-            })
+            return result.withLeadingAnnotations(
+                result.leadingAnnotations.map { ann ->
+                    originalPrefixes[ann.id]?.let { prefix -> ann.withPrefix(prefix) } ?: ann
+                },
+            )
         } else {
             // otherwise add a qualifier annotation
             return AddQualifierAnnotation(variable.variable, newName).visit(tree, p, cursor.parent!!) as J.VariableDeclarations
@@ -63,7 +71,10 @@ internal class QualifyVariable(
 }
 
 // TODO: this recipe does not add an annotation import for now, it should be handled by the caller having access to J.CompilationUnit
-private class AddQualifierAnnotation(val variable: J.VariableDeclarations.NamedVariable, val qualifier: String) : JavaVisitor<ExecutionContext>() {
+private class AddQualifierAnnotation(
+    val variable: J.VariableDeclarations.NamedVariable,
+    val qualifier: String,
+) : JavaVisitor<ExecutionContext>() {
 
     override fun visitVariableDeclarations(variableDeclaration: J.VariableDeclarations, p: ExecutionContext): J.VariableDeclarations {
         if (variable !in variableDeclaration.variables) return variableDeclaration
@@ -83,7 +94,7 @@ private class AddQualifierAnnotation(val variable: J.VariableDeclarations.NamedV
     // e.g. adding a space between variable and annotation
     private fun adjustSpaces(v: J.VariableDeclarations): J.VariableDeclarations {
         if (cursor.isKotlin()) {
-           return adjustKotlinSpaces(v)
+            return adjustKotlinSpaces(v)
         } else if (v.typeExpression != null) {
             val typePrefix = v.typeExpression!!.prefix
             if (typePrefix == null || typePrefix.isEmpty) {

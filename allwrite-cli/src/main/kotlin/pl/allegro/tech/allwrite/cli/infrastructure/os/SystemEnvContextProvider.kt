@@ -6,7 +6,7 @@ import pl.allegro.tech.allwrite.cli.infrastructure.os.port.incoming.SystemEnviro
 
 @Single
 internal class SystemEnvContextProvider(
-    private val systemEnvironment: SystemEnvironment
+    private val systemEnvironment: SystemEnvironment,
 ) : AdditionalContextProvider {
 
     override fun extractFromSystemEnvs(): Map<String, String> =
@@ -32,4 +32,3 @@ internal class SystemEnvContextProvider(
         private const val TELEMETRY_ADDITIONAL_KEY_PREFIX = "TELEMETRY_ADDITIONAL_KEY_"
     }
 }
-

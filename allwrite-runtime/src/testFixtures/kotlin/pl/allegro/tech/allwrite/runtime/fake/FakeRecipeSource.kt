@@ -4,12 +4,14 @@ import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
 import org.openrewrite.RecipeException
 import org.openrewrite.config.RecipeDescriptor
+import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.api.tagPropertyOrNull
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 
 @Single
-class FakeRecipeSource(val recipes: List<Recipe> = TEST_RECIPES) : RecipeSource {
+class FakeRecipeSource(
+    val recipes: List<Recipe> = TEST_RECIPES,
+) : RecipeSource {
 
     constructor(vararg recipes: Recipe) : this(listOf(*recipes))
 
@@ -28,43 +30,43 @@ class FakeRecipeSource(val recipes: List<Recipe> = TEST_RECIPES) : RecipeSource 
             id = "pl.allegro.tech.allwrite.recipes.spring-boot-3",
             displayName = "This recipe upgrades Spring Boot\n2 to 3",
             description = "Longer first description\nline break",
-            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:spring-boot", "action:upgrade")
+            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:spring-boot", "action:upgrade"),
         )
         val SPRING_BOOT_4_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.spring-boot-4",
             displayName = "Upgrade Spring Boot from 3 to 4",
             description = "This recipe upgrades Spring Boot\n3 to 4",
-            tags = setOf("visibility:PUBLIC", "from:3", "to:4", "group:spring-boot", "action:upgrade")
+            tags = setOf("visibility:PUBLIC", "from:3", "to:4", "group:spring-boot", "action:upgrade"),
         )
         val JACKSON_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.jackson",
             displayName = "Move from Jackson to kotlinx-serialization",
             description = "Move from Jackson to kotlinx-serialization.",
-            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:jackson", "action:upgrade")
+            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:jackson", "action:upgrade"),
         )
         val SETUP_CI_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.setup-ci",
             displayName = "Setup CI",
             description = "Introduce CI setup action",
-            tags = setOf("visibility:PUBLIC", "group:workflows", "action:introduceSetupCi")
+            tags = setOf("visibility:PUBLIC", "group:workflows", "action:introduceSetupCi"),
         )
         val EXPAND_MAPPINGS_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.yaml.ExpandMappings",
             displayName = "Expand YAML Mappings",
             description = "Expands YAML mappings",
-            tags = setOf("visibility:INTERNAL")
+            tags = setOf("visibility:INTERNAL"),
         )
         val OPENREWRITE_TEST_RECIPE = FakeRecipe(
             id = "org.openrewrite.java.format.AutoFormat",
             displayName = "Auto Format",
             description = "Auto-formats Java code",
-            tags = emptySet()
+            tags = emptySet(),
         )
         val PICNIC_TEST_RECIPE = FakeRecipe(
             id = "tech.picnic.errorprone.SomeRule",
             displayName = "Some Rule",
             description = "Some Picnic rule",
-            tags = emptySet()
+            tags = emptySet(),
         )
         val TEST_RECIPES = listOf(
             SPRING_BOOT_3_TEST_RECIPE,
@@ -73,7 +75,7 @@ class FakeRecipeSource(val recipes: List<Recipe> = TEST_RECIPES) : RecipeSource 
             SETUP_CI_TEST_RECIPE,
             EXPAND_MAPPINGS_TEST_RECIPE,
             OPENREWRITE_TEST_RECIPE,
-            PICNIC_TEST_RECIPE
+            PICNIC_TEST_RECIPE,
         )
     }
 }

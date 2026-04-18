@@ -16,7 +16,7 @@ class PrefixPartsTest : YamlTest {
                 """
                 prop1: 1 # this is comment for prop1
                 prop2: 2
-                """.trimIndent()
+                """.trimIndent(),
             )
 
             // when
@@ -36,7 +36,7 @@ class PrefixPartsTest : YamlTest {
                 prop1: 1
                 # this is comment for prop2
                 prop2: 2
-                """.trimIndent()
+                """.trimIndent(),
             )
 
             // when
@@ -56,7 +56,7 @@ class PrefixPartsTest : YamlTest {
                 prop1: 1 # this is comment for prop1
                 # this is comment for prop2
                 prop2: 2
-                """.trimIndent()
+                """.trimIndent(),
             )
 
             // when
@@ -76,7 +76,7 @@ class PrefixPartsTest : YamlTest {
                 object:   # this is comment for parent
                   # this is comment for prop
                   prop: 1
-                """.trimIndent()
+                """.trimIndent(),
             )
 
             // when
@@ -104,7 +104,7 @@ class PrefixPartsTest : YamlTest {
                 2
                 3
                 
-                """.trimIndent()
+                """.trimIndent(),
             )
         }
 
@@ -136,5 +136,4 @@ class PrefixPartsTest : YamlTest {
             assertThat(result).isEqualTo("indent")
         }
     }
-
 }

@@ -15,14 +15,12 @@ public interface SystemEnvironment {
     /**
      * Check whether given env variable or system property exists
      */
-    public fun contains(name: String): Boolean =
-        get(name) != null
+    public fun contains(name: String): Boolean = get(name) != null
 
     /**
      * Get value of env variable or system property or throw [IllegalStateException]
      */
-    public fun require(name: String): String =
-        get(name) ?: error("Environment variable '$name' is missing")
+    public fun require(name: String): String = get(name) ?: error("Environment variable '$name' is missing")
 
     /**
      * Try to get subsequent env variables or system properties until first non-null.
@@ -30,6 +28,9 @@ public interface SystemEnvironment {
      * Otherwise, throw [IllegalStateException]
      */
     public fun requireWithFallbacks(vararg names: String): String =
-        if (names.size == 1) require(names.first())
-        else names.firstNotNullOfOrNull(::get) ?: error("None of environment variables '$names' is defined")
+        if (names.size == 1) {
+            require(names.first())
+        } else {
+            names.firstNotNullOfOrNull(::get) ?: error("None of environment variables '$names' is defined")
+        }
 }

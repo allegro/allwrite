@@ -14,7 +14,7 @@ public class UnnestProperties(
     @Option(
         displayName = "path",
         description = "Path to unnest",
-        example = "spring.groovy.template.configuration"
+        example = "spring.groovy.template.configuration",
     )
     public val targetPath: String = "",
 ) : AllwriteRecipe(

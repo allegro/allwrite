@@ -23,10 +23,11 @@ class CliIntegrationSpec : BaseCliSpec() {
     private val appEntrypoint: AppEntrypoint by injectEagerly()
     private val fakeSystemEnvironment: FakeSystemEnvironment by injectEagerly()
 
-    override fun additionalModules() = listOf(
-        GithubBotModule().module,
-        FakeOperatingSystemModule().module
-    )
+    override fun additionalModules() =
+        listOf(
+            GithubBotModule().module,
+            FakeOperatingSystemModule().module,
+        )
 
     init {
         test("should post a comment with summary from failing post-processing recipe") {
@@ -46,8 +47,7 @@ class CliIntegrationSpec : BaseCliSpec() {
         }
     }
 
-    private fun createSummaryCommentFile(): Path =
-        Files.createTempFile("rewrite", "summary-comment")
+    private fun createSummaryCommentFile(): Path = Files.createTempFile("rewrite", "summary-comment")
 }
 
 private fun AppEntrypoint.execute(vararg args: String) {

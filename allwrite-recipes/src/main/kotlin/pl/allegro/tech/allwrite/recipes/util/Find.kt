@@ -13,6 +13,5 @@ internal fun Find(
     dotAll: Boolean? = null,
     filePattern: String? = null,
     description: Boolean? = null,
-    contextSize: Int? = null
-) =
-    RewriteFind(pattern, regex, caseSensitive, multiline, dotAll, filePattern, description, contextSize)
+    contextSize: Int? = null,
+) = RewriteFind(pattern, regex, caseSensitive, multiline, dotAll, filePattern, description, contextSize)

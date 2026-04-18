@@ -5,11 +5,11 @@ import pl.allegro.tech.allwrite.PostprocessingRecipe
 import pl.allegro.tech.allwrite.PostprocessingResult
 import pl.allegro.tech.allwrite.RecipeVisibility
 
-open class FailingPostProcessingRecipe : AllwriteRecipe(visibility = RecipeVisibility.INTERNAL), PostprocessingRecipe {
+open class FailingPostProcessingRecipe :
+    AllwriteRecipe(visibility = RecipeVisibility.INTERNAL),
+    PostprocessingRecipe {
 
-    override fun postprocess(): PostprocessingResult {
-        return PostprocessingResult.Failure("Something went wrong")
-    }
+    override fun postprocess(): PostprocessingResult = PostprocessingResult.Failure("Something went wrong")
 
     companion object : FailingPostProcessingRecipe()
 }

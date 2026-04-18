@@ -13,7 +13,6 @@ plugins {
 
 rootProject.name = "build-logic"
 
-
 // conventions from this subproject will land on every buildscript classpath (because they are applied to root project)
 // modifying those conventions may be painful, because it will trigger reconfiguration of every buildscript
 include("root-project-conventions")

@@ -6,6 +6,5 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.AdditionalContextP
 @Single
 class FakeSystemEnvContextProvider : AdditionalContextProvider {
 
-    override fun extractFromSystemEnvs(): Map<String, String> =
-        mapOf("firstTestVariable" to "firstTestValue", "secondTestVariable" to "secondTestValue")
+    override fun extractFromSystemEnvs(): Map<String, String> = mapOf("firstTestVariable" to "firstTestValue", "secondTestVariable" to "secondTestValue")
 }

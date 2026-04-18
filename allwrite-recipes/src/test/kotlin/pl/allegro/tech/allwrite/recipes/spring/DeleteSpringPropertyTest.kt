@@ -6,8 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.openrewrite.java.Assertions.srcMainResources
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
-import pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKeyTest.PartialPropertyNameCaseConventionSource
 import pl.allegro.tech.allwrite.recipes.properties
+import pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKeyTest.PartialPropertyNameCaseConventionSource
 import pl.allegro.tech.allwrite.recipes.yaml
 import java.util.function.Consumer
 
@@ -36,15 +36,15 @@ class DeleteSpringPropertyTest : RewriteTest {
                                   - b
                               test:
                                 123
-                            """.trimIndent(),
+                        """.trimIndent(),
                         after = """
                             myapp:
                               test:
                                 123
-                            """.trimIndent(),
-                        spec = { path("application.yml") }
-                    )
-                )
+                        """.trimIndent(),
+                        spec = { path("application.yml") },
+                    ),
+                ),
             )
         }
 
@@ -56,11 +56,11 @@ class DeleteSpringPropertyTest : RewriteTest {
                     yaml(
                         before = """
                             myapp.isolated-environment: vte666
-                            """.trimIndent(),
+                        """.trimIndent(),
                         after = "",
-                        spec = { path("application.yml") }
-                    )
-                )
+                        spec = { path("application.yml") },
+                    ),
+                ),
             )
         }
 
@@ -70,9 +70,9 @@ class DeleteSpringPropertyTest : RewriteTest {
                 srcMainResources(
                     yaml(
                         beforeAndAfter = "myapp.i18n.language-bundle.default-locale: cs-CZ",
-                        spec = { path("src/main/resources/application.yml") }
-                    )
-                )
+                        spec = { path("src/main/resources/application.yml") },
+                    ),
+                ),
             )
         }
 
@@ -82,9 +82,9 @@ class DeleteSpringPropertyTest : RewriteTest {
                 srcMainResources(
                     yaml(
                         beforeAndAfter = "myapp.isolated-environment: vte666",
-                        spec = { path("src/main/resources/tycho.yml") }
-                    )
-                )
+                        spec = { path("src/main/resources/tycho.yml") },
+                    ),
+                ),
             )
         }
     }
@@ -102,15 +102,15 @@ class DeleteSpringPropertyTest : RewriteTest {
                             myapp.isolated-environment.nested-object.scalar = 123
                             myapp.isolated-environment.nested-object.list = a,b
                             myapp.test = 123
-                            """.trimIndent(),
+                        """.trimIndent(),
                         after = """
                             myapp.isolated-environment.nested-object.scalar = 123
                             myapp.isolated-environment.nested-object.list = a,b
                             myapp.test = 123
-                            """.trimIndent(),
-                        spec = { path("application.properties") }
-                    )
-                )
+                        """.trimIndent(),
+                        spec = { path("application.properties") },
+                    ),
+                ),
             )
         }
 
@@ -118,7 +118,7 @@ class DeleteSpringPropertyTest : RewriteTest {
         @PartialPropertyNameCaseConventionSource
         fun `should delete property key with asterisk in properties file`(inputDescription: String, propertyName: String) {
             rewriteRun(
-                Consumer<RecipeSpec>{spec -> spec.recipe(DeleteSpringProperty(REMOVED_PROPERTY_WITH_ASTERISK))},
+                Consumer<RecipeSpec> { spec -> spec.recipe(DeleteSpringProperty(REMOVED_PROPERTY_WITH_ASTERISK)) },
                 srcMainResources(
                     properties(
                         before = """
@@ -126,14 +126,14 @@ class DeleteSpringPropertyTest : RewriteTest {
                             myapp.isolated-environment.nested-object.scalar = 123
                             myapp.isolated-environment.nested-object.list = a,b
                             myapp.test = 123
-                            """.trimIndent(),
+                        """.trimIndent(),
                         after = """
                             myapp.isolated-environment: vte666
                             myapp.test = 123
-                            """.trimIndent(),
-                        spec = { path("application.properties") }
-                    )
-                )
+                        """.trimIndent(),
+                        spec = { path("application.properties") },
+                    ),
+                ),
             )
         }
 
@@ -143,9 +143,9 @@ class DeleteSpringPropertyTest : RewriteTest {
                 srcMainResources(
                     properties(
                         beforeAndAfter = "myapp.i18n.language-bundle.default-locale: cs-CZ",
-                        spec = { path("src/main/resources/application.properties") }
-                    )
-                )
+                        spec = { path("src/main/resources/application.properties") },
+                    ),
+                ),
             )
         }
 
@@ -155,9 +155,9 @@ class DeleteSpringPropertyTest : RewriteTest {
                 srcMainResources(
                     properties(
                         beforeAndAfter = "myapp.isolated-environment: vte666",
-                        spec = { path("src/main/resources/tycho.properties") }
-                    )
-                )
+                        spec = { path("src/main/resources/tycho.properties") },
+                    ),
+                ),
             )
         }
     }

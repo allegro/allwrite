@@ -7,16 +7,22 @@ import org.openrewrite.kotlin.tree.K
 /**
  * Abstraction over Java and Kotlin constructors to access underlying [J.MethodDeclaration]
  */
-internal sealed class Constructor(val method: J.MethodDeclaration) {
+internal sealed class Constructor(
+    val method: J.MethodDeclaration,
+) {
 
     abstract fun tree(): Statement
 
-    internal class JavaConstructor(method: J.MethodDeclaration) : Constructor(method) {
+    internal class JavaConstructor(
+        method: J.MethodDeclaration,
+    ) : Constructor(method) {
 
         override fun tree(): Statement = method
     }
 
-    internal class KotlinConstructor(val constructor: K.Constructor) : Constructor(constructor.methodDeclaration) {
+    internal class KotlinConstructor(
+        val constructor: K.Constructor,
+    ) : Constructor(constructor.methodDeclaration) {
 
         override fun tree(): Statement = constructor
     }
@@ -41,8 +47,9 @@ internal fun J.ClassDeclaration.getAutowiringConstructor(): Constructor? {
 
 private fun Constructor.isDefault() = method.parameters.isNullOrEmpty() || (method.parameters.size == 1 && method.parameters[0] is J.Empty)
 
-private fun Statement.asConstructor(): Constructor? = when {
-    this is J.MethodDeclaration && this.methodType?.name in setOf("<constructor>") -> Constructor.JavaConstructor(this)
-    this is K.Constructor -> Constructor.KotlinConstructor(this)
-    else -> null
-}
+private fun Statement.asConstructor(): Constructor? =
+    when {
+        this is J.MethodDeclaration && this.methodType?.name in setOf("<constructor>") -> Constructor.JavaConstructor(this)
+        this is K.Constructor -> Constructor.KotlinConstructor(this)
+        else -> null
+    }

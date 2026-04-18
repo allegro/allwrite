@@ -8,5 +8,5 @@ internal fun AddOrUpdateAnnotationAttribute(
     attributeValue: String? = null,
     oldAttributeValue: String? = null,
     addOnly: Boolean = false,
-    appendArray: Boolean = false
+    appendArray: Boolean = false,
 ) = AddOrUpdateAnnotationAttribute(annotationType, attributeName, attributeValue, oldAttributeValue, addOnly, appendArray)

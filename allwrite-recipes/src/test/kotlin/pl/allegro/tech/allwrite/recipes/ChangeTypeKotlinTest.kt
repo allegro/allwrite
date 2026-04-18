@@ -18,8 +18,8 @@ class ChangeTypeKotlinTest : RewriteTest {
                         ChangeType(
                             "com.example.otherpackage.OldSampleClass",
                             "com.example.somepackage.NewSampleClass",
-                            false
-                        )
+                            false,
+                        ),
                     )
             },
             kotlin(
@@ -29,14 +29,14 @@ class ChangeTypeKotlinTest : RewriteTest {
                     class SomeService {
                         private val oldSampleClass = OldSampleClass()
                     }
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     import com.example.somepackage.NewSampleClass
 
                     class SomeService {
                         private val newSampleClass = NewSampleClass()
                     }
-                    """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -49,7 +49,7 @@ class ChangeTypeKotlinTest : RewriteTest {
                             val someField = oldSampleClass.someField
                         }
                     }
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     import com.example.somepackage.NewSampleClass
 
@@ -60,7 +60,7 @@ class ChangeTypeKotlinTest : RewriteTest {
                             val someField = newSampleClass.someField
                         }
                     }
-                    """.trimIndent()
+                """.trimIndent(),
             ),
         )
     }

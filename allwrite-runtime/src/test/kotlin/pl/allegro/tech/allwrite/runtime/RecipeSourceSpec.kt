@@ -3,12 +3,12 @@ package pl.allegro.tech.allwrite.runtime
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotContainAnyOf
 import org.koin.test.inject
-import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
 import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
 
 class RecipeSourceSpec : BaseRuntimeSpec() {
     init {
-        val recipeSource : RecipeSource by inject()
+        val recipeSource: RecipeSource by inject()
 
         test("should find all allegro recipes with public visibility") {
             val recipes = recipeSource.findAll()
@@ -17,7 +17,7 @@ class RecipeSourceSpec : BaseRuntimeSpec() {
             recipeIds shouldContainAll listOf(
                 "pl.allegro.tech.allwrite.recipes.KotlinPublicRecipe",
                 "pl.allegro.tech.allwrite.recipes.JavaPublicRecipe",
-                "pl.allegro.tech.allwrite.recipes.YamlPublicRecipe"
+                "pl.allegro.tech.allwrite.recipes.YamlPublicRecipe",
             )
             recipeIds shouldNotContainAnyOf listOf(
                 "pl.allegro.tech.allwrite.recipes.KotlinInternalRecipe",

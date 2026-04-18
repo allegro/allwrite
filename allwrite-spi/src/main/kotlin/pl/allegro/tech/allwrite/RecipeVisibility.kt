@@ -17,5 +17,5 @@ public enum class RecipeVisibility {
      * allwrite run --recipe pl.allegro.tech.recipes.SomePublicRecipe
      * ```
      */
-    PUBLIC
+    PUBLIC,
 }

@@ -17,8 +17,9 @@ import pl.allegro.tech.allwrite.cli.util.injectAll
 
 internal abstract class SubCommand(
     name: String,
-    private val help: String
-) : CliktCommand(name = name), KoinComponent {
+    private val help: String,
+) : CliktCommand(name = name),
+    KoinComponent {
 
     private val commandListeners: List<CommandListener> by injectAll()
 
@@ -42,7 +43,7 @@ internal abstract class SubCommand(
             commandName,
             commandExecutionResult.executionTime,
             commandExecutionResult.throwable,
-            commandExecutionResult.executedRecipes
+            commandExecutionResult.executedRecipes,
         )
         commandListeners.forEach { it.onCommandExecuted(event) }
     }

@@ -24,19 +24,19 @@ internal class RunWithDependabotCommand(
     private val pullRequestDescriptionEnricher: PullRequestDescriptionEnricher,
 ) : SubCommand(
     name = COMMAND_NAME,
-    help = "Finds recipe by dependabot metadata and runs it"
+    help = "Finds recipe by dependabot metadata and runs it",
 ) {
 
     override val hiddenFromHelp: Boolean = true
 
     private val pullRequestManagerExtraParams by option(
         names = arrayOf("--prm-extra"),
-        envvar = ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME
+        envvar = ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME,
     ).required()
 
     private val dumpExecutionResult by option(
         names = arrayOf("--dump-execution-result"),
-        completionCandidates = CompletionCandidates.Path
+        completionCandidates = CompletionCandidates.Path,
     ).convert { File(it) }
 
     override fun runSubCommand(): ExecutionResult {
@@ -44,7 +44,7 @@ internal class RunWithDependabotCommand(
         if (matching.isEmpty()) {
             throw PrintMessage(
                 message = "No matching recipes found.",
-                statusCode = 0
+                statusCode = 0,
             )
         }
 
@@ -78,9 +78,17 @@ internal class RunWithDependabotCommand(
     }
 
     @Serializable
-    internal data class ExecutionInfo(val title: String, val recipes: List<ExecutionInfoRecipe>)
+    internal data class ExecutionInfo(
+        val title: String,
+        val recipes: List<ExecutionInfoRecipe>,
+    )
+
     @Serializable
-    internal data class ExecutionInfoRecipe(val id: String, val name: String, val description: String)
+    internal data class ExecutionInfoRecipe(
+        val id: String,
+        val name: String,
+        val description: String,
+    )
 
     companion object {
 

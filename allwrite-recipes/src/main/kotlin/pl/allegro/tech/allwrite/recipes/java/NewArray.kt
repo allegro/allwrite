@@ -20,7 +20,8 @@ internal fun NewArray(
     initializer: List<Expression>,
 ): J.NewArray = J.NewArray(Tree.randomId(), prefix, markers, typeExpression, dimensions, JContainer.build(initializer.map { JRightPadded.build(it) }), type)
 
-internal fun stringArray(values: List<String>): J.NewArray = NewArray(
-    type = JavaType.Array(null, JavaType.Primitive.String, null),
-    initializer = values.map { JavaStringLiteral(it) }.spacesInBetween(),
-)
+internal fun stringArray(values: List<String>): J.NewArray =
+    NewArray(
+        type = JavaType.Array(null, JavaType.Primitive.String, null),
+        initializer = values.map { JavaStringLiteral(it) }.spacesInBetween(),
+    )

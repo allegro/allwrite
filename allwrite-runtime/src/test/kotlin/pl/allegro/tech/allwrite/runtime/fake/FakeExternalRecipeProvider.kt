@@ -6,7 +6,7 @@ import java.nio.file.Path
 
 @Single
 class FakeExternalRecipeProvider(
-    private val jarPaths: List<Path> = emptyList()
+    private val jarPaths: List<Path> = emptyList(),
 ) : ExternalRecipeProvider {
     override fun get(): List<Path> = jarPaths
 }

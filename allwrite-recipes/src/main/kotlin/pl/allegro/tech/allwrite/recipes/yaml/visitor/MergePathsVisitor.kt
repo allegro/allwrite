@@ -26,7 +26,9 @@ import pl.allegro.tech.allwrite.recipes.yaml.Builders.scalar
  *   bax: 0
  * ```
  */
-internal class MergePathsVisitor(val prefix: String) : YamlIsoVisitor<ExecutionContext>() {
+internal class MergePathsVisitor(
+    val prefix: String,
+) : YamlIsoVisitor<ExecutionContext>() {
 
     override fun visitMapping(input: Yaml.Mapping, ctx: ExecutionContext): Yaml.Mapping {
         var mapping = input
@@ -49,7 +51,7 @@ internal class MergePathsVisitor(val prefix: String) : YamlIsoVisitor<ExecutionC
             input,
             mapping,
             ctx,
-            (if (cursor.parent?.getValue<Any>() is Yaml.Document) cursor.parent else cursor)!!
+            (if (cursor.parent?.getValue<Any>() is Yaml.Document) cursor.parent else cursor)!!,
         )
 
         return super.visitMapping(mapping, ctx)
@@ -68,4 +70,3 @@ internal class MergePathsVisitor(val prefix: String) : YamlIsoVisitor<ExecutionC
         return mapping.withEntries(ListUtils.insertAll(cleanedUpEntries, insertionIndex, listOf(toBe)))
     }
 }
-

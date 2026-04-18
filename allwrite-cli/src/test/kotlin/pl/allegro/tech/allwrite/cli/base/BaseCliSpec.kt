@@ -9,16 +9,19 @@ import pl.allegro.tech.allwrite.cli.fake.clock.FakeClockModule
 import pl.allegro.tech.allwrite.cli.fake.external.FakeExternalDependenciesModule
 import pl.allegro.tech.allwrite.runtime.util.KoinMockkExtension
 
-abstract class BaseCliSpec : FunSpec(), KoinTest {
+abstract class BaseCliSpec :
+    FunSpec(),
+    KoinTest {
 
-    override fun extensions() = listOf(
-        KoinMockkExtension(
-            CliModule().module,
-            FakeExternalDependenciesModule().module, // always faked to avoid sending requests to real services
-            FakeClockModule().module,
-            *additionalModules().toTypedArray()
+    override fun extensions() =
+        listOf(
+            KoinMockkExtension(
+                CliModule().module,
+                FakeExternalDependenciesModule().module, // always faked to avoid sending requests to real services
+                FakeClockModule().module,
+                *additionalModules().toTypedArray(),
+            ),
         )
-    )
 
     protected open fun additionalModules(): List<Module> = emptyList()
 }

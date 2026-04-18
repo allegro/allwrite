@@ -13,7 +13,7 @@ import java.net.URLClassLoader
 
 @Single
 internal class OpenrewriteRecipeSource(
-    private val externalRecipeProvider: ExternalRecipeProvider?
+    private val externalRecipeProvider: ExternalRecipeProvider?,
 ) : RecipeSource {
 
     private val allwriteEnvironment = Environment.builder()
@@ -68,4 +68,3 @@ private fun Environment.activateRecipesOrNull(vararg recipes: String) =
     } catch (_: Exception) {
         null
     }
-

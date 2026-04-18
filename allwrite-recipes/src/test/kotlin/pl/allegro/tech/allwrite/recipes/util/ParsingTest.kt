@@ -15,7 +15,6 @@ abstract class ParsingTest {
     val kotlinParser: KotlinParser = KotlinParser.builder().classpath(JavaParser.runtimeClasspath()).build()
     val groovyParser: GroovyParser = GroovyParser.builder().classpath(JavaParser.runtimeClasspath()).build()
 
-
     @BeforeEach
     fun setup() {
         javaParser.reset()
@@ -26,5 +25,4 @@ abstract class ParsingTest {
     fun parseJava(java: String): J.CompilationUnit = javaParser.parse(java).findFirst().getOrNull() as J.CompilationUnit
     fun parseKotlin(kotlin: String): K.CompilationUnit = kotlinParser.parse(kotlin).findFirst().getOrNull() as K.CompilationUnit
     fun parseGroovy(groovy: String): G.CompilationUnit = groovyParser.parse(groovy).findFirst().getOrNull() as G.CompilationUnit
-
 }

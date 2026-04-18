@@ -18,7 +18,7 @@ public class ReplaceFactoryWithConstructor(
     @Option
     private val fullyQualifiedTypeName: String,
     @Option
-    private val factoryClassNamePattern: String
+    private val factoryClassNamePattern: String,
 ) : AllwriteRecipe(visibility = INTERNAL) {
 
     override fun getDisplayName(): String = "Replace factory with constructor"
@@ -26,17 +26,18 @@ public class ReplaceFactoryWithConstructor(
 
     private val factoryClassNameRegex = factoryClassNamePattern.toRegex()
 
-    override fun getVisitor(): TreeVisitor<*, ExecutionContext> = object : JavaVisitor<ExecutionContext>() {
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> =
+        object : JavaVisitor<ExecutionContext>() {
 
-        init {
-            doAfterVisit(ReplaceFactoryMethodWithConstructor())
-        }
+            init {
+                doAfterVisit(ReplaceFactoryMethodWithConstructor())
+            }
 
-        override fun visitNewClass(newClass: J.NewClass, p: ExecutionContext): J {
-            cursor.root.putMessage("constructorIdentifierPrefix", newClass.clazz!!.prefix)
-            return super.visitNewClass(newClass, p)
+            override fun visitNewClass(newClass: J.NewClass, p: ExecutionContext): J {
+                cursor.root.putMessage("constructorIdentifierPrefix", newClass.clazz!!.prefix)
+                return super.visitNewClass(newClass, p)
+            }
         }
-    }
 
     private inner class ReplaceFactoryMethodWithConstructor : JavaVisitor<ExecutionContext>() {
 
@@ -46,7 +47,6 @@ public class ReplaceFactoryWithConstructor(
             if (factoryClassNameRegex.matches(method.methodType?.declaringType?.className ?: "") &&
                 method.methodType?.declaringType?.owningClass?.fullyQualifiedName == fullyQualifiedTypeName
             ) {
-
                 val select = m.select
 
                 if (select is J.NewClass) {
@@ -62,12 +62,12 @@ public class ReplaceFactoryWithConstructor(
                                     .withClazz(
                                         constructorSymbol
                                             .withSimpleName(owningClass.className)
-                                            .withType(owningClass)
+                                            .withType(owningClass),
                                     )
                                     .withConstructorType(
                                         constructorType
                                             .withDeclaringType(owningClass)
-                                            .withReturnType(owningClass)
+                                            .withReturnType(owningClass),
                                     )
                                     .withArguments(m.arguments)
                                     .withPrefix(m.prefix)
@@ -94,7 +94,7 @@ public class ReplaceFactoryWithConstructor(
                             emptyList(),
                             fullyQualifiedTypeName.substringAfterLast("."),
                             m.methodType?.declaringType?.owningClass,
-                            null
+                            null,
                         ),
                         JContainer.build(m.arguments.map { JRightPadded.build(it) }),
                         null,
@@ -109,8 +109,8 @@ public class ReplaceFactoryWithConstructor(
                             null,
                             null,
                             null,
-                            null
-                        )
+                            null,
+                        ),
                     )
                 }
             }

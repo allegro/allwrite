@@ -4,7 +4,7 @@ import org.koin.core.annotation.Single
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.PullRequestContext
 
 @Single
-class FakePullRequestContext() : PullRequestContext {
+class FakePullRequestContext : PullRequestContext {
 
     private var description: String = ORIGINAL_DESCRIPTION
 

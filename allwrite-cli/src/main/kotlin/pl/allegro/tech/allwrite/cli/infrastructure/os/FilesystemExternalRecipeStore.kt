@@ -18,14 +18,13 @@ import kotlin.io.path.writeText
 @Single
 internal class FilesystemExternalRecipeStore(
     private val jarFetcher: JarFetcher,
-    private val allwriteHome: AllwriteHome
-) : ExternalRecipeStore, ExternalRecipeProvider {
+    private val allwriteHome: AllwriteHome,
+) : ExternalRecipeStore,
+    ExternalRecipeProvider {
 
-    override fun get(): List<Path> =
-        readConfig().recipes.keys.map(::jarPath).filter(Path::exists)
+    override fun get(): List<Path> = readConfig().recipes.keys.map(::jarPath).filter(Path::exists)
 
-    override fun list(): Map<String, String> =
-        readConfig().recipes.mapValues { it.value.url }
+    override fun list(): Map<String, String> = readConfig().recipes.mapValues { it.value.url }
 
     override fun add(name: String, url: String) {
         val config = readConfig()
@@ -74,11 +73,9 @@ internal class FilesystemExternalRecipeStore(
         configFile.writeText(JSON.encodeToString(config))
     }
 
-    private fun jarPath(name: String): Path =
-        allwriteHome.path.resolve("jars").resolve("$name.jar")
+    private fun jarPath(name: String): Path = allwriteHome.path.resolve("jars").resolve("$name.jar")
 
-    private fun configFilePath(): Path =
-        allwriteHome.path.resolve("external-recipes.json")
+    private fun configFilePath(): Path = allwriteHome.path.resolve("external-recipes.json")
 
     companion object {
         private val logger = KotlinLogging.logger { }
@@ -87,10 +84,10 @@ internal class FilesystemExternalRecipeStore(
 
 @Serializable
 internal data class ExternalRecipesConfig(
-    val recipes: Map<String, ExternalRecipeEntry> = emptyMap()
+    val recipes: Map<String, ExternalRecipeEntry> = emptyMap(),
 )
 
 @Serializable
 internal data class ExternalRecipeEntry(
-    val url: String
+    val url: String,
 )

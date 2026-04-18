@@ -14,13 +14,17 @@ import java.util.function.Supplier
 class AddVersionCatalogDependencyReferenceTest : RewriteTest {
 
     override fun defaults(spec: RecipeSpec) {
-        spec.recipes(toRecipe(Supplier {
-            AddVersionCatalogDependencyReference(
-                configuration = "testRuntimeOnly",
-                library = Library("com.example", "test", null),
-                versionCatalogAlias = "com-example-test"
-            )
-        }))
+        spec.recipes(
+            toRecipe(
+                Supplier {
+                    AddVersionCatalogDependencyReference(
+                        configuration = "testRuntimeOnly",
+                        library = Library("com.example", "test", null),
+                        versionCatalogAlias = "com-example-test",
+                    )
+                },
+            ),
+        )
     }
 
     @Test
@@ -35,7 +39,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                     testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle") },
             buildGradleKts(
                 before = """
@@ -47,7 +51,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                     testRuntimeOnly(libs.com.example.test)
                 }
                 """.trimIndent(),
-                { path("build.gradle.kts") }
+                { path("build.gradle.kts") },
             ),
             buildGradle(
                 before = """
@@ -78,7 +82,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 java {
                   withSourcesJar()
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle") },
             buildGradleKts(
                 before = """
@@ -109,8 +113,8 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 java {
                   withSourcesJar()
                 }
-                """.trimIndent()
-            ) { path("build.gradle.kts") }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
         )
     }
 
@@ -123,7 +127,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                     testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle") },
             buildGradleKts(
                 before = "",
@@ -131,7 +135,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                     testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build1.gradle.kts") },
             buildGradleKts(
                 before = """
@@ -154,8 +158,8 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                     testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
-            ) { path("build2.gradle.kts") }
+                """.trimIndent(),
+            ) { path("build2.gradle.kts") },
         )
     }
 
@@ -172,7 +176,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                     }
                     testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle") },
             buildGradleKts(
                 beforeAndAfter = """
@@ -184,11 +188,10 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                     }
                     testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build1.gradle.kts") },
         )
     }
-
 
     @Test
     fun `should not add dependency when it exists for a different configuration`() {
@@ -198,15 +201,15 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                     implementation(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle") },
             buildGradleKts(
                 beforeAndAfter = """
                 dependencies {
                     compileOnly(libs.com.example.test)
                 }
-                """.trimIndent()
-            ) { path("build.gradle.kts") }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
         )
     }
 
@@ -218,15 +221,15 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                   testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle") },
             buildGradleKts(
                 beforeAndAfter = """
                 dependencies {
                   testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
-            ) { path("build.gradle.kts") }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
         )
     }
 
@@ -238,15 +241,15 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                   testRuntimeOnly "com.example:test:1.0.1"
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle") },
             buildGradleKts(
                 beforeAndAfter = """
                 dependencies {
                   testRuntimeOnly("com.example:test:1.0.1")
                 }
-                """.trimIndent()
-            ) { path("build.gradle.kts") }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
         )
     }
 
@@ -258,8 +261,8 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                   testRuntimeOnly(group: 'com.example', name: 'test', version: '1.0.0')
                 }
-                """.trimIndent()
-            ) { path("build.gradle") }
+                """.trimIndent(),
+            ) { path("build.gradle") },
         )
     }
 
@@ -271,8 +274,8 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                   testRuntimeOnly(group = "com.example", name = "test", version = "1.0.0")
                 }
-                """.trimIndent()
-            ) { path("build.gradle.kts") }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
         )
     }
 
@@ -296,7 +299,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                     testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle.kts") },
             buildGradle(
                 before = """
@@ -315,11 +318,10 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 dependencies {
                     testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
-            ) { path("build.gradle") }
+                """.trimIndent(),
+            ) { path("build.gradle") },
         )
     }
-
 
     @Test
     fun `should not change non-gradle files`() {
@@ -328,13 +330,13 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                 beforeAndAfter = """
                 dependencies {
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.groovy") },
             buildGradleKts(
                 beforeAndAfter = """
                 dependencies {
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.kt") },
         )
     }
@@ -354,7 +356,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                     testRuntimeOnly(libs.com.example.two)
                 }
                 """.trimIndent(),
-                { path("build.gradle") }
+                { path("build.gradle") },
             ),
             buildGradleKts(
                 before = """
@@ -367,8 +369,8 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                     testRuntimeOnly(libs.com.example.two)
                 }
                 """.trimIndent(),
-                { path("build.gradle.kts") }
-            )
+                { path("build.gradle.kts") },
+            ),
         )
     }
 
@@ -386,28 +388,33 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
                  testRuntimeOnly("com.example:example")
                  testRuntimeOnly(libs.com.example.test)
                 }
-                """.trimIndent()
+                """.trimIndent(),
             ) { path("build.gradle") },
         )
     }
 
     private class ListRecipe : AllwriteRecipe(null, null, RecipeVisibility.INTERNAL, null, null) {
 
-        override fun getRecipeList(): List<Recipe> = listOf(
-            toRecipe(Supplier {
-                AddVersionCatalogDependencyReference(
-                    configuration = "testRuntimeOnly",
-                    library = Library("com.example", "test", null),
-                    versionCatalogAlias = "com-example-test",
-                )
-            }),
-            toRecipe(Supplier {
-                AddVersionCatalogDependencyReference(
-                    configuration = "testRuntimeOnly",
-                    library = Library("com.example", "two", null),
-                    versionCatalogAlias = "com-example-two"
-                )
-            }),
-        )
+        override fun getRecipeList(): List<Recipe> =
+            listOf(
+                toRecipe(
+                    Supplier {
+                        AddVersionCatalogDependencyReference(
+                            configuration = "testRuntimeOnly",
+                            library = Library("com.example", "test", null),
+                            versionCatalogAlias = "com-example-test",
+                        )
+                    },
+                ),
+                toRecipe(
+                    Supplier {
+                        AddVersionCatalogDependencyReference(
+                            configuration = "testRuntimeOnly",
+                            library = Library("com.example", "two", null),
+                            versionCatalogAlias = "com-example-two",
+                        )
+                    },
+                ),
+            )
     }
 }

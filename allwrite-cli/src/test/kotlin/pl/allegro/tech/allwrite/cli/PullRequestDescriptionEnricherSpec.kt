@@ -16,9 +16,10 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
     private val pullRequestDescriptionEnricher: PullRequestDescriptionEnricher by injectEagerly()
     private val fakePullRequestContext: PullRequestContext by injectEagerly()
 
-    override fun additionalModules(): List<Module> = listOf(
-        FakeGithubModule().module,
-    )
+    override fun additionalModules(): List<Module> =
+        listOf(
+            FakeGithubModule().module,
+        )
 
     init {
         test("should be noop when no recipes executed") {
@@ -48,7 +49,7 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
                 <hr id="auto-upgrade-watchdog-separator"/>
 
                 ${FakePullRequestContext.Companion.ORIGINAL_DESCRIPTION}
-                """.trimIndent()
+            """.trimIndent()
         }
 
         test("should deduplicate recipes") {
@@ -70,12 +71,13 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
                 <hr id="auto-upgrade-watchdog-separator"/>
 
                 ${FakePullRequestContext.Companion.ORIGINAL_DESCRIPTION}
-                """.trimIndent()
+            """.trimIndent()
         }
 
         test("should append recipe info to the disclaimer in the description when it is already present") {
             // given
-            fakePullRequestContext.updateDescription("""
+            fakePullRequestContext.updateDescription(
+                """
                 ## 🤖 Allwrite bot has taken over this PR! 🤖
 
                 ### Migration 1
@@ -89,15 +91,15 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
                 <hr id="auto-upgrade-watchdog-separator"/>
 
                 ${FakePullRequestContext.Companion.ORIGINAL_DESCRIPTION}
-                """.trimIndent()
+                """.trimIndent(),
             )
 
             // when
             pullRequestDescriptionEnricher.addRewriteDisclaimerToPullRequest(
                 listOf(
                     FakeRecipe(),
-                    FakeRecipe(id = "recipe2", displayName = "recipe2", description = "second recipe")
-                )
+                    FakeRecipe(id = "recipe2", displayName = "recipe2", description = "second recipe"),
+                ),
             )
 
             // then
@@ -127,7 +129,7 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
                 <hr id="auto-upgrade-watchdog-separator"/>
 
                 ${FakePullRequestContext.Companion.ORIGINAL_DESCRIPTION}
-                """.trimIndent()
+            """.trimIndent()
         }
     }
 }

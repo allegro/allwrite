@@ -21,9 +21,10 @@ class RunCommandSpec : BaseCliSpec() {
     private val runCommand: RunCommand by injectEagerly()
     private val fakeRecipeExecutor: FakeRecipeExecutor by injectEagerly()
 
-    override fun additionalModules() = listOf(
-        FakeRuntimeModule().module
-    )
+    override fun additionalModules() =
+        listOf(
+            FakeRuntimeModule().module,
+        )
 
     init {
         test("should fail when no arguments provided") {
@@ -49,7 +50,7 @@ class RunCommandSpec : BaseCliSpec() {
 
             result.statusCode shouldBe 0
             fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
-                FakeRecipeSource.Companion.SETUP_CI_TEST_RECIPE
+                FakeRecipeSource.Companion.SETUP_CI_TEST_RECIPE,
             )
         }
 
@@ -61,7 +62,7 @@ class RunCommandSpec : BaseCliSpec() {
 
             fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
                 FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE,
-                FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE
+                FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE,
             )
         }
 
@@ -82,7 +83,7 @@ class RunCommandSpec : BaseCliSpec() {
             result.statusCode shouldBe 0
 
             fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
-                FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE
+                FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE,
             )
         }
 
@@ -93,7 +94,7 @@ class RunCommandSpec : BaseCliSpec() {
 
             fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
                 FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE,
-                FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE
+                FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE,
             )
         }
 
@@ -141,7 +142,7 @@ class RunCommandSpec : BaseCliSpec() {
             result.statusCode shouldBe 0
 
             fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
-                FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE
+                FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE,
             )
         }
 
@@ -152,7 +153,7 @@ class RunCommandSpec : BaseCliSpec() {
 
             fakeRecipeExecutor.executedRecipes shouldContainExactly listOf(
                 FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE,
-                FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE
+                FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE,
             )
         }
     }

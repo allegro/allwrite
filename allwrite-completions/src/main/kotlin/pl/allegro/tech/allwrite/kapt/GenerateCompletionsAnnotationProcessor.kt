@@ -24,7 +24,9 @@ import javax.tools.Diagnostic.Kind.ERROR
 @AutoService(Processor::class)
 @SupportedAnnotationTypes("pl.allegro.tech.allwrite.kapt.GenerateCompletions")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
-public class GenerateCompletionsAnnotationProcessor : AbstractProcessor(), KoinComponent {
+public class GenerateCompletionsAnnotationProcessor :
+    AbstractProcessor(),
+    KoinComponent {
 
     private val recipeSource: RecipeSource by inject()
     private val completionGenerators: List<CompletionGenerator> by injectAll()

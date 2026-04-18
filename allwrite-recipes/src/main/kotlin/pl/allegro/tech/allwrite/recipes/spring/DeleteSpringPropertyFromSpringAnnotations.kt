@@ -22,8 +22,9 @@ public class DeleteSpringPropertyFromSpringAnnotations(
     private val propertyName: String,
 ) : AllwriteRecipe(
     displayName = "Remove Spring property from @SpringBootTest and @TestPropertySource annotations",
-    visibility = INTERNAL
-), ClasspathAwareRecipe {
+    visibility = INTERNAL,
+),
+    ClasspathAwareRecipe {
 
     override fun requireOnClasspath(): List<String> =
         listOf(
@@ -33,11 +34,11 @@ public class DeleteSpringPropertyFromSpringAnnotations(
             "spring-context-6",
         )
 
-    override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
-        return Visitor(propertyName)
-    }
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor(propertyName)
 
-    internal class Visitor(private val propertyNameGlob: String) : JavaIsoVisitor<ExecutionContext>() {
+    internal class Visitor(
+        private val propertyNameGlob: String,
+    ) : JavaIsoVisitor<ExecutionContext>() {
 
         override fun visitAnnotation(annotation: J.Annotation, p: ExecutionContext): J.Annotation {
             var annotation = annotation
@@ -57,7 +58,7 @@ public class DeleteSpringPropertyFromSpringAnnotations(
 
     internal class SpringBootTestVisitor(
         private val propertyNameGlob: String,
-        private val annotationArgumentSelector: (J.Annotation) -> AnnotationArgument?
+        private val annotationArgumentSelector: (J.Annotation) -> AnnotationArgument?,
     ) : JavaIsoVisitor<ExecutionContext>() {
 
         override fun visitAnnotation(a: J.Annotation, p: ExecutionContext): J.Annotation {
@@ -75,23 +76,24 @@ public class DeleteSpringPropertyFromSpringAnnotations(
             }
         }
 
-        private fun processElements(exprs: List<Expression>?): List<Expression>? = exprs
-            ?.toMutableList()
-            ?.also { elements ->
-                elements.withIndex()
-                    .filter { (_, init) -> (init as? J.Literal).matchesRequestedProperty() }
-                    .reversed()
-                    .forEach { (idx, _) ->
-                        val prefixToTransfer = (elements[idx] as? J.Literal)?.prefix
-                        elements.removeAt(idx)
-                        if (idx == 0 && elements.isNotEmpty() && prefixToTransfer != null) {
-                            if (elements[0] is J.Literal) {
-                                elements[0] = elements[0].withPrefix(prefixToTransfer)
+        private fun processElements(exprs: List<Expression>?): List<Expression>? =
+            exprs
+                ?.toMutableList()
+                ?.also { elements ->
+                    elements.withIndex()
+                        .filter { (_, init) -> (init as? J.Literal).matchesRequestedProperty() }
+                        .reversed()
+                        .forEach { (idx, _) ->
+                            val prefixToTransfer = (elements[idx] as? J.Literal)?.prefix
+                            elements.removeAt(idx)
+                            if (idx == 0 && elements.isNotEmpty() && prefixToTransfer != null) {
+                                if (elements[0] is J.Literal) {
+                                    elements[0] = elements[0].withPrefix(prefixToTransfer)
+                                }
                             }
                         }
-                    }
-            }
-            ?.ifEmpty { null }
+                }
+                ?.ifEmpty { null }
 
         private fun J.Literal?.matchesRequestedProperty(): Boolean {
             val propertyName = (this?.value as? String)?.split('=', ':')?.first()

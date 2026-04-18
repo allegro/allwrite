@@ -6,7 +6,7 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.ExternalRecipeStor
 
 @Single
 internal class ListExternalRecipesCommand(
-    private val externalRecipeStore: ExternalRecipeStore
+    private val externalRecipeStore: ExternalRecipeStore,
 ) : ExternalSubCommand(name = COMMAND_NAME, help = "Lists all external recipe JARs") {
 
     override fun runSubCommand(): ExecutionResult {

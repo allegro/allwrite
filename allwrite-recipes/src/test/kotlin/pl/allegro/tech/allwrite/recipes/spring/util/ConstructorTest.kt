@@ -22,7 +22,8 @@ class ConstructorTest : ParsingTest() {
             class Config {
               Config(int x) {}
             }
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // when
         val result = jclass.getAutowiringConstructor()
@@ -43,7 +44,8 @@ class ConstructorTest : ParsingTest() {
               Config(int x) {}
               @Autowired Config(String str, int x) {}
             }
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // when
         val result = jclass.getAutowiringConstructor()
@@ -64,7 +66,8 @@ class ConstructorTest : ParsingTest() {
               Config(int x) {}
               Config(String str, int x) {}
             }
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // when
         val result = jclass.getAutowiringConstructor()
@@ -84,7 +87,8 @@ class ConstructorTest : ParsingTest() {
               Config(int x) {}
               Config(String str, int x) {}
             }
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // when
         val result = jclass.getAutowiringConstructor()
@@ -101,7 +105,8 @@ class ConstructorTest : ParsingTest() {
             class Config @Autowired constructor(str: String, x: Int) {
               constructor() : this("", 0)
             }
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // when
         var result = kclass.getAutowiringConstructor()
@@ -117,7 +122,8 @@ class ConstructorTest : ParsingTest() {
             class Config(str: String) {
               @Autowired constructor(str: String, x: Int) : this(str + x)
             }
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
         result = kclass.getAutowiringConstructor()
 
         // then
@@ -133,7 +139,8 @@ class ConstructorTest : ParsingTest() {
             class Config(str: String) {
               constructor(str: String, x: Int) : this(str + x)
             }
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
         result = kclass.getAutowiringConstructor()
 
         // then
@@ -148,7 +155,8 @@ class ConstructorTest : ParsingTest() {
             class Config(str: String) {
               constructor() : this("123")
             }
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
         result = kclass.getAutowiringConstructor()
 
         // then

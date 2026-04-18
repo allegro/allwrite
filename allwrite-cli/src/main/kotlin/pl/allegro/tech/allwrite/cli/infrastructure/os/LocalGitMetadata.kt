@@ -6,7 +6,7 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.GitRepo
 
 @Single
 internal class LocalGitMetadata(
-    private val commandExecutor: SystemCommandExecutor
+    private val commandExecutor: SystemCommandExecutor,
 ) : GitMetadata {
 
     override val branch: String? by lazy {

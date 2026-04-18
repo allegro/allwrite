@@ -8,14 +8,17 @@ import pl.allegro.tech.allwrite.runtime.RuntimeModule
 import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeOutgoingPortsModule
 import pl.allegro.tech.allwrite.runtime.util.KoinMockkExtension
 
-abstract class BaseRuntimeSpec : FunSpec(), KoinTest {
-    override fun extensions() = listOf(
-        KoinMockkExtension(
-            RuntimeModule().module,
-            FakeRuntimeOutgoingPortsModule().module,
-            *additionalModules().toTypedArray()
+abstract class BaseRuntimeSpec :
+    FunSpec(),
+    KoinTest {
+    override fun extensions() =
+        listOf(
+            KoinMockkExtension(
+                RuntimeModule().module,
+                FakeRuntimeOutgoingPortsModule().module,
+                *additionalModules().toTypedArray(),
+            ),
         )
-    )
 
     protected open fun additionalModules(): List<Module> = emptyList()
 }
