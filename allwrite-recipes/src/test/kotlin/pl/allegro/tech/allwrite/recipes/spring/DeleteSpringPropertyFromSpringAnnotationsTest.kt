@@ -37,7 +37,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 })
                 class Example {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -56,7 +56,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 ])
                 class KotlinExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             groovy(
                 before = """
@@ -75,8 +75,8 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 ])
                 class GroovyExample {}
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -100,7 +100,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 })
                 class Example {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -119,7 +119,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 ])
                 class KotlinExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             groovy(
                 before = """
@@ -138,8 +138,8 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 ])
                 class GroovyExample {}
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -156,7 +156,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                 import org.springframework.boot.test.context.SpringBootTest;
                 @SpringBootTest
                 class Example {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -168,7 +168,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                 import org.springframework.boot.test.context.SpringBootTest
                 @SpringBootTest("server.port=8080", "myapp.best=2")
                 class KotlinExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             groovy(
                 before = """
@@ -180,8 +180,8 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                 import org.springframework.boot.test.context.SpringBootTest
                 @SpringBootTest
                 class GroovyExample {}
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -205,7 +205,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 })
                 class Example {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -224,7 +224,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 ])
                 class KotlinExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             groovy(
                 before = """
@@ -243,8 +243,8 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                   "myapp.best=2"
                 ])
                 class GroovyExample {}
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -265,7 +265,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                 @TestPropertySource(encoding = "UTF-8")
                 @SpringBootTest(args = { "test" })
                 class Example {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -281,7 +281,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                 @TestPropertySource(encoding = "UTF-8")
                 @SpringBootTest(args = [ "test" ])
                 class KotlinExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             groovy(
                 before = """
@@ -297,8 +297,8 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                 @TestPropertySource(encoding = "UTF-8")
                 @SpringBootTest(args = [ "test" ])
                 class GroovyExample {}
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -324,7 +324,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT // this should stay
                 )
                 class JavaExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -345,7 +345,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT // this should stay
                 )
                 class KotlinExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             groovy(
                 before = """
@@ -366,8 +366,8 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT // this should stay
                 )
                 class GroovyExample {}
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
 
         rewriteRun(
@@ -390,7 +390,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
                 )
                 class JavaExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -411,7 +411,7 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
                 )
                 class KotlinExample {}
-                """.trimIndent()
+                """.trimIndent(),
             ),
             groovy(
                 before = """
@@ -432,8 +432,8 @@ class DeleteSpringPropertyFromSpringAnnotationsTest : RewriteTest {
                    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
                 )
                 class GroovyExample {}
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 }

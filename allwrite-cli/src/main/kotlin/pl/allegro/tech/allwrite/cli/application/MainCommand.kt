@@ -10,7 +10,10 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.ShutdownListener
 import pl.allegro.tech.allwrite.cli.util.injectAll
 
 @Single
-internal class MainCommand : CliktCommand(name = COMMAND_NAME), AppEntrypoint, KoinComponent {
+internal class MainCommand :
+    CliktCommand(name = COMMAND_NAME),
+    AppEntrypoint,
+    KoinComponent {
 
     private val subCommands: List<SubCommand> by injectAll()
     private val shutdownListeners: List<ShutdownListener> by injectAll()

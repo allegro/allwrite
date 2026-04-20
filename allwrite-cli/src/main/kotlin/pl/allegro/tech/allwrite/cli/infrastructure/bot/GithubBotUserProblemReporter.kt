@@ -2,17 +2,18 @@ package pl.allegro.tech.allwrite.cli.infrastructure.bot
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.core.annotation.Single
-import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
-import pl.allegro.tech.allwrite.runtime.port.outgoing.UserProblemReporter
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.ShutdownListener
 import pl.allegro.tech.allwrite.cli.infrastructure.os.port.incoming.SystemEnvironment
+import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
+import pl.allegro.tech.allwrite.runtime.port.outgoing.UserProblemReporter
 import java.io.File
 import java.io.PrintStream
 
 @Single
 internal class GithubBotUserProblemReporter(
     private val systemEnvironment: SystemEnvironment,
-) : UserProblemReporter, ShutdownListener {
+) : UserProblemReporter,
+    ShutdownListener {
 
     private val issues = mutableListOf<Problem>()
 

@@ -8,8 +8,7 @@ import java.nio.file.Path
 
 private val profileRegex = Regex("application-([^.]*)\\..*")
 
-internal fun profile(filePath: Path): String? =
-    profileRegex.matchEntire(filePath.fileName.toString())?.groupValues?.drop(1)?.firstOrNull()
+internal fun profile(filePath: Path): String? = profileRegex.matchEntire(filePath.fileName.toString())?.groupValues?.drop(1)?.firstOrNull()
 
 internal val propertyFilePathExpressions = listOf(
     "**/application*.yaml",
@@ -17,6 +16,7 @@ internal val propertyFilePathExpressions = listOf(
     "**/application*.properties",
 )
 
-internal fun findSpringPropertyFiles(): TreeVisitor<*, ExecutionContext> = propertyFilePathExpressions
-    .map { FindSourceFiles(it).visitor }
-    .let { Preconditions.or(*it.toTypedArray()) }
+internal fun findSpringPropertyFiles(): TreeVisitor<*, ExecutionContext> =
+    propertyFilePathExpressions
+        .map { FindSourceFiles(it).visitor }
+        .let { Preconditions.or(*it.toTypedArray()) }

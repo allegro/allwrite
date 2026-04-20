@@ -23,10 +23,10 @@ public class ChangeSpringPropertyKey(
     @Option(displayName = "Old property key", description = "The property key to rename. Supports glob", example = "management.metrics.binders.*.enabled")
     public val oldKey: String,
     @Option(displayName = "New property key", description = "The new name for the property key.", example = "management.metrics.enable.process.files")
-    public val newKey: String
+    public val newKey: String,
 ) : AllwriteRecipe(
     displayName = "Change a key of spring application property",
-    visibility = INTERNAL
+    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor(oldKey, newKey)
 
@@ -39,7 +39,8 @@ public class ChangeSpringPropertyKey(
             return when (tree) {
                 // delegate yaml and properties to openrewrite-spring
                 is Yaml.Documents,
-                is Properties.File -> {
+                is Properties.File,
+                -> {
                     return DefaultChangeSpringPropertyKey(find, replace, null).visitor.visit(tree, context)
                 }
 
@@ -52,7 +53,7 @@ public class ChangeSpringPropertyKey(
                     multiline = false,
                     dotAll = false,
                     filePattern = null,
-                    plaintextOnly = false
+                    plaintextOnly = false,
                 ).visitor.visit(tree, context)
             }
         }

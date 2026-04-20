@@ -65,11 +65,15 @@ internal class CopyDeletedPropertyCommentsVisitor(
         val nextSerial = next?.serial()
         return if (thisSerial != null && prevSerial != null && nextSerial != null) {
             thisSerial in (prevSerial + 1)..<nextSerial
-        } else false
+        } else {
+            false
+        }
     }
 }
 
-internal class PreOrderTraversalSnapshot(val order: Map<Yaml, Int>)
+internal class PreOrderTraversalSnapshot(
+    val order: Map<Yaml, Int>,
+)
 
 // Capture visited entries in pre-order traversal and produce a mapping
 // from Yaml to its serial number during traversal
@@ -95,4 +99,3 @@ internal class PreOrderVisitor : YamlIsoVisitor<ExecutionContext>() {
         return super.visitSequenceEntry(entry, p)
     }
 }
-

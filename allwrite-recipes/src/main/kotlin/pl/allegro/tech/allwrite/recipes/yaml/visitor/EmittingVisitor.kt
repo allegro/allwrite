@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
  * Visitor to traverse the whole tree and capture all subtrees of type [Y]
  */
 internal open class EmittingVisitor<Y : Yaml>(
-    private val type: KClass<out Y>
+    private val type: KClass<out Y>,
 ) : YamlIsoVisitor<ExecutionContext>() {
     open val nodes: MutableMap<YamlPath, Y> = HashMap()
 
@@ -23,6 +23,6 @@ internal open class EmittingVisitor<Y : Yaml>(
     }
 
     companion object {
-        inline operator fun <reified Y: Yaml> invoke() = EmittingVisitor(Y::class)
+        inline operator fun <reified Y : Yaml> invoke() = EmittingVisitor(Y::class)
     }
 }

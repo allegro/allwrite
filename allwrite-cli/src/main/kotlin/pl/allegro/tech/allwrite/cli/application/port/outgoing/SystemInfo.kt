@@ -10,11 +10,11 @@ public data class OperatingSystemInfo(
     public val name: String,
     public val version: String,
     public val arch: String,
-    public val username: String
+    public val username: String,
 )
 
 public data class SystemCpuInfo(
-    val cores: Int
+    val cores: Int,
 )
 
 public data class SystemMemoryInfo(

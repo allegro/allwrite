@@ -1,22 +1,29 @@
+@file:Suppress("ktlint:standard:filename")
+
 package pl.allegro.tech.allwrite.recipes.spring.util
 
 import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.TypeUtils
 
-internal fun J.VariableDeclarations.hasAutowiredAnnotation() = leadingAnnotations
-    .any { TypeUtils.isAssignableTo("org.springframework.beans.factory.annotation.Autowired", it.type) }
+internal fun J.VariableDeclarations.hasAutowiredAnnotation() =
+    leadingAnnotations
+        .any { TypeUtils.isAssignableTo("org.springframework.beans.factory.annotation.Autowired", it.type) }
 
-internal fun J.VariableDeclarations.hasResourceAnnotation() = leadingAnnotations
-    .any { TypeUtils.isAssignableTo("jakarta.annotation.Resource", it.type) }
+internal fun J.VariableDeclarations.hasResourceAnnotation() =
+    leadingAnnotations
+        .any { TypeUtils.isAssignableTo("jakarta.annotation.Resource", it.type) }
 
-internal fun J.VariableDeclarations.hasInjectAnnotation() = leadingAnnotations
-    .any { TypeUtils.isAssignableTo("jakarta.inject.Inject", it.type) }
+internal fun J.VariableDeclarations.hasInjectAnnotation() =
+    leadingAnnotations
+        .any { TypeUtils.isAssignableTo("jakarta.inject.Inject", it.type) }
 
-internal fun J.VariableDeclarations.hasQualifierAnnotation() = leadingAnnotations
-    .any { TypeUtils.isAssignableTo(ANNOTATION_QUALIFIER, it.type) }
+internal fun J.VariableDeclarations.hasQualifierAnnotation() =
+    leadingAnnotations
+        .any { TypeUtils.isAssignableTo(ANNOTATION_QUALIFIER, it.type) }
 
-internal fun J.VariableDeclarations.hasNamedAnnotation() = leadingAnnotations
-    .any { TypeUtils.isAssignableTo(ANNOTATION_NAMED, it.type) }
+internal fun J.VariableDeclarations.hasNamedAnnotation() =
+    leadingAnnotations
+        .any { TypeUtils.isAssignableTo(ANNOTATION_NAMED, it.type) }
 
 /**
  * Returns `true` if variable is marked with one of @Autowired, @Resource or @Named
@@ -36,8 +43,9 @@ internal fun J.VariableDeclarations.qualifiedName(): String? = leadingAnnotation
 /**
  * Find variable matching a **simple** name
  */
-internal fun J.VariableDeclarations.findVariableBy(simpleName: String): Variable? = variables.find { it.simpleName == simpleName }
-    ?.let { Variable(it, this) }
+internal fun J.VariableDeclarations.findVariableBy(simpleName: String): Variable? =
+    variables.find { it.simpleName == simpleName }
+        ?.let { Variable(it, this) }
 
 /**
  * Container representing [J.VariableDeclarations.NamedVariable] along with its declaration info.
@@ -45,7 +53,7 @@ internal fun J.VariableDeclarations.findVariableBy(simpleName: String): Variable
  */
 public data class Variable(
     val variable: J.VariableDeclarations.NamedVariable,
-    val declaration: J.VariableDeclarations
+    val declaration: J.VariableDeclarations,
 ) {
 
     val modifiers: List<J.Modifier> = declaration.modifiers

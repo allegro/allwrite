@@ -16,9 +16,7 @@ internal class AddTomlVersionCatalogDependency(
     val onVersionConflict: OnVersionConflict = OnVersionConflict.IGNORE,
 ) : TomlIsoVisitor<ExecutionContext>() {
 
-    override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document {
-        return super.visitDocument(withLibraries(document), p)
-    }
+    override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document = super.visitDocument(withLibraries(document), p)
 
     private fun withLibraries(document: Toml.Document): Toml.Document {
         val librariesExist = document.values.any { it is Toml.Table && it.name() == VERSION_CATALOG_TABLE_LIBS }

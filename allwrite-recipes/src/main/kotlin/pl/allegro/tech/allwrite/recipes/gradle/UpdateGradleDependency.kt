@@ -38,35 +38,37 @@ public class UpdateGradleDependency(
         |Versions declared in simple variables are supported as well:
         | - classpath group: 'GROUP', name: 'ID', version: "${'$'}versionInVariable" +
         | - plugin-name = { group = "GROUP", name = "ID", version.ref = \"versionInVariable\" } // TOML format.
-        """.trimMargin(),
-    visibility = INTERNAL
+    """.trimMargin(),
+    visibility = INTERNAL,
 ) {
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> =
         Preconditions.check(
             filePatternPreconditions(),
-            DependencyUpdaterVisitor(groupId, artifactId, targetVersion, sourceVersionPattern)
+            DependencyUpdaterVisitor(groupId, artifactId, targetVersion, sourceVersionPattern),
         )
 
     private fun filePatternPreconditions(): TreeVisitor<*, ExecutionContext> =
-        Preconditions.or(*filePatterns
-            .map { FindSourceFiles(it) }
-            .map { it.visitor }
-            .toTypedArray())
+        Preconditions.or(
+            *filePatterns
+                .map { FindSourceFiles(it) }
+                .map { it.visitor }
+                .toTypedArray(),
+        )
 
     internal class DependencyUpdaterVisitor(
         groupId: String,
         artifactId: String,
         targetVersion: String,
-        versionPattern: String
+        versionPattern: String,
     ) : TreeVisitor<Tree, ExecutionContext>() {
 
         private val regexpDependencyUpdater = RegexpDependencyUpdater(
             groupId = groupId,
             artifactId = artifactId,
             targetVersion = targetVersion,
-            versionPattern = versionPattern
-        );
+            versionPattern = versionPattern,
+        )
 
         override fun visit(tree: Tree?, p: ExecutionContext): Tree? {
             val plainText = PlainTextParser.convert(tree as SourceFile)

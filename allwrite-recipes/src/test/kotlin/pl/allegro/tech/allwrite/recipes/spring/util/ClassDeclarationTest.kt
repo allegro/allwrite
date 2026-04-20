@@ -22,21 +22,24 @@ class ClassDeclarationTest : ParsingTest() {
     inner class GetSpringComponentAnnotation {
 
         @ParameterizedTest(name = "should return annotation and a qualified name when {0} annotation is present")
-        @ValueSource(strings = [
-            ANNOTATION_COMPONENT,
-            ANNOTATION_SERVICE,
-            ANNOTATION_REPOSITORY,
-            ANNOTATION_CONTROLLER,
-            ANNOTATION_REST_CONTROLLER,
-            ANNOTATION_CONFIGURATION,
-        ])
+        @ValueSource(
+            strings = [
+                ANNOTATION_COMPONENT,
+                ANNOTATION_SERVICE,
+                ANNOTATION_REPOSITORY,
+                ANNOTATION_CONTROLLER,
+                ANNOTATION_REST_CONTROLLER,
+                ANNOTATION_CONFIGURATION,
+            ],
+        )
         fun `getSpringComponentAnnotation() should return spring component annotation and a qualified name when it is present`(annotation: String) {
             val jclass = parse(
                 """
                 @Deprecated(since = "1.5")
                 @$annotation("c")
                 class A {}
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getSpringComponentAnnotation()
@@ -57,7 +60,8 @@ class ClassDeclarationTest : ParsingTest() {
                 @Named("n")
                 @Component("c")
                 class A {}
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getSpringComponentAnnotation()
@@ -78,7 +82,8 @@ class ClassDeclarationTest : ParsingTest() {
                 @Named("n")
                 @Component
                 class A {}
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getSpringComponentAnnotation()
@@ -97,7 +102,8 @@ class ClassDeclarationTest : ParsingTest() {
                 
                 @Component
                 class A {}
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getSpringComponentAnnotation()
@@ -116,7 +122,8 @@ class ClassDeclarationTest : ParsingTest() {
                 
                 @Component("c")
                 class A {}
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getSpringComponentAnnotation()
@@ -135,7 +142,8 @@ class ClassDeclarationTest : ParsingTest() {
                 
                 @Named("n")
                 class A {}
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getSpringComponentAnnotation()
@@ -152,7 +160,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """
                 @Deprecated(since = "1.5")
                 class A {}
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getSpringComponentAnnotation()
@@ -183,7 +192,8 @@ class ClassDeclarationTest : ParsingTest() {
                   @Bean(name = "fiftyTwo")
                   public int i(String str) { return 52; }
                 }
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getBeanMethodDeclarations()
@@ -192,7 +202,7 @@ class ClassDeclarationTest : ParsingTest() {
             assertThat(result).hasSize(2)
             assertThat(result.map { it.method }).containsExactly(
                 jclass.body.statements[0] as J.MethodDeclaration,
-                jclass.body.statements[3] as J.MethodDeclaration
+                jclass.body.statements[3] as J.MethodDeclaration,
             )
             assertThat(result.map { it.beanName }).containsExactly("str", "fiftyTwo")
         }
@@ -215,7 +225,8 @@ class ClassDeclarationTest : ParsingTest() {
                   @Bean(name = "fiftyTwo")
                   fun i(str: String): Int { return 52 }
                 }
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getBeanMethodDeclarations()
@@ -224,7 +235,7 @@ class ClassDeclarationTest : ParsingTest() {
             assertThat(result).hasSize(2)
             assertThat(result.map { it.method }).containsExactly(
                 jclass.body.statements[0] as J.MethodDeclaration,
-                jclass.body.statements[3] as J.MethodDeclaration
+                jclass.body.statements[3] as J.MethodDeclaration,
             )
             assertThat(result.map { it.beanName }).containsExactly("str", "fiftyTwo")
         }
@@ -249,7 +260,8 @@ class ClassDeclarationTest : ParsingTest() {
                   @Resource(name = "int")
                   Integer i;
                 }
-                """.trimIndent()).classes[0]
+                """.trimIndent(),
+            ).classes[0]
 
             // when
             val result = jclass.getAutowiredFields()
@@ -258,7 +270,7 @@ class ClassDeclarationTest : ParsingTest() {
             assertThat(result).hasSize(2)
             assertThat(result.map { it.declaration }).containsExactly(
                 jclass.body.statements[0] as J.VariableDeclarations,
-                jclass.body.statements[2] as J.VariableDeclarations
+                jclass.body.statements[2] as J.VariableDeclarations,
             )
             assertThat(result.map { it.name }).containsExactly("str", "int")
             assertThat(result.map { it.qualifiedName }).containsExactly(null, "int")

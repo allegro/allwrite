@@ -22,20 +22,19 @@ class SystemEnvContextProviderSpec : BaseCliSpec() {
             // then
             context shouldBe mapOf(
                 "firstVar" to "firstExampleValue",
-                "secondVar" to "secondExampleValue"
+                "secondVar" to "secondExampleValue",
             )
         }
-
     }
 
-    private class FakeBlankSystemEnvironment() : SystemEnvironment {
+    private class FakeBlankSystemEnvironment : SystemEnvironment {
 
         override fun get(name: String): String = "SAMPLE_SYSTEM_ENVIRONMENT"
         override fun getAll(): Map<String, String> =
             mapOf(
                 "SAMPLE_SYSTEM_ENVIRONMENT" to "someSystemValue",
                 "TELEMETRY_ADDITIONAL_KEY_FIRST_VAR" to "firstExampleValue",
-                "TELEMETRY_ADDITIONAL_KEY_SECOND_VAR" to "secondExampleValue"
+                "TELEMETRY_ADDITIONAL_KEY_SECOND_VAR" to "secondExampleValue",
             )
     }
 }

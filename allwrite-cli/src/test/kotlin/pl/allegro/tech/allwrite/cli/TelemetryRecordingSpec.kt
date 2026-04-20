@@ -26,10 +26,11 @@ class TelemetryRecordingSpec : BaseCliSpec() {
     private val runCommand: RunCommand by injectEagerly()
     private val fakeTelemetryPublisher: FakeTelemetryPublisher by injectEagerly()
 
-    override fun additionalModules() = listOf(
-        FakeRuntimeModule().module,
-        FakeOperatingSystemModule().module
-    )
+    override fun additionalModules() =
+        listOf(
+            FakeRuntimeModule().module,
+            FakeOperatingSystemModule().module,
+        )
 
     init {
         test("should record telemetry for successful command") {

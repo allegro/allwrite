@@ -19,18 +19,18 @@ public class DeleteSpringPropertyWithValue(
     @Option(
         displayName = "Property key",
         description = "The property key to delete.",
-        example = "management.endpoint.configprops"
+        example = "management.endpoint.configprops",
     )
     public var propertyKey: String,
     @Option(
         displayName = "Property value",
         description = "The exact value the property should have to be deleted",
-        example = "true"
+        example = "true",
     )
-    public val propertyValue: String
+    public val propertyValue: String,
 ) : AllwriteRecipe(
     displayName = "Delete Spring property having specific value",
-    visibility = INTERNAL
+    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor(propertyKey, propertyValue)
 
@@ -38,24 +38,22 @@ public class DeleteSpringPropertyWithValue(
         private val propertyKey: String,
         private val propertyValue: String?,
     ) : TreeVisitor<Tree, ExecutionContext>() {
-        override fun isAcceptable(sourceFile: SourceFile, ctx: ExecutionContext): Boolean {
-            return sourceFile is Documents || sourceFile is Properties.File
-        }
+        override fun isAcceptable(sourceFile: SourceFile, ctx: ExecutionContext): Boolean = sourceFile is Documents || sourceFile is Properties.File
 
         override fun visit(tree: Tree?, ctx: ExecutionContext): Tree? {
             var t = tree
             if (t is Documents) {
                 t = Preconditions.check(
                     FindProperty(propertyKey, true, propertyValue),
-                    DeleteYamlProperty(propertyKey, false, true, null).visitor
+                    DeleteYamlProperty(propertyKey, false, true, null).visitor,
                 ).visitNonNull(t, ctx)
             } else if (t is Properties.File) {
                 t = Preconditions.check(
                     Find(
-                        pattern = "${propertyKey}\\s*=\\s*${propertyValue}",
-                        regex = true
+                        pattern = "${propertyKey}\\s*=\\s*$propertyValue",
+                        regex = true,
                     ),
-                    DeleteProperty(propertyKey, true).visitor
+                    DeleteProperty(propertyKey, true).visitor,
                 ).visitNonNull(t, ctx)
             }
             return t

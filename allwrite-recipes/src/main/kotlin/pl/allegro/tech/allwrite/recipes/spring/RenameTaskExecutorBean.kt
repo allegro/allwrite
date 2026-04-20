@@ -20,11 +20,14 @@ import pl.allegro.tech.allwrite.recipes.spring.util.getBeanMethodDeclarations
 import pl.allegro.tech.allwrite.recipes.spring.util.getSpringComponentAnnotation
 import pl.allegro.tech.allwrite.recipes.spring.util.hasConfigurationAnnotation
 
-public class RenameTaskExecutorBean : AllwriteScanningRecipe<RenameTaskExecutorBean.Context>(
-    displayName = "Rename task executor bean",
-    description = "Rename task executor bean, as required by [Spring Boot 3.5](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.5-Release-Notes#auto-configured-taskexecutor-names).",
-    visibility = RecipeVisibility.INTERNAL,
-), ClasspathAwareRecipe {
+public class RenameTaskExecutorBean :
+    AllwriteScanningRecipe<RenameTaskExecutorBean.Context>(
+        displayName = "Rename task executor bean",
+        description = "Rename task executor bean, as required by [Spring Boot 3.5](https://github.com/spring-projects/spring-boot/wiki/" +
+            "Spring-Boot-3.5-Release-Notes#auto-configured-taskexecutor-names).",
+        visibility = RecipeVisibility.INTERNAL,
+    ),
+    ClasspathAwareRecipe {
 
     override fun requireOnClasspath(): List<String> =
         listOf(
@@ -44,14 +47,18 @@ public class RenameTaskExecutorBean : AllwriteScanningRecipe<RenameTaskExecutorB
 
     override fun getScanner(context: Context): TreeVisitor<*, ExecutionContext> = Scanner(context)
 
-    private class Scanner(val context: Context) : TreeVisitor<Tree, ExecutionContext>() {
+    private class Scanner(
+        val context: Context,
+    ) : TreeVisitor<Tree, ExecutionContext>() {
         override fun visit(tree: Tree?, p: ExecutionContext): Tree? {
             FindCustomTaskExecutorBean(context).visit(tree, p)
             FindTaskExecutorInjectingPoints(context.variables).visit(tree, p)
             return tree
         }
 
-        private class FindCustomTaskExecutorBean(val acc: Context) : JavaIsoVisitor<ExecutionContext>() {
+        private class FindCustomTaskExecutorBean(
+            val acc: Context,
+        ) : JavaIsoVisitor<ExecutionContext>() {
 
             override fun visitClassDeclaration(classDecl: J.ClassDeclaration, p: ExecutionContext): J.ClassDeclaration {
                 // if the class is @Component
@@ -74,7 +81,9 @@ public class RenameTaskExecutorBean : AllwriteScanningRecipe<RenameTaskExecutorB
         }
 
         // Finds VariableDeclarations of where beans of type TaskExecutor and a qualified name `taskExecutor` are injected
-        private class FindTaskExecutorInjectingPoints(val data: MutableMap<J.VariableDeclarations, List<Variable>>) : JavaIsoVisitor<ExecutionContext>() {
+        private class FindTaskExecutorInjectingPoints(
+            val data: MutableMap<J.VariableDeclarations, List<Variable>>,
+        ) : JavaIsoVisitor<ExecutionContext>() {
 
             override fun visitClassDeclaration(classDecl: J.ClassDeclaration, p: ExecutionContext): J.ClassDeclaration {
                 val result = super.visitClassDeclaration(classDecl, p)
@@ -110,27 +119,28 @@ public class RenameTaskExecutorBean : AllwriteScanningRecipe<RenameTaskExecutorB
      * TODO: this recipe disregards submodules - if at least one of the modules defines custom `taskExecutor` bean, the visitor is noop
      *   for the whole project
      */
-    override fun getVisitor(context: Context): TreeVisitor<*, ExecutionContext> = object : JavaIsoVisitor<ExecutionContext>() {
+    override fun getVisitor(context: Context): TreeVisitor<*, ExecutionContext> =
+        object : JavaIsoVisitor<ExecutionContext>() {
 
-        private val targetVariables = context.variables
+            private val targetVariables = context.variables
 
-        override fun visitCompilationUnit(cu: J.CompilationUnit, p: ExecutionContext): J.CompilationUnit {
-            if (context.hasCustomTaskExecutorBean) return cu
-            return super.visitCompilationUnit(cu, p)
-        }
-
-        override fun visitStatement(statement: Statement, p: ExecutionContext): Statement {
-            var result = super.visitStatement(statement, p)
-            val parent = cursor.parent ?: return result
-            val replacement = targetVariables[statement] ?: return result
-
-            maybeAddImport(ANNOTATION_QUALIFIER)
-            replacement.forEach { v ->
-                result = QualifyVariable(v, APP_TASK_EXECUTOR).visit(result, p, parent) as Statement
+            override fun visitCompilationUnit(cu: J.CompilationUnit, p: ExecutionContext): J.CompilationUnit {
+                if (context.hasCustomTaskExecutorBean) return cu
+                return super.visitCompilationUnit(cu, p)
             }
-            return result
+
+            override fun visitStatement(statement: Statement, p: ExecutionContext): Statement {
+                var result = super.visitStatement(statement, p)
+                val parent = cursor.parent ?: return result
+                val replacement = targetVariables[statement] ?: return result
+
+                maybeAddImport(ANNOTATION_QUALIFIER)
+                replacement.forEach { v ->
+                    result = QualifyVariable(v, APP_TASK_EXECUTOR).visit(result, p, parent) as Statement
+                }
+                return result
+            }
         }
-    }
 
     private companion object {
 

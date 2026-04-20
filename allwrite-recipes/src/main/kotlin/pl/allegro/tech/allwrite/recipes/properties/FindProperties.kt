@@ -15,20 +15,20 @@ public class FindProperties(
     @Option(
         displayName = "Property key",
         description = "The property key to look for. Always compared using relaxed binding, supports glob",
-        example = "server.port"
+        example = "server.port",
     )
     public val propertyKey: String,
 
     @Option(
         displayName = "Expected property value",
         description = "The property value to look for. If null, matches any value",
-        example = "8080"
+        example = "8080",
     )
     public val expectedValue: String?,
-): AllwriteRecipe(
+) : AllwriteRecipe(
     displayName = "Find property",
     description = "Finds occurrences of a property with given key and value.",
-    visibility = INTERNAL
+    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor()
 

@@ -48,20 +48,21 @@ public class ExpandMappings(
     public var prefix: String = "",
 
     @Option(displayName = "excludes", description = "Exclude prefixes", example = "myapp", required = false)
-    public var excludes: List<String> = emptyList()
+    public var excludes: List<String> = emptyList(),
 ) : Recipe() {
 
     override fun getDisplayName(): String = "Transform properties from plain structure into hierarchical"
 
-    override fun getDescription(): String = """
+    override fun getDescription(): String =
+        """
         Transforms properties from plain structure into hierarchical and merges paths.
-    """.trimIndent()
+        """.trimIndent()
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor(prefix, excludes)
 
     public open class Visitor(
         private val prefix: String,
-        private val excludes: List<String>
+        private val excludes: List<String>,
     ) : YamlIsoVisitor<ExecutionContext>() {
         private val mergePathsVisitor = MergePathsVisitor(prefix)
 
@@ -75,13 +76,12 @@ public class ExpandMappings(
             return mergePathsVisitor.visit(expanded, p, cursor.parentOrThrow) as Yaml.Mapping
         }
 
-        override fun visitMappingEntry(input: Yaml.Mapping.Entry, context: ExecutionContext): Yaml.Mapping.Entry {
-            return when (action(input)) {
+        override fun visitMappingEntry(input: Yaml.Mapping.Entry, context: ExecutionContext): Yaml.Mapping.Entry =
+            when (action(input)) {
                 Action.EXPAND -> expand(input, context)
                 Action.PROCEED -> super.visitMappingEntry(input, context)
                 Action.SKIP -> input
             }
-        }
 
         private fun expand(input: Yaml.Mapping.Entry, context: ExecutionContext): Yaml.Mapping.Entry {
             var entry = input
@@ -94,7 +94,7 @@ public class ExpandMappings(
                 val remainingEntry = entry(
                     key = scalar(remainingKey),
                     value = entry.value,
-                    prefix = PrefixParts(null, main, "").asString()
+                    prefix = PrefixParts(null, main, "").asString(),
                 )
 
                 entry = entry
@@ -110,14 +110,13 @@ public class ExpandMappings(
         // choose how to split the key
         // in case of complex prefixes and collapsed entries (e.g prefix myapp.metrics and property myapp.metrics.graphite.enabled),
         // we have to make sure prefix parts are not expanded. Otherwise, simply split in 2 parts by '.'
-        private fun splitKey(keyValue: String): Pair<String, String> {
-            return if (keyValue.startsWith("$prefix.")) {
+        private fun splitKey(keyValue: String): Pair<String, String> =
+            if (keyValue.startsWith("$prefix.")) {
                 Pair(prefix, keyValue.removePrefix("$prefix."))
             } else {
                 val (new, remainder) = keyValue.split(".", limit = 2)
                 Pair(new, remainder)
             }
-        }
 
         private fun action(entry: Yaml.Mapping.Entry): Action {
             val key = entry.key.value
@@ -143,9 +142,7 @@ public class ExpandMappings(
             return Action.SKIP
         }
 
-        override fun <Y: Yaml> autoFormat(y: Y, p: ExecutionContext, cursor: Cursor): Y {
-            return AutoFormatVisitor(prefix = prefix).visit(y, p, cursor) as Y
-        }
+        override fun <Y : Yaml> autoFormat(y: Y, p: ExecutionContext, cursor: Cursor): Y = AutoFormatVisitor(prefix = prefix).visit(y, p, cursor) as Y
 
         override fun <Y : Yaml> maybeAutoFormat(before: Y, after: Y, p: ExecutionContext, cursor: Cursor): Y {
             if (before !== after) {
@@ -162,7 +159,7 @@ public class ExpandMappings(
             PROCEED,
 
             // do not expand current entry, do not process child entries
-            SKIP
+            SKIP,
         }
     }
 }

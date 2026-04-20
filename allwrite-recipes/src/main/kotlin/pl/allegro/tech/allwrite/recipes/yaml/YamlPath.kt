@@ -9,7 +9,9 @@ import org.openrewrite.yaml.tree.Yaml
  * OpenRewrite also supplies [org.openrewrite.yaml.JsonPathMatcher], which uses a similar approach and
  * should be used in most of the cases, but not always sufficient.
  */
-@JvmInline internal value class YamlPath(val path: String) {
+@JvmInline internal value class YamlPath(
+    val path: String,
+) {
 
     fun isRoot() = path.trim().isEmpty()
 
@@ -18,27 +20,28 @@ import org.openrewrite.yaml.tree.Yaml
     fun map(mapper: (String) -> String) = YamlPath(mapper(path))
 
     companion object {
-        fun List<String>.toYamlPath() = YamlPath(this.joinToString(separator =  "."))
+        fun List<String>.toYamlPath() = YamlPath(this.joinToString(separator = "."))
 
         /**
          * Iterates over parents through [Cursor] and builds [YamlPath]
          */
-        fun Cursor.toYamlPath() = this.pathAsCursors.asSequence().toList()
-            .mapNotNull {
-                when (val value = it.getValue<Any>()) {
-                    is Yaml.Mapping.Entry -> {
-                        value.key.value
-                    }
+        fun Cursor.toYamlPath() =
+            this.pathAsCursors.asSequence().toList()
+                .mapNotNull {
+                    when (val value = it.getValue<Any>()) {
+                        is Yaml.Mapping.Entry -> {
+                            value.key.value
+                        }
 
-                    is Yaml.Sequence.Entry -> {
-                        val index = (it.parent?.getValue<Any>() as? Yaml.Sequence)?.entries?.indexOfFirst { e -> e.id == value.id }?.toString() ?: "?"
-                        "[$index]"
-                    }
+                        is Yaml.Sequence.Entry -> {
+                            val index = (it.parent?.getValue<Any>() as? Yaml.Sequence)?.entries?.indexOfFirst { e -> e.id == value.id }?.toString() ?: "?"
+                            "[$index]"
+                        }
 
-                    else -> null
+                        else -> null
+                    }
                 }
-            }
-            .reversed()
-            .toYamlPath()
+                .reversed()
+                .toYamlPath()
     }
 }

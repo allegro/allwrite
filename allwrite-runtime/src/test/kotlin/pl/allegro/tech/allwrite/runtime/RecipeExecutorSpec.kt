@@ -8,13 +8,13 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import pl.allegro.tech.allwrite.PostprocessingResult.Failure
+import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
 import pl.allegro.tech.allwrite.runtime.fake.FakeCompositeRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakePostProcessingRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeThrowingRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeUserProblemReporter
-import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 import java.nio.file.Path
@@ -83,7 +83,7 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
 
             // and
             fakeProblemReporter.reportedProblems shouldContainExactly listOf(
-                Problem("Unable to execute recipe")
+                Problem("Unable to execute recipe"),
             )
         }
 
@@ -103,13 +103,12 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             // and
             fakeProblemReporter.reportedProblems shouldContainExactly listOf(
                 Problem("Unable to execute recipe1"),
-                Problem("Unable to execute recipe2")
+                Problem("Unable to execute recipe2"),
             )
         }
 
         // TODO make writing modified files an outgoing port (implemented by OperatingSystemModule) that can be mocked and write tests for that
     }
 
-    private fun inputFiles(): List<Path> =
-        Paths.get("src/testFixtures/inputFilesForTests").walk().toList()
+    private fun inputFiles(): List<Path> = Paths.get("src/testFixtures/inputFilesForTests").walk().toList()
 }

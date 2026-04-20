@@ -6,7 +6,7 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.PullRequestContext
 
 @Single
 internal class PullRequestDescriptionEnricher(
-    private val pullRequestContext: PullRequestContext
+    private val pullRequestContext: PullRequestContext,
 ) {
 
     fun addRewriteDisclaimerToPullRequest(executedRecipes: List<Recipe>) {
@@ -37,16 +37,17 @@ internal class PullRequestDescriptionEnricher(
         return (previousMigrationsDescriptions + newMigrationDescription).joinToString("\n\n")
     }
 
-    private fun buildRecipeInfoText(executedRecipes: List<Recipe>): String = executedRecipes
-        .distinctBy { it.name }
-        .withIndex()
-        .joinToString("\n\n") { (index, recipe) ->
-            """
+    private fun buildRecipeInfoText(executedRecipes: List<Recipe>): String =
+        executedRecipes
+            .distinctBy { it.name }
+            .withIndex()
+            .joinToString("\n\n") { (index, recipe) ->
+                """
             |#### Recipe ${index + 1}: `${recipe.displayName}`
             |
             |${recipe.description}
-            """.trimMargin()
-        }
+                """.trimMargin()
+            }
 
     private fun String.splitByLastSeparator(separator: String): Pair<String, String> =
         substringBeforeLast(separator, missingDelimiterValue = "").trim() to substringAfterLast(separator).trim()

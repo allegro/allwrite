@@ -30,7 +30,7 @@ class ChangeRecordFieldTest : RewriteTest {
                            println(someRecord.oldField)
                        }
                     }
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     import com.example.SomeRecord
 
@@ -39,7 +39,7 @@ class ChangeRecordFieldTest : RewriteTest {
                            println(someRecord.newField)
                        }
                     }
-                    """.trimIndent()
+                """.trimIndent(),
             ),
             kotlin(
                 before = """
@@ -50,7 +50,7 @@ class ChangeRecordFieldTest : RewriteTest {
                            println(someRecord.oldField())
                        }
                     }
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     import com.example.SomeRecord
 
@@ -59,7 +59,7 @@ class ChangeRecordFieldTest : RewriteTest {
                            println(someRecord.newField())
                        }
                     }
-                    """.trimIndent()
+                """.trimIndent(),
             ),
             java(
                 before = """
@@ -83,8 +83,8 @@ class ChangeRecordFieldTest : RewriteTest {
                             System.out.println(someRecord.newField());
                         }
                     }
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -100,7 +100,7 @@ class ChangeRecordFieldTest : RewriteTest {
                            println(someRecord.anotherField)
                        }
                     }
-                    """.trimIndent(),
+                """.trimIndent(),
             ),
             java(
                 beforeAndAfter = """
@@ -114,7 +114,7 @@ class ChangeRecordFieldTest : RewriteTest {
                         }
                     }
                 """.trimIndent(),
-            )
+            ),
         )
     }
 }

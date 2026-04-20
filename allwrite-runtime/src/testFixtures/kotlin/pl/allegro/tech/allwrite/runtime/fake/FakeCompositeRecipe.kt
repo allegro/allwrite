@@ -5,7 +5,7 @@ import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 
 open class FakeCompositeRecipe(
-    val childRecipes: List<Recipe>
+    val childRecipes: List<Recipe>,
 ) : AllwriteRecipe(visibility = INTERNAL) {
 
     constructor(vararg childRecipes: Recipe) : this(childRecipes.toList())

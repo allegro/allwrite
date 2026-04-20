@@ -8,7 +8,7 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.ExternalRecipeStor
 
 @Single
 internal class AddExternalRecipeCommand(
-    private val externalRecipeStore: ExternalRecipeStore
+    private val externalRecipeStore: ExternalRecipeStore,
 ) : ExternalSubCommand(name = COMMAND_NAME, help = "Adds an external recipe JAR from a URL") {
 
     private val name: String by argument(help = "Name for the external recipe source")

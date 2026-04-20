@@ -38,13 +38,13 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                             i18n:
                                $propertyName:
                                  enabled: true
-                            """.trimIndent(),
+                        """.trimIndent(),
                         after = """
                             myapp.i18n.$LANGUAGE_BUNDLE_KEBAB.enabled: true
-                            """.trimIndent(),
-                        spec = { path("application.yml") }
-                    )
-                )
+                        """.trimIndent(),
+                        spec = { path("application.yml") },
+                    ),
+                ),
             )
         }
 
@@ -56,13 +56,13 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                     yaml(
                         before = """
                             i18n.$propertyName.enabled: true
-                            """.trimIndent(),
+                        """.trimIndent(),
                         after = """
                             myapp.i18n.$LANGUAGE_BUNDLE_KEBAB.enabled: true
-                            """.trimIndent(),
-                        spec = { path("src/main/resources/application.yml") }
-                    )
-                )
+                        """.trimIndent(),
+                        spec = { path("src/main/resources/application.yml") },
+                    ),
+                ),
             )
         }
 
@@ -75,14 +75,14 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                         before = """
                             i18n.$propertyName.enabled: true
                             myapp.i18n.$propertyName.default-locale: cs-CZ
-                            """.trimIndent(),
+                        """.trimIndent(),
                         after = """
                             myapp.i18n.$LANGUAGE_BUNDLE_KEBAB.enabled: true
                             myapp.i18n.$propertyName.default-locale: cs-CZ
-                            """.trimIndent(),
-                        spec = { path("src/main/resources/application.yml") }
-                    )
-                )
+                        """.trimIndent(),
+                        spec = { path("src/main/resources/application.yml") },
+                    ),
+                ),
             )
         }
 
@@ -92,9 +92,9 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                 srcMainResources(
                     yaml(
                         beforeAndAfter = "myapp.i18n.language-bundle.default-locale: cs-CZ",
-                        spec = { path("src/main/resources/application.yml") }
-                    )
-                )
+                        spec = { path("src/main/resources/application.yml") },
+                    ),
+                ),
             )
         }
     }
@@ -109,13 +109,13 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                     properties(
                         before = """
                             $propertyName = true
-                            """.trimIndent(),
+                        """.trimIndent(),
                         after = """
                             $NEW_PROPERTY = true
-                            """.trimIndent(),
-                        spec = { path("src/main/resources/application.properties") }
-                    )
-                )
+                        """.trimIndent(),
+                        spec = { path("src/main/resources/application.properties") },
+                    ),
+                ),
             )
         }
 
@@ -125,9 +125,9 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                 srcMainResources(
                     properties(
                         beforeAndAfter = "myapp.i18n.language-bundle.default-locale: cs-CZ",
-                        spec = { path("src/main/resources/application.properties") }
-                    )
-                )
+                        spec = { path("src/main/resources/application.properties") },
+                    ),
+                ),
             )
         }
     }
@@ -153,7 +153,7 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                           @ConditionalOnProperty(name = "$propertyName", matchIfMissing = true)
                           public String testBean() { return ""; }
                         }
-                        """.trimIndent(),
+                    """.trimIndent(),
                     after = """
                         import pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKeyTest.TestPropertySource;
                         import pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKeyTest.ConditionalOnProperty;
@@ -167,9 +167,9 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                           @ConditionalOnProperty(name = "$NEW_PROPERTY", matchIfMissing = true)
                           public String testBean() { return ""; }
                         }
-                        """.trimIndent(),
-                    spec = { path("src/main/java/Example.java") }
-                )
+                    """.trimIndent(),
+                    spec = { path("src/main/java/Example.java") },
+                ),
             )
         }
 
@@ -191,7 +191,7 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                           @ConditionalOnProperty(name = '$propertyName', matchIfMissing = true)
                           public Map testBean() { return ['$propertyName': "$propertyName"] }
                         }
-                        """.trimIndent(),
+                    """.trimIndent(),
                     after = """
                         import pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKeyTest.TestPropertySource
                         import pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKeyTest.ConditionalOnProperty
@@ -205,9 +205,9 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                           @ConditionalOnProperty(name = '$NEW_PROPERTY', matchIfMissing = true)
                           public Map testBean() { return ['$NEW_PROPERTY': "$NEW_PROPERTY"] }
                         }
-                        """.trimIndent(),
-                    spec = { path("src/integration/groovy/Example.groovy") }
-                )
+                    """.trimIndent(),
+                    spec = { path("src/integration/groovy/Example.groovy") },
+                ),
             )
         }
 
@@ -229,7 +229,7 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                           @ConditionalOnProperty(name = "$propertyName", matchIfMissing = true)
                           public fun testBean(): Map<String, String> = mapOf("$propertyName", "$propertyName")
                         }
-                        """.trimIndent(),
+                    """.trimIndent(),
                     after = """
                         import pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKeyTest.TestPropertySource
                         import pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKeyTest.ConditionalOnProperty
@@ -243,9 +243,9 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                           @ConditionalOnProperty(name = "$NEW_PROPERTY", matchIfMissing = true)
                           public fun testBean(): Map<String, String> = mapOf("$NEW_PROPERTY", "$NEW_PROPERTY")
                         }
-                        """.trimIndent(),
-                    spec = { path("src/main/kotlin/Example.kt") }
-                )
+                    """.trimIndent(),
+                    spec = { path("src/main/kotlin/Example.kt") },
+                ),
             )
         }
 
@@ -257,13 +257,13 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                     before = """
                         ## Description
                         We are using `$propertyName` to change myapp's behaviour.
-                        """.trimIndent(),
+                    """.trimIndent(),
                     after = """
                         ## Description
                         We are using `$NEW_PROPERTY` to change myapp's behaviour.
-                        """.trimIndent(),
-                    spec = { path("example.md") }
-                )
+                    """.trimIndent(),
+                    spec = { path("example.md") },
+                ),
             )
         }
 
@@ -276,9 +276,9 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                     beforeAndAfter = """
                         ## Description
                         We are using `$nonMatchingPropertyName` to change myapp's behaviour.
-                        """.trimIndent(),
-                    spec = { path("example.md") }
-                )
+                    """.trimIndent(),
+                    spec = { path("example.md") },
+                ),
             )
         }
     }
@@ -291,19 +291,30 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
         const val NEW_PROPERTY = "myapp.i18n.$LANGUAGE_BUNDLE_KEBAB.enabled"
     }
 
-    @CsvSource(delimiterString = "->", textBlock = """
+    @CsvSource(
+        delimiterString = "->",
+        textBlock = """
         kebab case -> $OLD_PROPERTY_KEBAB
-        camel case -> $OLD_PROPERTY_CAMEL"""
+        camel case -> $OLD_PROPERTY_CAMEL""",
     )
     annotation class FullPropertyNameCaseConventionSource
 
-    @CsvSource(delimiterString = "->", textBlock = """
+    @CsvSource(
+        delimiterString = "->",
+        textBlock = """
         kebab case -> $LANGUAGE_BUNDLE_KEBAB
-        camel case -> $LANGUAGE_BUNDLE_CAMEL"""
+        camel case -> $LANGUAGE_BUNDLE_CAMEL""",
     )
     annotation class PartialPropertyNameCaseConventionSource
 
-    annotation class TestPropertySource(val properties: Array<String>)
-    annotation class Value(val value: String)
-    annotation class ConditionalOnProperty(val name: String, val matchIfMissing: Boolean)
+    annotation class TestPropertySource(
+        val properties: Array<String>,
+    )
+    annotation class Value(
+        val value: String,
+    )
+    annotation class ConditionalOnProperty(
+        val name: String,
+        val matchIfMissing: Boolean,
+    )
 }

@@ -31,11 +31,14 @@ class AnnotationArgumentAddTest : ParsingTest() {
 
     @Test
     fun `should add argument and explicit name to the default argument to the annotation`() {
-        val j = parseJava("""
+        val j =
+            parseJava(
+                """
                     @SuppressWarnings("a")
                     class A {
                     }
-                    """.trimIndent())
+                """.trimIndent(),
+            )
         val annotation = j.classes[0].leadingAnnotations[0] as J.Annotation
 
         // then
@@ -45,11 +48,14 @@ class AnnotationArgumentAddTest : ParsingTest() {
 
     @Test
     fun `should add argument and explicit name to the default argument to the annotation and wrap with array literal in kotlin`() {
-        val kt = parseKotlin("""
+        val kt =
+            parseKotlin(
+                """
                     @SuppressWarnings("a")
                     class A {
                     }
-                    """.trimIndent())
+                """.trimIndent(),
+            )
         val annotation = kt.classes[0].leadingAnnotations[0] as J.Annotation
         val cursor = Cursor(null, kt)
 

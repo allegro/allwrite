@@ -25,10 +25,11 @@ class ExternalRecipeCommandsSpec : BaseCliSpec() {
     private val fakeJarFetcher: FakeJarFetcher by injectEagerly()
     private val externalRecipeProvider: ExternalRecipeProvider by injectEagerly()
 
-    override fun additionalModules() = listOf(
-        FakeRuntimeModule().module,
-        FakeOperatingSystemModule().module,
-    )
+    override fun additionalModules() =
+        listOf(
+            FakeRuntimeModule().module,
+            FakeOperatingSystemModule().module,
+        )
 
     init {
         test("add should fetch jar and register external recipe") {

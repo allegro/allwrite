@@ -20,7 +20,7 @@ internal class TelemetryRecordingCommandListener(
     private val systemInfo: SystemInfo,
     private val additionalContextProvider: AdditionalContextProvider,
     private val jobContext: JobContext,
-    private val clock: Clock
+    private val clock: Clock,
 ) : CommandListener {
 
     override fun onCommandExecuted(event: CommandExecutedEvent) {
@@ -48,12 +48,14 @@ internal class TelemetryRecordingCommandListener(
                     repoName = gitMetadata.repo!!.name,
                     branch = gitMetadata.branch!!,
                 )
-            } else null,
+            } else {
+                null
+            },
             os = Telemetry.OperatingSystem(
                 name = systemInfo.os.name,
                 version = systemInfo.os.version,
                 arch = systemInfo.os.arch,
-                username = systemInfo.os.username
+                username = systemInfo.os.username,
             ),
             hardware = Telemetry.Hardware(
                 cpus = systemInfo.cpu.cores,
@@ -62,7 +64,7 @@ internal class TelemetryRecordingCommandListener(
             ),
             context = additionalContextProvider.extractFromSystemEnvs(),
             timestamp = Instant.now(clock),
-            jobUrl = jobContext.jobUrl
+            jobUrl = jobContext.jobUrl,
         )
         telemetryPublisher.publishTelemetry(telemetry)
     }

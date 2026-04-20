@@ -12,11 +12,13 @@ import pl.allegro.tech.allwrite.runtime.RuntimeModule
  *
  * NOTE: there is no @ComponentScan here to allow some modules to be conditionally loaded.
  */
-@Module(includes = [
-    ApplicationModule::class,
-    RuntimeModule::class,
-    OperatingSystemModule::class,
-    ClockModule::class,
-    HttpModule::class,
-])
+@Module(
+    includes = [
+        ApplicationModule::class,
+        RuntimeModule::class,
+        OperatingSystemModule::class,
+        ClockModule::class,
+        HttpModule::class,
+    ],
+)
 public class CliModule

@@ -131,7 +131,7 @@ internal data class PrimitiveAnnotationArgument(
     override val name: String,
     val literal: J.Literal,
     override val source: Expression,
-    override val annotation: J.Annotation
+    override val annotation: J.Annotation,
 ) : AnnotationArgument() {
 
     override fun unwrapString(): String? = literal.value?.toString()
@@ -141,20 +141,20 @@ internal data class ClassAnnotationArgument(
     override val name: String,
     val type: JavaType,
     override val source: Expression,
-    override val annotation: J.Annotation
+    override val annotation: J.Annotation,
 ) : AnnotationArgument()
 
 internal data class EnumAnnotationArgument(
     override val name: String,
     val type: JavaType,
     override val source: Expression,
-    override val annotation: J.Annotation
+    override val annotation: J.Annotation,
 ) : AnnotationArgument()
 
 internal data class AnnotationAnnotationArgument(
     override val name: String,
     override val source: Expression,
-    override val annotation: J.Annotation
+    override val annotation: J.Annotation,
 ) : AnnotationArgument()
 
 internal data class ListAnnotationArgument(
@@ -162,7 +162,7 @@ internal data class ListAnnotationArgument(
     override val elements: List<Expression>,
     override val elementType: JavaType,
     override val source: Expression,
-    override val annotation: J.Annotation
+    override val annotation: J.Annotation,
 ) : MultiValueAnnotationArgument()
 
 /**
@@ -173,7 +173,7 @@ internal data class VarArgAnnotationArgument(
     override val elements: List<Expression>,
     override val elementType: JavaType,
     override val source: Expression,
-    override val annotation: J.Annotation
+    override val annotation: J.Annotation,
 ) : MultiValueAnnotationArgument() {
 
     override fun replaceWith(replacement: Expression?): J.Annotation {
@@ -182,9 +182,7 @@ internal data class VarArgAnnotationArgument(
         return annotation.withArguments(listOf(assignment))
     }
 
-    override fun replaceElements(replacement: List<Expression>?): J.Annotation {
-        return annotation.withArguments(replacement)
-    }
+    override fun replaceElements(replacement: List<Expression>?): J.Annotation = annotation.withArguments(replacement)
 }
 
 internal data class ReferenceAnnotationArgument(
@@ -192,15 +190,14 @@ internal data class ReferenceAnnotationArgument(
     val type: JavaType?,
     val sourceType: JavaType?,
     override val source: Expression,
-    override val annotation: J.Annotation
+    override val annotation: J.Annotation,
 ) : AnnotationArgument()
 
 internal data class CalculatedAnnotationArgument(
     override val name: String,
     override val source: Expression,
-    override val annotation: J.Annotation
+    override val annotation: J.Annotation,
 ) : AnnotationArgument()
-
 
 internal fun J.Annotation.getArgument(name: String): AnnotationArgument? {
     val arguments = this.arguments ?: return null
@@ -247,7 +244,7 @@ internal fun J.Annotation.getArgument(name: String): AnnotationArgument? {
         is J.MethodInvocation -> {
             val type = argumentValue.arguments.firstOrNull()?.type ?: JavaType.Unknown.getInstance()
             argumentValue
-                .takeIf { it.name.simpleName == "arrayOf" && it.methodType == null}
+                .takeIf { it.name.simpleName == "arrayOf" && it.methodType == null }
                 ?.let { ListAnnotationArgument(name, it.arguments, type, argument, this) }
         }
         else -> null
@@ -286,8 +283,9 @@ private fun J.Annotation.fixValueArgument(cursor: Cursor): J.Annotation {
     val args = arguments ?: emptyList<Expression>()
     var newValueArgument = valueArgument.source
 
-    val isArray = (type as? JavaType.Class)?.methods?.filter { m -> m.name == DEFAULT_ANNOTATION_ARGUMENT_NAME }?.map { it.returnType }?.any { it is JavaType.Array }
-        ?: return this
+    val isArray =
+        (type as? JavaType.Class)?.methods?.filter { m -> m.name == DEFAULT_ANNOTATION_ARGUMENT_NAME }?.map { it.returnType }?.any { it is JavaType.Array }
+            ?: return this
     if (isArray && valueArgument !is MultiValueAnnotationArgument && cursor.isKotlin()) {
         newValueArgument = KotlinListLiteral(type = valueArgument.source.type, elements = listOf(valueArgument.source))
     }

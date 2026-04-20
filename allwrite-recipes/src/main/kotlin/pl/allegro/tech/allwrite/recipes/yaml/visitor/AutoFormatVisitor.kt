@@ -14,9 +14,7 @@ import org.openrewrite.yaml.style.YamlDefaultStyles
 import org.openrewrite.yaml.tree.Yaml
 import org.openrewrite.yaml.tree.Yaml.Documents
 import pl.allegro.tech.allwrite.recipes.yaml.YamlPath.Companion.toYamlPath
-import pl.allegro.tech.allwrite.recipes.yaml.asPrefixParts
 import pl.allegro.tech.allwrite.recipes.yaml.prefixParts
-import java.util.regex.Pattern
 
 internal class AutoFormatVisitor(
     private val stopAfter: Tree? = null,
@@ -61,7 +59,9 @@ internal class AutoFormatVisitor(
         return super.visit(tree, p)
     }
 
-    internal class CustomMinimumViableSpacingVisitor(stopAfter: Tree?) : MinimumViableSpacingVisitor<ExecutionContext>(stopAfter) {
+    internal class CustomMinimumViableSpacingVisitor(
+        stopAfter: Tree?,
+    ) : MinimumViableSpacingVisitor<ExecutionContext>(stopAfter) {
 
         override fun visitSequenceEntry(input: Yaml.Sequence.Entry, p: ExecutionContext): Yaml.Sequence.Entry {
             var formatted = super.visitSequenceEntry(input, p)
@@ -95,8 +95,8 @@ internal class AutoFormatVisitor(
 
     internal class CustomIndentsVisitor(
         indentsStyle: IndentsStyle,
-        stopAfter: Tree?
-    ): IndentsVisitor<ExecutionContext>(indentsStyle, stopAfter) {
+        stopAfter: Tree?,
+    ) : IndentsVisitor<ExecutionContext>(indentsStyle, stopAfter) {
 
         override fun visitMappingEntry(input: Yaml.Mapping.Entry, p: ExecutionContext): Yaml.Mapping.Entry {
             val formatted = super.visitMappingEntry(input, p)

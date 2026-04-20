@@ -10,5 +10,5 @@ internal data class CommandExecutedEvent(
     val command: String,
     val executionTime: Duration,
     val throwable: Throwable?,
-    val recipes: List<String> = emptyList()
+    val recipes: List<String> = emptyList(),
 )

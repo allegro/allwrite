@@ -9,7 +9,11 @@ import org.openrewrite.yaml.tree.Yaml
  * - [indent] - part of the prefix after the last `\n`, in fact an indent for the current line
  * - [main] - anything in between, must not contain `\n` in the beginning or the end
  */
-internal data class PrefixParts(val remainder: String?, val main: String?, val indent: String) {
+internal data class PrefixParts(
+    val remainder: String?,
+    val main: String?,
+    val indent: String,
+) {
 
     fun merge(another: PrefixParts): PrefixParts {
         val mergedBody = when {
@@ -65,7 +69,7 @@ internal fun Yaml.Document.End.prefixParts(): PrefixParts {
         else -> PrefixParts(
             remainder = lines[0],
             main = lines.drop(1).joinToString("\n"),
-            indent = ""
+            indent = "",
         )
     }
 }
@@ -79,7 +83,7 @@ internal fun String.asPrefixParts(): PrefixParts {
         else -> PrefixParts(
             remainder = lines[0],
             main = lines.slice(1 until lines.size - 1).joinToString("\n"),
-            indent = lines.last()
+            indent = lines.last(),
         )
     }
 }

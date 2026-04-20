@@ -11,7 +11,7 @@ import pl.allegro.tech.allwrite.api.tagPropertyOrNull
 
 @Single
 internal class RecipeMatcher(
-    private val recipeSource: RecipeSource
+    private val recipeSource: RecipeSource,
 ) {
 
     fun findMatching(coordinates: RecipeCoordinates): List<RecipeDescriptor> {
@@ -78,11 +78,10 @@ internal class RecipeMatcher(
                 val recipeVersionTo = it.getToVersion()
 
                 atLeastOneNullOr(from, recipeVersionFrom) { v1, v2 -> v1.majorVersion() <= v2.majorVersion() } &&
-                        atLeastOneNullOr(to, recipeVersionTo) { v1, v2 -> v1.isHigherThanOrEquivalentTo(v2) } &&
-                        atLeastOneNullOr(recipeVersionTo, from) { v1, v2 -> v1.isHigherThan(v2) }
+                    atLeastOneNullOr(to, recipeVersionTo) { v1, v2 -> v1.isHigherThanOrEquivalentTo(v2) } &&
+                    atLeastOneNullOr(recipeVersionTo, from) { v1, v2 -> v1.isHigherThan(v2) }
             }
             .sortedWith(nullsLast(compareBy(RecipeDescriptor::getFromVersion, RecipeDescriptor::getToVersion)))
 
-    private inline fun <A, B> atLeastOneNullOr(a: A?, b: B?, block: (A, B) -> Boolean): Boolean =
-        (a == null || b == null || block(a, b))
+    private inline fun <A, B> atLeastOneNullOr(a: A?, b: B?, block: (A, B) -> Boolean): Boolean = (a == null || b == null || block(a, b))
 }

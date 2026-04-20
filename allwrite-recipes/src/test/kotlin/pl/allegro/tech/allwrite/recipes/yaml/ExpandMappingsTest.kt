@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.recipes.yaml;
+package pl.allegro.tech.allwrite.recipes.yaml
 
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
@@ -15,7 +15,7 @@ class ExpandMappingsTest : RewriteTest {
         spec.recipe(recipe).typeValidationOptions(
             TypeValidation.builder()
                 .cursorAcyclic(false)
-                .build()
+                .build(),
         )
     }
 
@@ -26,7 +26,7 @@ class ExpandMappingsTest : RewriteTest {
                 before = """
                     myapp.metrics.graphite.enabled: true
                     logging.level.root: DEBUG
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     
                     
@@ -37,9 +37,9 @@ class ExpandMappingsTest : RewriteTest {
                     logging:
                       level:
                         root: DEBUG
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
@@ -51,7 +51,7 @@ class ExpandMappingsTest : RewriteTest {
                     myapp.test: 1010
                     myapp.metrics.graphite.enabled: true
                     myapp.metrics.graphite.host: localhost
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     
                     
@@ -61,9 +61,9 @@ class ExpandMappingsTest : RewriteTest {
                         graphite:
                           enabled: true
                           host: localhost
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
@@ -78,7 +78,7 @@ class ExpandMappingsTest : RewriteTest {
                     example-one.value: 1
                     myapp.metrics.graphite.host: localhost
                     example-two.value: 2
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     
                     
@@ -96,9 +96,9 @@ class ExpandMappingsTest : RewriteTest {
                       value: 1
                     example-two:
                       value: 2
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
@@ -112,9 +112,9 @@ class ExpandMappingsTest : RewriteTest {
                         graphite:
                           enabled: true
                           host: localhost
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
@@ -137,7 +137,7 @@ class ExpandMappingsTest : RewriteTest {
                       metrics:
                         graphite:
                           port: 1111
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     # top level comment in the top
                     
@@ -152,8 +152,8 @@ class ExpandMappingsTest : RewriteTest {
                           host: localhost
                           port: 1111
                 """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
@@ -165,7 +165,7 @@ class ExpandMappingsTest : RewriteTest {
                 before = """
                     logging.level.com.example: DEBUG
                     logging.level.com.example.impl: WARN
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     logging:
                       level:
@@ -173,8 +173,8 @@ class ExpandMappingsTest : RewriteTest {
                           example: DEBUG
                           example.impl: WARN
                 """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
@@ -186,7 +186,7 @@ class ExpandMappingsTest : RewriteTest {
                         myapp.sequence:
                           - 1
                           - 2
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                         
                         
@@ -194,11 +194,11 @@ class ExpandMappingsTest : RewriteTest {
                           sequence:
                             - 1
                             - 2
-                    """.trimIndent(),
+                """.trimIndent(),
                 spec = {
                     path("src/main/resources/application.yml")
-                }
-            )
+                },
+            ),
         )
     }
 
@@ -210,7 +210,7 @@ class ExpandMappingsTest : RewriteTest {
                         myapp.sequence: [1, 2]
                         another: [4,
                           5]
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                         
                         
@@ -218,9 +218,9 @@ class ExpandMappingsTest : RewriteTest {
                           sequence: [1, 2]
                         another: [4,
                           5]
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
@@ -233,7 +233,7 @@ class ExpandMappingsTest : RewriteTest {
                           -
                             field1: 1
                             field2: 2
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                         
                         
@@ -242,9 +242,9 @@ class ExpandMappingsTest : RewriteTest {
                             -
                               field1: 1
                               field2: 2
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
@@ -258,7 +258,7 @@ class ExpandMappingsTest : RewriteTest {
             spec.recipe(recipe).typeValidationOptions(
                 TypeValidation.builder()
                     .cursorAcyclic(false)
-                    .build()
+                    .build(),
             )
         }
 
@@ -280,8 +280,8 @@ class ExpandMappingsTest : RewriteTest {
                           ignored:
                             value.example: 42
                     """.trimIndent(),
-                    spec = { path("src/main/resources/application.yml") }
-                )
+                    spec = { path("src/main/resources/application.yml") },
+                ),
             )
         }
 
@@ -310,8 +310,8 @@ class ExpandMappingsTest : RewriteTest {
                           ignored:
                             value.example: 42
                     """.trimIndent(),
-                    spec = { path("src/main/resources/application.yml") }
-                )
+                    spec = { path("src/main/resources/application.yml") },
+                ),
             )
         }
 
@@ -334,8 +334,8 @@ class ExpandMappingsTest : RewriteTest {
                           enabled: true
                           default-locale: en_US
                     """.trimIndent(),
-                    spec = { path("src/main/resources/application.yml") }
-                )
+                    spec = { path("src/main/resources/application.yml") },
+                ),
             )
         }
 
@@ -365,8 +365,8 @@ class ExpandMappingsTest : RewriteTest {
                             another:
                               prop: 42
                     """.trimIndent(),
-                    spec = { path("src/main/resources/application.yml") }
-                )
+                    spec = { path("src/main/resources/application.yml") },
+                ),
             )
         }
 
@@ -382,8 +382,8 @@ class ExpandMappingsTest : RewriteTest {
                         myapp.language-bundle.enabled: true
                         myapp.language-bundle.default-locale: en_US
                     """.trimIndent(),
-                    spec = { path("src/main/resources/application.yml") }
-                )
+                    spec = { path("src/main/resources/application.yml") },
+                ),
             )
         }
 
@@ -399,8 +399,8 @@ class ExpandMappingsTest : RewriteTest {
                         myapp.i18n.enabled: true
                         myapp.language-bundle.default-locale: en_US
                     """.trimIndent(),
-                    spec = { path("src/main/resources/application.yml") }
-                )
+                    spec = { path("src/main/resources/application.yml") },
+                ),
             )
         }
 
@@ -446,8 +446,8 @@ class ExpandMappingsTest : RewriteTest {
                           - first: 3
                             second: 4
                     """.trimIndent(),
-                    spec = { path("src/main/resources/application.yml") }
-                )
+                    spec = { path("src/main/resources/application.yml") },
+                ),
             )
         }
     }

@@ -26,7 +26,8 @@ class MethodDeclarationTest : ParsingTest() {
               @Autowired
               public void test() {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
 
         // then
         assertTrue(j.hasAutowiredAnnotation())
@@ -42,7 +43,8 @@ class MethodDeclarationTest : ParsingTest() {
               @Inject
               public void test() {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
 
         // then
         assertFalse(j.hasAutowiredAnnotation())
@@ -59,7 +61,8 @@ class MethodDeclarationTest : ParsingTest() {
               @Autowired
               public void test(@Qualifier("target") String str) {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
 
         // then
         val found = j.findArguments("target")
@@ -84,7 +87,8 @@ class MethodDeclarationTest : ParsingTest() {
               @Autowired
               public void test(String str1, @Qualifier("target") String str2, @Named("target") String str2, String target) {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
 
         // then
         val found = j.findArguments("target")
@@ -106,7 +110,8 @@ class MethodDeclarationTest : ParsingTest() {
               @Autowired
               public void test(String target) {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
 
         // then
         val found = j.findArguments("target")

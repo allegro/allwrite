@@ -49,12 +49,7 @@ internal class RegexpDependencyUpdater(
         }
     }
 
-    private fun updateVersionInVariable(
-        originalText: String,
-        versionFound: String,
-        patternOptions: Int,
-        versionPattern: Pattern,
-    ): String {
+    private fun updateVersionInVariable(originalText: String, versionFound: String, patternOptions: Int, versionPattern: Pattern): String {
         val maybeLocalVariable =
             versionFound
                 .trimStart('$')

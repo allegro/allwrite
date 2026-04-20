@@ -15,32 +15,32 @@ class AddTopLevelLineBreaksTest : RewriteTest {
     @Test
     fun `should add line breaks to top level properties`() {
         rewriteRun(
-            {
-              spec -> spec.cycles(1).expectedCyclesThatMakeChanges(1)
+            { spec ->
+                spec.cycles(1).expectedCyclesThatMakeChanges(1)
             },
             yaml(
                 before = """
                     prop1: 123
                     prop2: 456
                     prop3: 789
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     prop1: 123
                     
                     prop2: 456
                     
                     prop3: 789
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
     @Test
     fun `should remove odd line breaks from top level properties`() {
         rewriteRun(
-            {
-                    spec -> spec.cycles(1).expectedCyclesThatMakeChanges(1)
+            { spec ->
+                spec.cycles(1).expectedCyclesThatMakeChanges(1)
             },
             yaml(
                 before = """
@@ -50,24 +50,24 @@ class AddTopLevelLineBreaksTest : RewriteTest {
                     
                     prop2: 456
                     prop3: 789
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     prop1: 123
                     
                     prop2: 456
                     
                     prop3: 789
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
     @Test
     fun `should not change line breaks for nested properties`() {
         rewriteRun(
-            {
-                    spec -> spec.cycles(1).expectedCyclesThatMakeChanges(1)
+            { spec ->
+                spec.cycles(1).expectedCyclesThatMakeChanges(1)
             },
             yaml(
                 before = """
@@ -85,7 +85,7 @@ class AddTopLevelLineBreaksTest : RewriteTest {
                     
                     
                          value: 456
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     prop1:
                     
@@ -103,49 +103,49 @@ class AddTopLevelLineBreaksTest : RewriteTest {
                     
                     
                          value: 456
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
     @Test
     fun `should keep newline after document separator`() {
         rewriteRun(
-            {
-                    spec -> spec.cycles(1).expectedCyclesThatMakeChanges(1)
+            { spec ->
+                spec.cycles(1).expectedCyclesThatMakeChanges(1)
             },
             yaml(
                 before = """
                     ---
                     prop1: 123
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     ---
                     prop1: 123
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 
     @Test
     fun `should keep newline after comment`() {
         rewriteRun(
-            {
-                    spec -> spec.cycles(1).expectedCyclesThatMakeChanges(1)
+            { spec ->
+                spec.cycles(1).expectedCyclesThatMakeChanges(1)
             },
             yaml(
                 before = """
                     # comment
                     prop1: 123
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     # comment
                     prop1: 123
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yml") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yml") },
+            ),
         )
     }
 }

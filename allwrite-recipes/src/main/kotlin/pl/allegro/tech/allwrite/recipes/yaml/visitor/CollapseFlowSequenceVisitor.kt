@@ -18,7 +18,7 @@ import pl.allegro.tech.allwrite.recipes.yaml.nodes
  */
 internal class CollapseFlowSequenceVisitor(
     original: Yaml.Documents,
-    private val keyMapper: (YamlPath) -> YamlPath = { it }
+    private val keyMapper: (YamlPath) -> YamlPath = { it },
 ) : YamlIsoVisitor<ExecutionContext>() {
 
     private val nodes = original.documents.associate { it.id to it.nodes<Yaml.Sequence>().mapKeys { entry -> keyMapper(entry.key) } }
@@ -62,6 +62,7 @@ internal class CollapseFlowSequenceVisitor(
             .withBlock(entry.block.withPrefix(originalFirstEntryBlockPrefix))
     }
 
-    private fun Yaml.Sequence.isExpanded() = this.entries.any { it.prefix.startsWith("\n") }
-        || this.entries.map { it.block }.any { it.prefix.startsWith("\n") }
+    private fun Yaml.Sequence.isExpanded() =
+        this.entries.any { it.prefix.startsWith("\n") } ||
+            this.entries.map { it.block }.any { it.prefix.startsWith("\n") }
 }

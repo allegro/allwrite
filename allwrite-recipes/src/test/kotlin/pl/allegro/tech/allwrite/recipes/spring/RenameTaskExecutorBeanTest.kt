@@ -8,9 +8,9 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.openrewrite.java.Assertions.srcMainJava
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
-import pl.allegro.tech.allwrite.runtime.util.withRecipeClasspath
 import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
+import pl.allegro.tech.allwrite.runtime.util.withRecipeClasspath
 
 class RenameTaskExecutorBeanTest : RewriteTest {
 
@@ -82,7 +82,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         fun myString(@Qualifier("applicationTaskExecutor") taskExecutor: TaskExecutor, @Qualifier("applicationTaskExecutor") taskExecutor2: TaskExecutor) = taskExecutor.toString() + taskExecutor2.toString();
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -138,7 +138,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         fun myString(@Qualifier("applicationTaskExecutor") taskExecutor : ConcurrentTaskExecutor) = taskExecutor.toString()
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -208,7 +208,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       }
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -224,7 +224,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       String myString(TaskExecutor taskExecutor) { return taskExecutor.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -235,8 +235,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       fun myString(taskExecutor: TaskExecutor) = taskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
@@ -252,7 +252,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                     class MyConfig {
                       String myString(TaskExecutor taskExecutor) { return taskExecutor.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -264,8 +264,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                     class MyConfigKotlin {
                       fun myString(taskExecutor: TaskExecutor) = taskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
@@ -287,7 +287,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       String myString2(@Named("custom") TaskExecutor taskExecutor) { return taskExecutor.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -302,8 +302,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       fun myString(@Qualifier("custom") taskExecutor: TaskExecutor) = taskExecutor.toString()
                       fun myString2(@Named("custom") taskExecutor: TaskExecutor) = taskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
@@ -321,7 +321,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       String myString(TaskExecutor customTaskExecutor) { return customTaskExecutor.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -334,8 +334,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       fun myString(customTaskExecutor: TaskExecutor) = customTaskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
@@ -353,7 +353,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       String myString(Object taskExecutor) { return taskExecutor.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -366,8 +366,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       fun myString(taskExecutor: Any) = customTaskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
@@ -391,7 +391,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         return o.toString();
                       }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -411,8 +411,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         return a.toString()
                       }
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
     }
@@ -585,7 +585,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         public fun test(): String = taskExecutor.toString()
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -683,7 +683,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor1.toString() + taskExecutor2.toString() + taskExecutor3.toString()
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -757,7 +757,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         public fun test(): String = taskExecutor.toString() + resource.toString()
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -804,8 +804,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                       public fun test(): String = taskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
@@ -840,8 +840,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                       public fun test(): String = customTaskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
@@ -874,8 +874,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                       public fun test(): String = taskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
 
@@ -906,8 +906,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                       public fun test(): String = taskExecutor.toString()
                     }
-                    """.trimIndent()
-                )
+                    """.trimIndent(),
+                ),
             )
         }
     }
@@ -990,7 +990,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutorString
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1054,7 +1054,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor1.toString() + taskExecutor2.toString()
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1116,7 +1116,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor1.toString() + taskExecutor.toString()
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1196,7 +1196,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor.toString() + s
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1229,7 +1229,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor.toString() + s
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1288,7 +1288,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         @Qualifier("applicationTaskExecutor") private TaskExecutor taskExecutor;
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1317,7 +1317,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       }
                       public String test() { return taskExecutor.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -1331,7 +1331,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor.toString() + s
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1361,7 +1361,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       }
                       public String test() { return taskExecutor1.toString() + taskExecutor2.toString() + taskExecutor3.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -1376,7 +1376,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor1.toString() + taskExecutor2.toString() + taskExecutor.toString()
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1402,7 +1402,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                       public String test() { return s + o.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -1415,7 +1415,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor + a.toString();
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -1437,7 +1437,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                       public String test() { return t.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -1465,7 +1465,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                       public String test() { return t.toString(); }
                     }
-                    """.trimIndent()
+                    """.trimIndent(),
                 ),
                 kotlin(
                     beforeAndAfter = """
@@ -1477,17 +1477,19 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor.toString();
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
         @ParameterizedTest(name = "should change the argument in @{0}")
-        @ValueSource(strings = [
-            "org.springframework.stereotype.Component",
-            "org.springframework.stereotype.Controller",
-            "org.springframework.stereotype.Repository",
-            "org.springframework.stereotype.Service",
-        ])
+        @ValueSource(
+            strings = [
+                "org.springframework.stereotype.Component",
+                "org.springframework.stereotype.Controller",
+                "org.springframework.stereotype.Repository",
+                "org.springframework.stereotype.Service",
+            ],
+        )
         fun `should treat Spring stereotype annotations as component`(annotation: String) {
             rewriteRun(
                 java(
@@ -1538,7 +1540,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor.toString()
                     }
                     """.trimIndent(),
-                )
+                ),
             )
         }
     }
@@ -1557,7 +1559,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         context.getBean("taskExecutor");
                       }
                     }
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     import org.springframework.core.task.TaskExecutor;
                     import org.springframework.context.ApplicationContext;
@@ -1567,16 +1569,17 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                         context.getBean("applicationTaskExecutor");
                       }
                     }
-                    """.trimIndent(),
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
     @Test
     fun `should not change anything if there is a custom @Component with name taskExecutor defined, which extends Spring's TaskExecutor`() {
         rewriteRun(
-            srcMainJava(java(
-                beforeAndAfter = """
+            srcMainJava(
+                java(
+                    beforeAndAfter = """
                     package com.example;
 
                     import org.springframework.stereotype.Component;
@@ -1588,10 +1591,12 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       }
                     }
                     """.trimIndent(),
-                spec = {path("src/main/java/com/example/TaskExecutor.java")}
-            )),
-            srcMainJava(java(
-                beforeAndAfter = """
+                    spec = { path("src/main/java/com/example/TaskExecutor.java") },
+                ),
+            ),
+            srcMainJava(
+                java(
+                    beforeAndAfter = """
                     package com.example;
 
                     import org.springframework.context.annotation.Bean;
@@ -1613,8 +1618,9 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       }
                     }
                     """.trimIndent(),
-                spec = {path("src/main/java/com/example/StringConfig.java")}
-            )),
+                    spec = { path("src/main/java/com/example/StringConfig.java") },
+                ),
+            ),
         )
     }
 
@@ -1636,8 +1642,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                          return new SimpleAsyncTaskExecutor();
                       }
                     }
-                    """.trimIndent(),
-                spec = { path("src/main/resources/com/example/Config.java") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/com/example/Config.java") },
             ),
             java(
                 beforeAndAfter = """
@@ -1660,8 +1666,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                          return taskExecutor.toString() + fallbackTaskExecutor.toString();
                       }
                     }
-                    """.trimIndent(),
-                spec = { path("src/main/resources/com/example/StringConfig.java") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/com/example/StringConfig.java") },
             ),
         )
     }
@@ -1680,8 +1686,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean(name = "taskExecutor")
                       fun custom() = SimpleAsyncTaskExecutor()
                     }
-                    """.trimIndent(),
-                spec = { path("src/main/resources/com/example/Config.java") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/com/example/Config.java") },
             ),
             java(
                 beforeAndAfter = """
@@ -1704,8 +1710,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                          return taskExecutor.toString() + fallbackTaskExecutor.toString();
                       }
                     }
-                    """.trimIndent(),
-                spec = { path("src/main/resources/com/example/StringConfig.java") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/com/example/StringConfig.java") },
             ),
         )
     }
@@ -1733,7 +1739,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       fun myString2() = taskExecutor.toString()
                     }
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     import org.springframework.core.task.TaskExecutor
                     import org.springframework.context.annotation.Configuration
@@ -1754,8 +1760,8 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Bean
                       fun myString2() = taskExecutor.toString()
                     }
-                    """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 }

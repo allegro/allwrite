@@ -33,4 +33,3 @@ private class UnnamedLambdaArgumentsVisitor : JavaIsoVisitor<ExecutionContext>()
         return multiVariable.withVariables(newVariables)
     }
 }
-

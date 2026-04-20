@@ -8,7 +8,9 @@ import org.koin.core.component.KoinComponent
 import pl.allegro.tech.allwrite.cli.util.injectAll
 
 @Single
-internal class ExternalCommand : CliktCommand(name = COMMAND_NAME), KoinComponent {
+internal class ExternalCommand :
+    CliktCommand(name = COMMAND_NAME),
+    KoinComponent {
 
     private val externalSubCommands: List<ExternalSubCommand> by injectAll()
 

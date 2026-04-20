@@ -11,7 +11,8 @@ class IdentifierTest : ParsingTest() {
         val j = parse(
             """
             class LongClassNameFactoryBeanFactory {}
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // then
         assertEquals("longClassNameFactoryBeanFactory", j.name.toSpringBeanName())
@@ -22,7 +23,8 @@ class IdentifierTest : ParsingTest() {
         val k = parseKotlin(
             """
             class LongClassNameFactoryBeanFactory
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // then
         assertEquals("longClassNameFactoryBeanFactory", k.name.toSpringBeanName())
@@ -35,7 +37,8 @@ class IdentifierTest : ParsingTest() {
             class Class {
               public void longMethodName() {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
 
         // then
         assertEquals("longMethodName", j.name.toSpringBeanName())
@@ -48,7 +51,8 @@ class IdentifierTest : ParsingTest() {
             class LongClassNameFactoryBeanFactory {
                fun longMethodName() {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
 
         // then
         assertEquals("longMethodName", k.name.toSpringBeanName())
@@ -61,7 +65,8 @@ class IdentifierTest : ParsingTest() {
             class Class {
               public void test(int longArgumentName) {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
         val variable = (j.parameters[0] as J.VariableDeclarations).variables[0]
 
         // then
@@ -75,7 +80,8 @@ class IdentifierTest : ParsingTest() {
             class LongClassNameFactoryBeanFactory {
                fun test(longArgumentName: Int) {}
             }
-            """.trimIndent()).classes[0].body.statements[0] as J.MethodDeclaration
+            """.trimIndent(),
+        ).classes[0].body.statements[0] as J.MethodDeclaration
         val variable = (k.parameters[0] as J.VariableDeclarations).variables[0]
 
         // then

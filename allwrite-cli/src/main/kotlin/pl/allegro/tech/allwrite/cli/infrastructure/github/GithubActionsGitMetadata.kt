@@ -12,7 +12,7 @@ import pl.allegro.tech.allwrite.cli.infrastructure.os.port.incoming.SystemEnviro
  */
 @Single
 internal class GithubActionsGitMetadata(
-    private val environment: SystemEnvironment
+    private val environment: SystemEnvironment,
 ) : GitMetadata {
 
     override val branch: String by lazy {
@@ -22,7 +22,7 @@ internal class GithubActionsGitMetadata(
     override val repo: GitRepo by lazy {
         GitRepo(
             owner = environment.require("GITHUB_REPOSITORY_OWNER"),
-            name = environment.require("GITHUB_REPOSITORY").substringAfter("/")
+            name = environment.require("GITHUB_REPOSITORY").substringAfter("/"),
         )
     }
 }

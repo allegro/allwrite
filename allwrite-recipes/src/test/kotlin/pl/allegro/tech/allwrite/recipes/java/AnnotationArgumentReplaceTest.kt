@@ -16,11 +16,13 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
     inner class ScalarArgumentCases {
         @Test
         fun `should replace default scalar argument with the given value`() {
-            val j = parseJava("""
+            val j = parseJava(
+                """
                     @SuppressWarnings("a")
                     class A {
                     }
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                """.trimIndent(),
+            ).classes[0].leadingAnnotations[0] as J.Annotation
 
             // when
             val argument = j.getArgument("value")!!
@@ -33,11 +35,13 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
         @Test
         fun `should replace default scalar argument with assignment`() {
-            val j = parseJava("""
+            val j = parseJava(
+                """
                     @SuppressWarnings("a")
                     class A {
                     }
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                """.trimIndent(),
+            ).classes[0].leadingAnnotations[0] as J.Annotation
 
             // when
             val argument = j.getArgument("value")!!
@@ -50,11 +54,13 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
         @Test
         fun `should replace named default argument scalar with the given value`() {
-            val j = parseJava("""
+            val j = parseJava(
+                """
                     @SuppressWarnings(value = "a")
                     class A {
                     }
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                """.trimIndent(),
+            ).classes[0].leadingAnnotations[0] as J.Annotation
 
             // when
             val argument = j.getArgument("value")!!
@@ -67,11 +73,13 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
         @Test
         fun `should replace named default scalar argument with assignment`() {
-            val j = parseJava("""
+            val j = parseJava(
+                """
                     @SuppressWarnings(value = "a")
                     class A {
                     }
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                """.trimIndent(),
+            ).classes[0].leadingAnnotations[0] as J.Annotation
 
             // when
             val argument = j.getArgument("value")!!
@@ -84,11 +92,13 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
         @Test
         fun `should remove default scalar argument when replacement is null`() {
-            val j = parseJava("""
+            val j = parseJava(
+                """
                     @SuppressWarnings("a")
                     class A {
                     }
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                """.trimIndent(),
+            ).classes[0].leadingAnnotations[0] as J.Annotation
 
             // when
             val argument = j.getArgument("value")!!
@@ -100,11 +110,13 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
         @Test
         fun `should remove named default scalar argument when replacement is null`() {
-            val j = parseJava("""
+            val j = parseJava(
+                """
                     @SuppressWarnings(value = "a")
                     class A {
                     }
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                """.trimIndent(),
+            ).classes[0].leadingAnnotations[0] as J.Annotation
 
             // when
             val argument = j.getArgument("value")!!
@@ -114,13 +126,14 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
             newAnnotation.print() shouldBeEqual "@SuppressWarnings"
         }
 
-
         @Test
         fun `should remove named default scalar argument when replacement is null and other argument is present`() {
-            val j = parseJava("""
+            val j = parseJava(
+                """
                     @SuppressWarnings(value = "a", other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                """.trimIndent(),
+            ).classes[0].leadingAnnotations[0] as J.Annotation
 
             // when
             val argument = j.getArgument("value")!!
@@ -138,13 +151,15 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
         inner class JavaCasse {
             @Test
             fun `should reuse container to keep formatting`() {
-                val j = parseJava("""
+                val j = parseJava(
+                    """
                     @SuppressWarnings(value = // comment
                                {"a"},     // some weird formatting and comment
                       other = "b"
                     )
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
@@ -161,10 +176,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should replace elements`() {
-                val j = parseJava("""
+                val j = parseJava(
+                    """
                     @SuppressWarnings(value = {"a", "b"}, other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
@@ -176,10 +193,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should replace with a single element`() {
-                val j = parseJava("""
+                val j = parseJava(
+                    """
                     @SuppressWarnings(value = {"a", "b"}, other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
@@ -191,10 +210,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove when replacement elements is null`() {
-                val j = parseJava("""
+                val j = parseJava(
+                    """
                     @SuppressWarnings(value = {"a", "b"})
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
@@ -206,10 +227,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove when replacement elements is null and other argument is present`() {
-                val j = parseJava("""
+                val j = parseJava(
+                    """
                     @SuppressWarnings(value = {"a", "b"}, other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
@@ -221,10 +244,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove when replacement elements is empty`() {
-                val j = parseJava("""
+                val j = parseJava(
+                    """
                     @SuppressWarnings(value = {"a", "b"})
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
@@ -236,10 +261,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove when replacement elements is empty and other argument is present`() {
-                val j = parseJava("""
+                val j = parseJava(
+                    """
                     @SuppressWarnings(value = {"a", "b"}, other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
@@ -248,20 +275,21 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                 // then
                 newAnnotation.print() shouldBeEqual "@SuppressWarnings(other = \"b\")"
             }
-
         }
 
         @Nested
         inner class KotlinCases {
             @Test
             fun `should reuse container to keep formatting`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings(value = // comment
                                ["a"],     // some weird formatting and comment
                       other = "b"
                     )
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -278,10 +306,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should replace elements`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings(value = ["a", "b"], other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -293,10 +323,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should replace with a single element`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings(value = ["a", "b"], other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -308,10 +340,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove when replacement elements is null`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings(value = ["a", "b"])
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -323,10 +357,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove when replacement elements is null and other argument is present`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings(value = ["a", "b"], other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -338,10 +374,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove when replacement elements is empty`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings(value = ["a", "b"])
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -353,10 +391,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove when replacement elements is empty and other argument is present`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings(value = ["a", "b"], other = "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -368,10 +408,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should replace elements in default vararg argument with a single element`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings("a", "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -383,10 +425,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should replace elements in default vararg argument with multiple elements`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings("a", "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -398,10 +442,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should replace elements in default vararg argument with assignment`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings("a", "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -413,10 +459,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should replace elements in default vararg argument with list literal`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings("a", "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -428,10 +476,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove default vararg argument when replacement elements is null`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings("a", "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
@@ -443,10 +493,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
 
             @Test
             fun `should remove default vararg argument when replacement elements is empty`() {
-                val kt = parseKotlin("""
+                val kt = parseKotlin(
+                    """
                     @SuppressWarnings("a", "b")
                     class A {}
-                    """.trimIndent()).classes[0].leadingAnnotations[0] as J.Annotation
+                    """.trimIndent(),
+                ).classes[0].leadingAnnotations[0] as J.Annotation
 
                 // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument

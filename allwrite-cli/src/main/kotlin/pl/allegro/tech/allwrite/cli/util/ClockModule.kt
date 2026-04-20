@@ -10,6 +10,5 @@ import java.time.Clock
 public class ClockModule {
 
     @Single
-    internal fun clock(): Clock =
-        Clock.systemUTC()
+    internal fun clock(): Clock = Clock.systemUTC()
 }

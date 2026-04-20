@@ -4,7 +4,7 @@ import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.JavaType
 
 internal class KotlinPropertyMatcher(
-    methodSignature: String
+    methodSignature: String,
 ) {
     private val ownerClassName: String
     private val fieldName: String

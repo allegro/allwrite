@@ -13,5 +13,4 @@ internal class NonBlankSystemEnvironment : SystemEnvironment {
     }
 }
 
-private fun String.notBlankOrNull(): String? =
-    takeIf(String::isNotBlank)
+private fun String.notBlankOrNull(): String? = takeIf(String::isNotBlank)

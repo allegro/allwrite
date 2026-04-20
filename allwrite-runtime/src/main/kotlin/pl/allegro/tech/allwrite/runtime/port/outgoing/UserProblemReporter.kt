@@ -8,4 +8,6 @@ public interface UserProblemReporter {
     public fun reportProblem(problem: Problem)
 }
 
-public data class Problem(val message: String)
+public data class Problem(
+    val message: String,
+)

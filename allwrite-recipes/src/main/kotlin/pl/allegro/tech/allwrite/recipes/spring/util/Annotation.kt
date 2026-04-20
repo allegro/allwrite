@@ -32,11 +32,14 @@ internal fun List<J.Annotation>.findActiveProfilesAnnotation(): J.Annotation? = 
 
 internal fun List<J.Annotation>.findAnnotation(annotationName: String): J.Annotation? = firstOrNull { TypeUtils.isAssignableTo(annotationName, it.type) }
 
-internal fun List<J.Annotation>.findVariableQualifiedName(): String? = findResourceAnnotation()?.getArgument("name")?.unwrapString()
-    ?: findQualifierAnnotation()?.getValueArgument()?.unwrapString()
-    ?: findNamedAnnotation()?.getValueArgument()?.unwrapString()
+internal fun List<J.Annotation>.findVariableQualifiedName(): String? =
+    findResourceAnnotation()?.getArgument("name")?.unwrapString()
+        ?: findQualifierAnnotation()?.getValueArgument()?.unwrapString()
+        ?: findNamedAnnotation()?.getValueArgument()?.unwrapString()
 
 internal fun J.Annotation.isEndpointMapping(): Boolean {
     val type = this.type
-    return type is JavaType.Class && type.fullyQualifiedName.startsWith("org.springframework.web.bind.annotation") && type.fullyQualifiedName.endsWith("Mapping")
+    return type is JavaType.Class &&
+        type.fullyQualifiedName.startsWith("org.springframework.web.bind.annotation") &&
+        type.fullyQualifiedName.endsWith("Mapping")
 }

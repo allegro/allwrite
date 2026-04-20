@@ -27,7 +27,7 @@ class FindSpringPropertyTest : RewriteTest {
                            port: 8080
                         myapp:
                           i18n.enabled: true
-                        """.trimIndent(),
+                """.trimIndent(),
                 after = """
                         server:
                            compression:
@@ -35,9 +35,9 @@ class FindSpringPropertyTest : RewriteTest {
                            port: ~~>8080
                         myapp:
                           i18n.enabled: true
-                        """.trimIndent(),
-                spec = { path("src/main/resources/${fileName}") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/$fileName") },
+            ),
         )
     }
 
@@ -48,12 +48,12 @@ class FindSpringPropertyTest : RewriteTest {
             properties(
                 before = """
                         server.port: 8080
-                        """.trimIndent(),
+                """.trimIndent(),
                 after = """
                         server.port: ~~>8080
-                        """.trimIndent(),
-                spec = { path("src/main/resources/${fileName}") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/$fileName") },
+            ),
         )
     }
 
@@ -64,83 +64,83 @@ class FindSpringPropertyTest : RewriteTest {
                 beforeAndAfter = """
                     server:
                       port: 8080
-                    """.trimIndent(),
-                spec = { path("src/main/resources/backup.yml") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/backup.yml") },
             ),
             yaml(
                 beforeAndAfter = """
                     server:
                       port: 8080
-                    """.trimIndent(),
-                spec = { path("tycho.yaml") }
+                """.trimIndent(),
+                spec = { path("tycho.yaml") },
             ),
             properties(
                 beforeAndAfter = """
                     server.port: 8080
-                    """.trimIndent(),
-                spec = { path("src/main/resources/project.properties") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/project.properties") },
+            ),
         )
     }
 
     @Test
     fun `should find spring properties in profile-specific application properties files`() {
         rewriteRun(
-            {
-                spec -> spec.recipe(
+            { spec ->
+                spec.recipe(
                     FindSpringProperty(
                         propertyKey = "server.port",
                         expectedValue = "8080",
-                        fileNameSuffix = "-integration"
-                    )
+                        fileNameSuffix = "-integration",
+                    ),
                 )
             },
             yaml(
                 before = """
                         server:
                            port: 8080
-                        """.trimIndent(),
+                """.trimIndent(),
                 after = """
                         server:
                            port: ~~>8080
-                        """.trimIndent(),
-                spec = { path("src/main/resources/application-integration.yml") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/application-integration.yml") },
             ),
             yaml(
                 beforeAndAfter = """
                     server:
                       port: 8080
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application.yaml") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.yaml") },
             ),
             yaml(
                 beforeAndAfter = """
                     server:
                       port: 8080
-                    """.trimIndent(),
-                spec = { path("src/main/resources/application-dev.yaml") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/application-dev.yaml") },
             ),
             properties(
                 before = """
                         server.port: 8080
-                        """.trimIndent(),
+                """.trimIndent(),
                 after = """
                         server.port: ~~>8080
-                        """.trimIndent(),
-                spec = { path("src/main/resources/application-integration.properties") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/application-integration.properties") },
             ),
             properties(
                 beforeAndAfter = """
                         server.port: 8080
-                        """.trimIndent(),
-                spec = { path("src/main/resources/application.properties") }
+                """.trimIndent(),
+                spec = { path("src/main/resources/application.properties") },
             ),
             properties(
                 beforeAndAfter = """
                         server.port: 8080
-                        """.trimIndent(),
-                spec = { path("src/main/resources/application-dev.properties") }
-            )
+                """.trimIndent(),
+                spec = { path("src/main/resources/application-dev.properties") },
+            ),
         )
     }
 }

@@ -27,7 +27,8 @@ class QualifyVariableTest {
             public class A {
               @Qualifier("old") int a = 1;
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
         // when
@@ -40,7 +41,8 @@ class QualifyVariableTest {
             public class A {
               @Qualifier("test") int a = 1;
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     // we want to minimize diff
@@ -52,7 +54,8 @@ class QualifyVariableTest {
             public class A {
               @Qualifier("old")        int a=1;
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
         // when
@@ -66,7 +69,8 @@ class QualifyVariableTest {
             public class A {
               @Qualifier("test")        int a=1;
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     @Test
@@ -77,7 +81,8 @@ class QualifyVariableTest {
             public class A {
               public A(@Qualifier("old") int a) {}
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
         // when
@@ -91,7 +96,8 @@ class QualifyVariableTest {
             public class A {
               public A(@Qualifier("test") int a) {}
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     @Test
@@ -102,7 +108,8 @@ class QualifyVariableTest {
             public class A {
               public void test(@Qualifier("old") int a) {}
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
         // when
@@ -116,7 +123,8 @@ class QualifyVariableTest {
             public class A {
               public void test(@Qualifier("test") int a) {}
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     @Test
@@ -126,7 +134,8 @@ class QualifyVariableTest {
             public class A {
               int a = 1;
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
         // when
@@ -139,7 +148,8 @@ class QualifyVariableTest {
             public class A {
               @Qualifier("test") int a = 1;
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     // we want to minimize diff
@@ -150,7 +160,8 @@ class QualifyVariableTest {
             public class A {
               int a=1;
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
         // when
@@ -163,7 +174,8 @@ class QualifyVariableTest {
             public class A {
               @Qualifier("test") int a=1;
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     @Test
@@ -173,7 +185,8 @@ class QualifyVariableTest {
             public class A {
               public A(int a) {}
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
         // when
@@ -186,7 +199,8 @@ class QualifyVariableTest {
             public class A {
               public A(@Qualifier("test") int a) {}
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     @Test
@@ -194,7 +208,8 @@ class QualifyVariableTest {
         val k = parseKotlin(
             """
             class A(a: Int) { companion object {} }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = (k.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
         // when
@@ -205,7 +220,8 @@ class QualifyVariableTest {
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             class A(@Qualifier("test") a: Int) { companion object {} }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     @Test
@@ -215,7 +231,8 @@ class QualifyVariableTest {
             public class A {
               public void test(int a) {}
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
         // when
@@ -228,7 +245,8 @@ class QualifyVariableTest {
             public class A {
               public void test(@Qualifier("test") int a) {}
             }
-            """.trimIndent())
+            """.trimIndent(),
+        )
     }
 
     @Test

@@ -8,6 +8,5 @@ import java.nio.file.Path
 @Single
 class FakeInputFilesProvider : InputFilesProvider {
 
-    override fun getInputFilesFor(recipe: Recipe): List<Path> =
-        emptyList()
+    override fun getInputFilesFor(recipe: Recipe): List<Path> = emptyList()
 }

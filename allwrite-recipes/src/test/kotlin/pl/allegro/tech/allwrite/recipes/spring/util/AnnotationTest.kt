@@ -24,7 +24,8 @@ class AnnotationTest : ParsingTest() {
             @Component
             @Resource
             class A {}
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // then
         assertThat(jclass.leadingAnnotations.findNamedAnnotation()).isSameAs(jclass.leadingAnnotations[0])
@@ -52,7 +53,8 @@ class AnnotationTest : ParsingTest() {
             @Component
             @Resource
             class A() {}
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // then
         assertThat(kclass.leadingAnnotations.findNamedAnnotation()).isSameAs(kclass.leadingAnnotations[0])
@@ -73,7 +75,8 @@ class AnnotationTest : ParsingTest() {
             @Qualifier("q")
             @Resource(name = "r")
             class A
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // then
         assertThat(kclass.leadingAnnotations.findVariableQualifiedName()).isEqualTo("r")
@@ -87,7 +90,8 @@ class AnnotationTest : ParsingTest() {
             @Named("n")
             @Qualifier("q")
             class A
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // then
         assertThat(kclass.leadingAnnotations.findVariableQualifiedName()).isEqualTo("q")
@@ -99,7 +103,8 @@ class AnnotationTest : ParsingTest() {
             
             @Named("n")
             class A
-            """.trimIndent()).classes[0]
+            """.trimIndent(),
+        ).classes[0]
 
         // then
         assertThat(kclass.leadingAnnotations.findVariableQualifiedName()).isEqualTo("n")

@@ -5,11 +5,11 @@ import org.openrewrite.Option
 import org.openrewrite.Recipe
 import org.openrewrite.Tree
 import org.openrewrite.TreeVisitor
+import org.openrewrite.internal.NameCaseConvention.LOWER_HYPHEN
 import org.openrewrite.marker.SearchResult
 import org.openrewrite.yaml.YamlIsoVisitor
 import org.openrewrite.yaml.tree.Yaml
 import pl.allegro.tech.allwrite.recipes.yaml.YamlPath.Companion.toYamlPath
-import org.openrewrite.internal.NameCaseConvention.LOWER_HYPHEN
 
 /**
  * Lighter and faster version of [org.openrewrite.yaml.search.FindKey], which does not support
@@ -23,11 +23,11 @@ public class FindKey(
 
     override fun getDescription(): String = "Should be used as precondition, which fires when YAML contains the specified key."
 
-    override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
-        return if (key == null) TreeVisitor.noop<Tree, ExecutionContext>() else Visitor(key)
-    }
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> = if (key == null) TreeVisitor.noop<Tree, ExecutionContext>() else Visitor(key)
 
-    internal class Visitor(target: String) : YamlIsoVisitor<ExecutionContext>() {
+    internal class Visitor(
+        target: String,
+    ) : YamlIsoVisitor<ExecutionContext>() {
 
         private val target = LOWER_HYPHEN.format(target)
 

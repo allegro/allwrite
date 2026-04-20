@@ -21,9 +21,10 @@ class GithubModuleSpec : BaseCliSpec() {
 
     private val pullRequestContext: PullRequestContext by injectEagerly()
 
-    override fun additionalModules() = listOf(
-        GithubModule().module
-    )
+    override fun additionalModules() =
+        listOf(
+            GithubModule().module,
+        )
 
     init {
 
@@ -68,7 +69,6 @@ class GithubModuleSpec : BaseCliSpec() {
             pullRequestContext.shouldBeInstanceOf<NoPullRequestContext>()
         }
 
-
         test("should create GithubPullRequestContext to get description") {
             // given
             declareFake<SystemEnvironment>(GithubPullRequestContextEnvironment())
@@ -83,7 +83,7 @@ class GithubModuleSpec : BaseCliSpec() {
         val pullRequestNumber: String? = "123",
     ) : SystemEnvironment {
 
-        private val source : Map<String, String> = buildMap {
+        private val source: Map<String, String> = buildMap {
             if (repository != null) {
                 put("REWRITE_REPOSITORY", repository)
             }

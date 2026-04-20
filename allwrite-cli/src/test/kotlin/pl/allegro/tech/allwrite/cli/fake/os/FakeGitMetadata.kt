@@ -11,7 +11,7 @@ open class FakeGitMetadata : GitMetadata {
 
     override val repo = GitRepo(
         owner = "test-org",
-        name = "test-repo"
+        name = "test-repo",
     )
 
     companion object : FakeGitMetadata()

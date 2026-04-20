@@ -8,12 +8,12 @@ import org.openrewrite.Recipe
 import org.openrewrite.RecipeRun
 import org.openrewrite.SourceFile
 import org.openrewrite.internal.InMemoryLargeSourceSet
+import pl.allegro.tech.allwrite.PostprocessingRecipe
+import pl.allegro.tech.allwrite.PostprocessingResult
 import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
 import pl.allegro.tech.allwrite.runtime.port.outgoing.UserProblemReporter
 import pl.allegro.tech.allwrite.runtime.util.WORKDIR
-import pl.allegro.tech.allwrite.PostprocessingRecipe
-import pl.allegro.tech.allwrite.PostprocessingResult
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.deleteIfExists
@@ -33,9 +33,8 @@ internal class OpenrewriteRecipeExecutor(
         postProcess(recipe)
     }
 
-    private fun parseInputFiles(recipe: Recipe, inputFiles: List<Path>, context: ExecutionContext): List<SourceFile> {
-        return sourceFilesParser.parseSourceFiles(recipe, inputFiles, context)
-    }
+    private fun parseInputFiles(recipe: Recipe, inputFiles: List<Path>, context: ExecutionContext): List<SourceFile> =
+        sourceFilesParser.parseSourceFiles(recipe, inputFiles, context)
 
     private fun runRecipe(recipe: Recipe, sourceFiles: List<SourceFile>, context: ExecutionContext): RecipeRun {
         logger.info { "Running recipe ${recipe.name}" }
@@ -80,8 +79,7 @@ internal class OpenrewriteRecipeExecutor(
             .forEach { result -> userProblemReporter?.reportProblem(Problem(result.errorMessage)) }
     }
 
-    private fun allRecipes(recipe: Recipe): List<Recipe> =
-        listOf(recipe) + recipe.recipeList.flatMap(::allRecipes)
+    private fun allRecipes(recipe: Recipe): List<Recipe> = listOf(recipe) + recipe.recipeList.flatMap(::allRecipes)
 
     private fun errorLoggingExecutionContext(failOnError: Boolean) =
         InMemoryExecutionContext {

@@ -55,7 +55,7 @@ class GithubPullRequestContextSpec : FunSpec() {
                         it.body().getOrNull() == newDescription &&
                             it.title().isEmpty &&
                             it.state().isEmpty
-                    }
+                    },
                 )
             }
         }

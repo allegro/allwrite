@@ -8,7 +8,7 @@ import pl.allegro.tech.allwrite.cli.application.port.outgoing.ExternalRecipeStor
 
 @Single
 internal class RemoveExternalRecipeCommand(
-    private val externalRecipeStore: ExternalRecipeStore
+    private val externalRecipeStore: ExternalRecipeStore,
 ) : ExternalSubCommand(name = COMMAND_NAME, help = "Removes an external recipe JAR") {
 
     private val name: String by argument(help = "Name of the external recipe source to remove")

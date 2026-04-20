@@ -6,17 +6,17 @@ import com.github.ajalt.clikt.parameters.options.option
 import io.koalaql.markout.md.markdown
 import org.koin.core.annotation.Single
 import org.openrewrite.config.RecipeDescriptor
+import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.api.tagPropertyOrNull
 import pl.allegro.tech.allwrite.api.toCompactString
 import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 import pl.allegro.tech.allwrite.cli.application.CommandExecutionResult.ExecutionResult
 import com.github.ajalt.mordant.markdown.Markdown as MdWidget
 
 @Single
 internal class ListRecipesCommand(
-    private val recipeSource: RecipeSource
+    private val recipeSource: RecipeSource,
 ) : SubCommand(name = COMMAND_NAME, help = "Lists all recipes") {
 
     private val all by option("-a", "--all", help = "Show all recipes including internal ones").flag(default = false)

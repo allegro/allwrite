@@ -12,7 +12,5 @@ import java.time.ZoneId
 class FakeClockModule {
 
     @Single
-    fun clock(): Clock =
-        Clock.fixed(Instant.parse("2024-07-24T10:00:00Z"), ZoneId.of("Europe/Warsaw"))
-
+    fun clock(): Clock = Clock.fixed(Instant.parse("2024-07-24T10:00:00Z"), ZoneId.of("Europe/Warsaw"))
 }

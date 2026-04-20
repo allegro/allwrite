@@ -27,8 +27,8 @@ class AddTomlVersionCatalogDependencyTest : RewriteTest {
                 [libraries]
                 smth-else = { group = "smth", name = "else" }
                 com-example-test = { group = "com.example", name = "test", version = "0.0.11" }
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -40,8 +40,8 @@ class AddTomlVersionCatalogDependencyTest : RewriteTest {
                 [libraries]
                 smth-else = { group = "smth", name = "else" }
                 com-example-test = { group = "com.example", name = "test" }
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -59,8 +59,8 @@ class AddTomlVersionCatalogDependencyTest : RewriteTest {
                 [libraries]
                 smth-else = { group = "smth", name = "else" }
                 com-example-test = { group = "com.example", name = "test", version = "0.0.11" }
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -72,8 +72,8 @@ class AddTomlVersionCatalogDependencyTest : RewriteTest {
                 after = """
                 [libraries]
                 com-example-test = { group = "com.example", name = "test", version = "0.0.11" }
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 
@@ -86,8 +86,8 @@ class AddTomlVersionCatalogDependencyTest : RewriteTest {
                 after = """
                 [libraries]
                 com-example-test = { group = "com.example", name = "test", version.ref = "x" }
-                """.trimIndent()
-            )
+                """.trimIndent(),
+            ),
         )
     }
 

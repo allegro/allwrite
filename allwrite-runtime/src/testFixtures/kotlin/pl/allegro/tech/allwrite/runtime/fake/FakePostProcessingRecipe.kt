@@ -8,12 +8,13 @@ import pl.allegro.tech.allwrite.RecipeVisibility
 
 open class FakePostProcessingRecipe(
     private val id: String = "pl.allegro.tech.allwrite.recipes.fake.postprocessing",
-    private val mockedResult: PostprocessingResult = Success
+    private val mockedResult: PostprocessingResult = Success,
 ) : AllwriteRecipe(
     displayName = "Fake recipe",
     description = "Fake recipe description.",
     visibility = RecipeVisibility.INTERNAL,
-), PostprocessingRecipe {
+),
+    PostprocessingRecipe {
 
     var executionCount = 0
 
