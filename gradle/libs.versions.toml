@@ -87,7 +87,7 @@ logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.
 kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "kotlin-logging" }
 
 # github
-github-client = { group = "com.spotify", name = "github-client", version = "0.4.8" }
+github-client = { group = "com.spotify", name = "github-client", version = "0.5.8" }
 
 # Other
 semver = { group = "com.github.zafarkhaja", name = "java-semver", version.ref = "semver" }
