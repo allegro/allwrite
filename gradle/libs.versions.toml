@@ -128,7 +128,7 @@ pgpainless-core = { group = "org.pgpainless", name = "pgpainless-core", version.
 pgpainless-sop = { group = "org.pgpainless", name = "pgpainless-sop", version.ref = "pgpainless" }
 
 # Apache Commons
-apache-commons-lang3 = "org.apache.commons:commons-lang3:3.17.0"
+apache-commons-lang3 = "org.apache.commons:commons-lang3:3.20.0"
 
 [bundles]
 ktor = [ "ktor-client-core", "ktor-client-cio", "ktor-client-content-negotiation", "ktor-serialization-kotlinx-json" ]
