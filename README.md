@@ -85,3 +85,17 @@ Remove an external recipes JAR:
 ```bash
 allwrite external rm custom-recipes
 ```
+
+### Local build
+
+Install dist locally:
+
+```bash
+./gradlew :allwrite-cli:installDist
+```
+
+Run it via:
+
+```sh
+<allwrite-root>/allwrite-cli/build/installation/bin/allwrite <args>
+```
