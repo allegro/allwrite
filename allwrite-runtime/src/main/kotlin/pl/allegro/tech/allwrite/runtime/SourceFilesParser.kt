@@ -66,13 +66,16 @@ internal class SourceFilesParser {
     private fun selectFilesToParse(recipe: Recipe, files: List<Path>) = (recipe as? ParsingAwareRecipe)?.selectFilesToParse(files) ?: files
 
     private fun resolveClasspath(recipe: Recipe): List<String> {
-        val artifacts = (recipe as? ClasspathAwareRecipe)?.requireOnClasspath() ?: emptyList()
-
+        val artifacts = allRecipes(recipe).filterIsInstance<ClasspathAwareRecipe>()
+            .flatMap { it.requireOnClasspath() }
+            .distinct()
         if (artifacts.isNotEmpty()) {
             logger.info { "Resolved recipe classpath: $artifacts" }
         }
         return artifacts
     }
+
+    private fun allRecipes(recipe: Recipe): List<Recipe> = listOf(recipe) + recipe.recipeList.flatMap(::allRecipes)
 
     private fun createParsers(classpath: List<String>, ctx: ExecutionContext): List<Parser> =
         listOf(
