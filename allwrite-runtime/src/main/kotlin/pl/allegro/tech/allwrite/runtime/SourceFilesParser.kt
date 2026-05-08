@@ -21,6 +21,7 @@ import org.openrewrite.tree.ParseError
 import org.openrewrite.yaml.YamlParser
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.ParsingAwareRecipe
+import pl.allegro.tech.allwrite.runtime.util.withNestedRecipes
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.extension
@@ -66,7 +67,7 @@ internal class SourceFilesParser {
     private fun selectFilesToParse(recipe: Recipe, files: List<Path>) = (recipe as? ParsingAwareRecipe)?.selectFilesToParse(files) ?: files
 
     private fun resolveClasspath(recipe: Recipe): List<String> {
-        val artifacts = allRecipes(recipe).filterIsInstance<ClasspathAwareRecipe>()
+        val artifacts = recipe.withNestedRecipes().filterIsInstance<ClasspathAwareRecipe>()
             .flatMap { it.requireOnClasspath() }
             .distinct()
         if (artifacts.isNotEmpty()) {
@@ -74,8 +75,6 @@ internal class SourceFilesParser {
         }
         return artifacts
     }
-
-    private fun allRecipes(recipe: Recipe): List<Recipe> = listOf(recipe) + recipe.recipeList.flatMap(::allRecipes)
 
     private fun createParsers(classpath: List<String>, ctx: ExecutionContext): List<Parser> =
         listOf(

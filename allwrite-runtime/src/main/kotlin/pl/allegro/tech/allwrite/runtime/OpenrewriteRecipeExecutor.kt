@@ -14,6 +14,7 @@ import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.runtime.port.outgoing.Problem
 import pl.allegro.tech.allwrite.runtime.port.outgoing.UserProblemReporter
 import pl.allegro.tech.allwrite.runtime.util.WORKDIR
+import pl.allegro.tech.allwrite.runtime.util.withNestedRecipes
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.deleteIfExists
@@ -69,7 +70,7 @@ internal class OpenrewriteRecipeExecutor(
     }
 
     private fun postProcess(recipe: Recipe) {
-        allRecipes(recipe)
+        recipe.withNestedRecipes()
             .filterIsInstance<PostprocessingRecipe>()
             .map { postprocessingRecipe ->
                 logger.info { "Applying post-processing recipe: ${postprocessingRecipe.javaClass.simpleName}" }
@@ -78,8 +79,6 @@ internal class OpenrewriteRecipeExecutor(
             .filterIsInstance<PostprocessingResult.Failure>()
             .forEach { result -> userProblemReporter?.reportProblem(Problem(result.errorMessage)) }
     }
-
-    private fun allRecipes(recipe: Recipe): List<Recipe> = listOf(recipe) + recipe.recipeList.flatMap(::allRecipes)
 
     private fun errorLoggingExecutionContext(failOnError: Boolean) =
         InMemoryExecutionContext {

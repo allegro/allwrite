@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.koin.core.component.inject
 import org.openrewrite.InMemoryExecutionContext
+import org.openrewrite.SourceFile
 import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.JavaType
 import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
@@ -62,12 +63,7 @@ class SourceFilesParserSpec : BaseRuntimeSpec() {
             val parsedFiles = sourceFilesParser.parseSourceFiles(recipe, inputFiles, InMemoryExecutionContext())
 
             // then
-            val compilationUnit = parsedFiles.single().shouldBeInstanceOf<J.CompilationUnit>()
-            val annotationType = compilationUnit.classes.single().leadingAnnotations.single().annotationType
-            val resolvedType = (annotationType as J.Identifier).type
-            resolvedType.shouldNotBeNull()
-            val classType = resolvedType.shouldBeInstanceOf<JavaType.Class>()
-            classType.fullyQualifiedName shouldBe "org.springframework.context.annotation.Configuration"
+            assertConfigurationAnnotationTypeResolved(parsedFiles)
         }
 
         test("should resolve classpath from ClasspathAwareRecipe nested in a composite recipe") {
@@ -80,12 +76,7 @@ class SourceFilesParserSpec : BaseRuntimeSpec() {
             val parsedFiles = sourceFilesParser.parseSourceFiles(compositeRecipe, inputFiles, InMemoryExecutionContext())
 
             // then
-            val compilationUnit = parsedFiles.single().shouldBeInstanceOf<J.CompilationUnit>()
-            val annotationType = compilationUnit.classes.single().leadingAnnotations.single().annotationType
-            val resolvedType = (annotationType as J.Identifier).type
-            resolvedType.shouldNotBeNull()
-            val classType = resolvedType.shouldBeInstanceOf<JavaType.Class>()
-            classType.fullyQualifiedName shouldBe "org.springframework.context.annotation.Configuration"
+            assertConfigurationAnnotationTypeResolved(parsedFiles)
         }
 
         test("should resolve classpath from ClasspathAwareRecipe deeply nested in composite recipes") {
@@ -99,12 +90,16 @@ class SourceFilesParserSpec : BaseRuntimeSpec() {
             val parsedFiles = sourceFilesParser.parseSourceFiles(outerComposite, inputFiles, InMemoryExecutionContext())
 
             // then
-            val compilationUnit = parsedFiles.single().shouldBeInstanceOf<J.CompilationUnit>()
-            val annotationType = compilationUnit.classes.single().leadingAnnotations.single().annotationType
-            val resolvedType = (annotationType as J.Identifier).type
-            resolvedType.shouldNotBeNull()
-            val classType = resolvedType.shouldBeInstanceOf<JavaType.Class>()
-            classType.fullyQualifiedName shouldBe "org.springframework.context.annotation.Configuration"
+            assertConfigurationAnnotationTypeResolved(parsedFiles)
         }
+    }
+
+    private fun assertConfigurationAnnotationTypeResolved(parsedFiles: List<SourceFile>) {
+        val compilationUnit = parsedFiles.single().shouldBeInstanceOf<J.CompilationUnit>()
+        val annotationType = compilationUnit.classes.single().leadingAnnotations.single().annotationType
+        val resolvedType = (annotationType as J.Identifier).type
+        resolvedType.shouldNotBeNull()
+        val classType = resolvedType.shouldBeInstanceOf<JavaType.Class>()
+        classType.fullyQualifiedName shouldBe "org.springframework.context.annotation.Configuration"
     }
 }
