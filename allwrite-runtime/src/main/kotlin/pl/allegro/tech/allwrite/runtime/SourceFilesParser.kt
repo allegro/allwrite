@@ -22,8 +22,11 @@ import org.openrewrite.yaml.YamlParser
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.ParsingAwareRecipe
 import pl.allegro.tech.allwrite.runtime.util.withNestedRecipes
+import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.Collections.enumeration
+import java.util.Enumeration
 import kotlin.io.path.extension
 
 @Single
@@ -37,7 +40,7 @@ internal class SourceFilesParser {
 
         val classpath = resolveClasspath(recipe)
         val sourceSet = JavaSourceSet.build("allwrite", emptyList()) // TODO is it ok to put empty list here?
-        val parsers = createParsers(classpath, ctx)
+        val parsers = withExternalRecipeClassLoaders(recipe) { createParsers(classpath, ctx) }
 
         for (parser in parsers) {
             val acceptedFiles = remainingFiles.filter(parser::accept)
@@ -74,6 +77,29 @@ internal class SourceFilesParser {
             logger.info { "Resolved recipe classpath: $artifacts" }
         }
         return artifacts
+    }
+
+    private fun <T> withExternalRecipeClassLoaders(recipe: Recipe, block: () -> T): T {
+        val externalRecipeClassLoaders = recipe.withNestedRecipes()
+            .filterIsInstance<ClasspathAwareRecipe>()
+            .map { (it as Any).javaClass.classLoader }
+            .filter { it !== javaClass.classLoader }
+            .distinct()
+
+        if (externalRecipeClassLoaders.isEmpty()) return block()
+
+        val compositeClassLoader = ExternalRecipeCompositeClassLoader(
+            externalRecipeClassLoaders,
+            parent = Thread.currentThread().contextClassLoader,
+        )
+
+        val previousClassLoader = Thread.currentThread().contextClassLoader
+        return try {
+            Thread.currentThread().contextClassLoader = compositeClassLoader
+            block()
+        } finally {
+            Thread.currentThread().contextClassLoader = previousClassLoader
+        }
     }
 
     private fun createParsers(classpath: List<String>, ctx: ExecutionContext): List<Parser> =
@@ -163,3 +189,31 @@ private val Parser.name: String
         } else {
             javaClass.simpleName
         }
+
+private class ExternalRecipeCompositeClassLoader(
+    private val externalRecipeClassLoaders: List<ClassLoader>,
+    parent: ClassLoader?,
+) : ClassLoader(parent) {
+
+    override fun findClass(name: String): Class<*> {
+        for (classLoader in externalRecipeClassLoaders) {
+            try {
+                return classLoader.loadClass(name)
+            } catch (_: ClassNotFoundException) {
+            }
+        }
+        throw ClassNotFoundException(name)
+    }
+
+    override fun findResource(name: String): URL? {
+        for (classLoader in externalRecipeClassLoaders) {
+            classLoader.getResource(name)?.let { return it }
+        }
+        return null
+    }
+
+    override fun findResources(name: String): Enumeration<URL> {
+        val urls = externalRecipeClassLoaders.flatMap { it.getResources(name).toList() }
+        return enumeration(urls)
+    }
+}
