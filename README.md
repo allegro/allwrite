@@ -85,3 +85,29 @@ Remove an external recipes JAR:
 ```bash
 allwrite external rm custom-recipes
 ```
+
+### Running from sources
+
+To build and run from source without installing, use Gradle directly:
+
+```bash
+./gradlew :allwrite-cli:run --args "run spring-boot/upgrade 3 4"
+```
+
+To run against a specific project directory:
+
+```bash
+./gradlew :allwrite-cli:run --args "run spring-boot/upgrade 3 4" -Pworkdir=<path-to-projects>/some-project
+```
+
+Alternatively, build a local installation:
+
+```bash
+./gradlew :allwrite-cli:installDist
+```
+
+And run it as a regular binary:
+
+```sh
+<allwrite-root>/allwrite-cli/build/installation/bin/allwrite <args>
+```
