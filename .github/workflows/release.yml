@@ -52,7 +52,7 @@ jobs:
           JRELEASER_HOMEBREW_GITHUB_TOKEN: ${{ steps.generate-homebrew-token.outputs.token }}
 
       - name: Publish to Maven Central
-        run: ./gradlew publish closeSonatypeStagingRepository
+        run: ./gradlew publish closeAndReleaseSonatypeStagingRepository
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
