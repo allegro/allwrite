@@ -1,7 +1,7 @@
 [versions]
 jvm = "21"
 kotlin = "2.3.21"
-ksp = "2.3.6"
+ksp = "2.3.8"
 kotlinx-serialization = "1.7.1"
 openrewrite = "8.81.6"
 openrewrite-spring = "6.30.3"
