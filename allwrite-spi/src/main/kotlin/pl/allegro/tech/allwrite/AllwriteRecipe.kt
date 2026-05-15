@@ -2,7 +2,7 @@ package pl.allegro.tech.allwrite
 
 import org.openrewrite.Recipe
 
-public abstract class AllwriteRecipe(
+public abstract class AllwriteRecipe @JvmOverloads public constructor(
     displayName: String? = null,
     description: String? = null,
     public val visibility: RecipeVisibility,

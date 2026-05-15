@@ -25,6 +25,15 @@ class VersionUpdateSpec : FunSpec() {
             )
         }
 
+        test("should derive action from matched descriptor tags") {
+            val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
+            val recipes = listOf(
+                RecipeDescriptor(setOf("group:my-group", "action:migrate", "dependabot-artifact:org.example:lib")),
+            )
+
+            update.toRecipeCoordinates(recipes)?.action shouldBe "migrate"
+        }
+
         test("should return null when no recipe has matching dependabot-artifact tag") {
             val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
             val recipes = listOf(
@@ -38,6 +47,24 @@ class VersionUpdateSpec : FunSpec() {
             val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
 
             update.toRecipeCoordinates(emptyList()) shouldBe null
+        }
+
+        test("should return null when matched recipe has no group tag") {
+            val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
+            val recipes = listOf(
+                RecipeDescriptor(setOf("action:upgrade", "dependabot-artifact:org.example:lib")),
+            )
+
+            update.toRecipeCoordinates(recipes) shouldBe null
+        }
+
+        test("should return null when matched recipe has no action tag") {
+            val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
+            val recipes = listOf(
+                RecipeDescriptor(setOf("group:my-group", "dependabot-artifact:org.example:lib")),
+            )
+
+            update.toRecipeCoordinates(recipes) shouldBe null
         }
 
         test("should match first recipe when multiple recipes have matching tag") {

@@ -1,6 +1,6 @@
 package pl.allegro.tech.allwrite
 
-public class RecipeMetadata(
+public class RecipeMetadata @JvmOverloads public constructor(
     displayName: String?,
     description: String?,
     public val visibility: RecipeVisibility,

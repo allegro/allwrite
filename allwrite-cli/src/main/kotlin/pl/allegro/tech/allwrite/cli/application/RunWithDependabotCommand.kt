@@ -63,8 +63,8 @@ internal class RunWithDependabotCommand(
 
     private fun getRecipesFromDependabotMetadata(): List<String> {
         val dependabotMetadata = JSON.decodeFromString<PullRequestManagerExtras>(pullRequestManagerExtraParams).dependabot
-        return dependabotMetadata
-            .mapNotNull { it.toRecipeCoordinates(recipeSource.findAll()) }
+        val recipes = recipeSource.findAll()
+        return dependabotMetadata.mapNotNull { it.toRecipeCoordinates(recipes) }
             .flatMap { recipeMatcher.findMatching(it) }
             .map { it.name }
             .distinct()

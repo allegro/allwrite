@@ -17,17 +17,15 @@ internal data class VersionUpdate(
     val from: Version,
     val to: Version,
 ) {
-    fun toRecipeCoordinates(recipes: List<RecipeDescriptor>): RecipeCoordinates? =
-        recipes.firstOrNull { it.tags.contains("dependabot-artifact:$artifact") }
-            ?.tagPropertyOrNull("group")
-            ?.let {
-                RecipeCoordinates(
-                    group = it,
-                    action = "upgrade",
-                    fromVersion = DomainVersion.parse(from.normalVersion),
-                    toVersion = DomainVersion.parse(to.normalVersion),
-                )
-            }
+    fun toRecipeCoordinates(recipes: List<RecipeDescriptor>): RecipeCoordinates? {
+        val matched = recipes.firstOrNull { it.tags.contains("dependabot-artifact:$artifact") } ?: return null
+        return RecipeCoordinates(
+            group = matched.tagPropertyOrNull("group") ?: return null,
+            action = matched.tagPropertyOrNull("action") ?: return null,
+            fromVersion = DomainVersion.parse(from.normalVersion),
+            toVersion = DomainVersion.parse(to.normalVersion),
+        )
+    }
 }
 
 @Serializable
