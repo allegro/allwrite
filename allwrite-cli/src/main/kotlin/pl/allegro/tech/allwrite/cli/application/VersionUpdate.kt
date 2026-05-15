@@ -1,10 +1,10 @@
 package pl.allegro.tech.allwrite.cli.application
 
 import kotlinx.serialization.Serializable
+import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.api.RecipeCoordinates
+import pl.allegro.tech.allwrite.api.tagPropertyOrNull
 import com.github.zafarkhaja.semver.Version as DomainVersion
-
-private val GROUPS_BY_ARTIFACT = mapOf<String, String>()
 
 @Serializable
 internal data class PullRequestManagerExtras(
@@ -17,9 +17,17 @@ internal data class VersionUpdate(
     val from: Version,
     val to: Version,
 ) {
-
-    fun toRecipeCoordinates() =
-        GROUPS_BY_ARTIFACT[artifact]?.let { RecipeCoordinates(it, "upgrade", DomainVersion.parse(from.normalVersion), DomainVersion.parse(to.normalVersion)) }
+    fun toRecipeCoordinates(recipes: List<RecipeDescriptor>): RecipeCoordinates? =
+        recipes.firstOrNull { it.tags.contains("dependabot-artifact:$artifact") }
+            ?.tagPropertyOrNull("group")
+            ?.let {
+                RecipeCoordinates(
+                    group = it,
+                    action = "upgrade",
+                    fromVersion = DomainVersion.parse(from.normalVersion),
+                    toVersion = DomainVersion.parse(to.normalVersion),
+                )
+            }
 }
 
 @Serializable
