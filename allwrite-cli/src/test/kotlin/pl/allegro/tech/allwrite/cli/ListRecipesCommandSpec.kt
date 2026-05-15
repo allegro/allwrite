@@ -23,6 +23,8 @@ class ListRecipesCommandSpec : BaseCliSpec() {
 
             result.statusCode shouldBe 0
             result.output shouldBe """
+                external-jackson/upgrade 2 3
+                external-spring-boot/upgrade 2 3
                 jackson/upgrade 2 3
                 spring-boot/upgrade 2 3
                 spring-boot/upgrade 3 4
@@ -36,6 +38,8 @@ class ListRecipesCommandSpec : BaseCliSpec() {
 
             result.statusCode shouldBe 0
             result.output shouldBe """
+                external-jackson/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.dependabot-jackson
+                external-spring-boot/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.dependabot-spring-boot-3
                 jackson/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.jackson
                 spring-boot/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.spring-boot-3
                 spring-boot/upgrade 3 4 -> pl.allegro.tech.allwrite.recipes.spring-boot-4
@@ -54,6 +58,8 @@ class ListRecipesCommandSpec : BaseCliSpec() {
 
             result.statusCode shouldBe 0
             result.output shouldBe """
+                external-jackson/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.dependabot-jackson
+                external-spring-boot/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.dependabot-spring-boot-3
                 jackson/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.jackson
                 spring-boot/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.spring-boot-3
                 spring-boot/upgrade 3 4 -> pl.allegro.tech.allwrite.recipes.spring-boot-4
