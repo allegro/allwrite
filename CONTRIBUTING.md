@@ -26,18 +26,43 @@ allwrite run workflows/introduceSetupGradle
 
 ### Convenient base classes
 
-For convenience, you can extend either `AllegroRecipe` or `AllegroScanningRecipe`. It will build all required tags for you:
+For convenience, you can extend either `AllwriteRecipe` or `AllwriteScanningRecipe` (from the `allwrite-spi` module). They will build all required tags for you:
 ```kotlin
-class SomeRecipe : AllegroRecipe(
+class SomeRecipe : AllwriteRecipe(
     displayName = "Some recipe", // optional, defaults to class name
     description = "Some description.", // optional, defaults to displayName + '.'
     visibility = PUBLIC, // optional, defaults to INTERNAL
     group = "some-group", // required if the visibility is PUBLIC
-    recipe = "some-recipe" // required if the visibility is PUBLIC
+    action = "some-action" // required if the visibility is PUBLIC
 ) {
     // your implementation
 }
 ```
+
+### Dependabot integration
+
+If your recipe should be triggered automatically when Dependabot bumps a specific dependency, declare `dependabotArtifacts`:
+```kotlin
+class SomeMigrationRecipe : AllwriteRecipe(
+    visibility = PUBLIC,
+    group = "some-group",
+    action = "upgrade",
+    dependabotArtifacts = listOf("com.example:some-library"),
+) {
+    // your implementation
+}
+```
+
+For declarative YAML recipes, add `dependabot-artifact:<coordinates>` tags:
+```yaml
+tags:
+  - visibility:public
+  - group:some-group
+  - action:upgrade
+  - dependabot-artifact:com.example:some-library
+```
+
+When `allwrite run-dependabot` processes a Dependabot PR that bumps `com.example:some-library`, it will dynamically match and run all recipes that declare this artifact tag (and match the version range).
 
 ### Limiting which files should be parsed
 
@@ -47,7 +72,7 @@ class SomeRecipe : AllegroRecipe(
 If your recipe is only interested in very specific files (for example it only modifies the `tycho.yaml` file) you can implement the `ParsingAwareRecipe`
 interface:
 ```kotlin
-class SomeRecipe : AllegroRecipe(), ParsingAwareRecipe {
+class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ParsingAwareRecipe {
 
     override fun selectFilesToParse(inputFiles: List<Path>): List<Path> {
         // return the files to be parsed
@@ -62,6 +87,7 @@ The `allwrite` is a modular project, utilizing dependency injection capabilities
 It consists of the following Gradle modules (that may contain one or more Koin modules):
 * `allwrite-cli` - provides both Application and Infrastructure layers for the CLI app
 * `allwrite-runtime` - provides core implementation interacting directly with the OpenRewrite runtime; equivalent of the Domain layer
+* `allwrite-spi` - published SPI with base classes for recipe authors (`AllwriteRecipe`, `AllwriteScanningRecipe`, `RecipeMetadata`)
 * `allwrite-recipes` - contains OpenRewrite recipes to be executed by `allwrite-cli`
 * `allwrite-completions` - provides annotation processors generating CLI auto-completions
 
