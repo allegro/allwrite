@@ -68,6 +68,32 @@ class FakeRecipeSource(
             description = "Some Picnic rule",
             tags = emptySet(),
         )
+        val DEPENDABOT_SPRING_BOOT_3_TEST_RECIPE = FakeRecipe(
+            id = "pl.allegro.tech.allwrite.recipes.dependabot-spring-boot-3",
+            displayName = "Dependabot Spring Boot 2 to 3",
+            description = "Dependabot-triggered Spring Boot upgrade.",
+            tags = setOf(
+                "visibility:PUBLIC",
+                "from:2",
+                "to:3",
+                "group:external-spring-boot",
+                "action:upgrade",
+                "dependabot-artifact:org.springframework.boot:spring-boot-starter",
+            ),
+        )
+        val DEPENDABOT_JACKSON_TEST_RECIPE = FakeRecipe(
+            id = "pl.allegro.tech.allwrite.recipes.dependabot-jackson",
+            displayName = "Dependabot Jackson upgrade",
+            description = "Dependabot-triggered Jackson upgrade.",
+            tags = setOf(
+                "visibility:PUBLIC",
+                "from:2",
+                "to:3",
+                "group:external-jackson",
+                "action:upgrade",
+                "dependabot-artifact:com.fasterxml.jackson.core:jackson-databind",
+            ),
+        )
         val TEST_RECIPES = listOf(
             SPRING_BOOT_3_TEST_RECIPE,
             SPRING_BOOT_4_TEST_RECIPE,
@@ -76,6 +102,8 @@ class FakeRecipeSource(
             EXPAND_MAPPINGS_TEST_RECIPE,
             OPENREWRITE_TEST_RECIPE,
             PICNIC_TEST_RECIPE,
+            DEPENDABOT_SPRING_BOOT_3_TEST_RECIPE,
+            DEPENDABOT_JACKSON_TEST_RECIPE,
         )
     }
 }
