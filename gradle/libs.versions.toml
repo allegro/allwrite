@@ -27,7 +27,7 @@ ktor = "3.5.0"
 jreleaser = "1.24.0"
 semver = "0.10.2"
 markout = "0.0.11"
-kotlinx-datetime = "0.7.1"
+kotlinx-datetime = "0.8.0"
 nexus-publish = "2.0.0"
 ktlint = "14.2.0"
 
