@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
+import pl.allegro.tech.allwrite.recipes.groovy
+import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
 import pl.allegro.tech.allwrite.runtime.util.withRecipeClasspath
 
@@ -247,6 +249,36 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
                 kotlin(
                     beforeAndAfter = """
                     interface NotARepo<T, ID>
+                    """.trimIndent(),
+                )
+            )
+        }
+    }
+
+    @Nested
+    inner class NonKotlinSources {
+
+        @Test
+        fun `should not modify Java repository interface`() {
+            rewriteRun(
+                java(
+                    beforeAndAfter = """
+                    import org.springframework.data.repository.CrudRepository;
+
+                    public interface Repo<T, ID> extends CrudRepository<T, ID> {}
+                    """.trimIndent(),
+                )
+            )
+        }
+
+        @Test
+        fun `should not modify Groovy repository interface`() {
+            rewriteRun(
+                groovy(
+                    beforeAndAfter = """
+                    import org.springframework.data.repository.CrudRepository
+
+                    interface Repo<T, ID> extends CrudRepository<T, ID> {}
                     """.trimIndent(),
                 )
             )

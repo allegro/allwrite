@@ -80,38 +80,31 @@ before finishing.
     - Class (not interface) extending a repository
     - Existing bound other than `Any` (e.g. `T : Serializable`) — should NOT add `: Any`
     - Non-repository interface — no change
+    - Java repository interface — no change (Kotlin-only recipe)
+    - Groovy repository interface — no change (Kotlin-only recipe)
 
-### 2. Implement the recipe (`AddNonNullableTypeBoundsToSpringRepositories.kt`)
+### 2. Implement the recipe (`AddNonNullableTypeBoundsToSpringRepositories.kt`) — ✅ DONE
 
 - **Location:**
   `allwrite-recipes/src/main/kotlin/pl/allegro/tech/allwrite/recipes/spring/AddNonNullableTypeBoundsToSpringRepositories.kt`
-- **Base class:** `AllwriteRecipe` (non-scanning, single-pass recipe)
+- **Base class:** `AllwriteRecipe` (non-scanning, single-pass recipe) + `ClasspathAwareRecipe`
 - **Visitor:** `JavaIsoVisitor<ExecutionContext>` (works on Kotlin AST via shared `J` tree nodes)
-- **Algorithm:**
+- **Algorithm (implemented):**
     1. Override `visitClassDeclaration`
     2. Check if any supertype (`classDecl.implements` or `classDecl.extends`) is a known Spring Data repository FQN
-    3. For each matching supertype, identify which type parameters are passed to it
-    4. Map those back to the declaring class's type parameter list
-    5. For any type parameter that has no existing upper bound, add `: Any` bound
-- **Known Spring Data repository interfaces to match:**
-    - `org.springframework.data.repository.Repository`
-    - `org.springframework.data.repository.CrudRepository`
-    - `org.springframework.data.repository.ListCrudRepository`
-    - `org.springframework.data.repository.PagingAndSortingRepository`
-    - `org.springframework.data.repository.ListPagingAndSortingRepository`
-    - `org.springframework.data.jpa.repository.JpaRepository`
-    - `org.springframework.data.mongodb.repository.MongoRepository`
-    - `org.springframework.data.mongodb.repository.ReactiveMongoRepository`
-    - `org.springframework.data.repository.reactive.ReactiveCrudRepository`
-    - `org.springframework.data.repository.reactive.ReactiveSortingRepository`
-- **Visibility:** `INTERNAL` (part of Spring Boot 4.0 migration)
-- **Key challenge — RESOLVED by spike:** Modifying `J.TypeParameter` to add a `: Any` bound requires (a) setting
-  `bounds = [J.Identifier("Any")]` (type `kotlin.Any`), (b) setting the bounds `JContainer.before` space, and (c) adding
-  an `org.openrewrite.kotlin.marker.TypeReferencePrefix` marker so the Kotlin printer emits the `:`. See Step 0 for the
-  exact `addAnyBound()` helper. Use a `changed` flag for change detection (id-based equality).
-- **Note (out of MVP scope):** the spike matched only `CrudRepository` by `J.FieldAccess.simpleName`. The real recipe
-  must match the full list above; with `ClasspathAwareRecipe` + classpath, prefer FQN/`TypeUtils` matching on the
-  supertype rather than simple-name string comparison.
+       (using `TypeUtils.isAssignableTo` for robust FQN matching)
+    3. For each matching supertype, identify which type parameters are passed to it (by inspecting
+       `J.ParameterizedType.typeParameters` — the type arguments)
+    4. Map those back to the declaring class's type parameter list by name
+    5. For any matched type parameter that has no existing upper bound, add `: Any` bound
+- **FQN matching:** Uses `TypeUtils.isAssignableTo` with the full list of 10 Spring Data repository FQNs
+- **Visibility:** `INTERNAL`
+- **Classpath:** `spring-data-commons-3` (added `org.springframework.data:spring-data-commons:3.5.+` to
+  `allwrite-recipes/build.gradle.kts` `recipeDependencies`)
+- **Kotlin-only guard:** Overrides `visitCompilationUnit` with `if (!cursor.isKotlin()) return cu` using the existing
+  `Cursor.isKotlin()` extension from `recipes/util/Cursor.kt` (which checks `firstEnclosing(K::class.java) != null`).
+  The `!is K.CompilationUnit` approach broke with Kotlin 2.4 ("Check for instance is always true" error).
+- **Test results:** All 15 tests pass (13 Kotlin + 2 non-Kotlin no-change)
 
 ### 3. Wire into Spring Boot 4.0 recipe list
 
