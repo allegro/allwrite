@@ -123,7 +123,7 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
-apache-commons-compress = "org.apache.commons:commons-compress:1.26.2"
+apache-commons-compress = "org.apache.commons:commons-compress:1.28.0"
 pgpainless-core = { group = "org.pgpainless", name = "pgpainless-core", version.ref = "pgpainless" }
 pgpainless-sop = { group = "org.pgpainless", name = "pgpainless-sop", version.ref = "pgpainless" }
 
