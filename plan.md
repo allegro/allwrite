@@ -113,14 +113,13 @@ before finishing.
 - This means the recipe runs as part of the Spring Boot 4.0 migration, after OpenRewrite's built-in recipes
 - Compilation and all 15 recipe tests pass
 
-### 4. Run tests and verify
+### 4. Run tests and verify — ✅ DONE
 
-- `./gradlew :allwrite-recipes:test --tests "*AddNonNullableTypeBoundsToSpringRepositories*"`
-- Ensure the Kotlin parser correctly handles the before/after transformations
+- Full `./gradlew :allwrite-recipes:test` suite passes (including all 15 `AddNonNullableTypeBoundsToSpringRepositories` tests)
 
-### 5. Update RECIPES.md
+### 5. Update RECIPES.md — ✅ DONE
 
-- Add documentation entry for the new recipe in the Spring section
+- Added documentation entry in the Spring section of `RECIPES.md` with before/after Kotlin examples
 
 ## Key References
 

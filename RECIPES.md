@@ -593,3 +593,25 @@ public class MyService {
     public MyService(@Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {}
 }
 ```
+
+### `pl.allegro.tech.allwrite.recipes.spring.AddNonNullableTypeBoundsToSpringRepositories`
+
+Adds `: Any` upper bounds to type parameters of Kotlin classes/interfaces extending Spring Data repository interfaces,
+as required by Spring Framework 7 / Spring Boot 4 JSpecify nullability annotations. Only applies to Kotlin source files.
+This recipe is automatically included in the Spring Boot 4.0 migration.
+
+Before:
+
+```kotlin
+import org.springframework.data.repository.CrudRepository
+
+interface UserRepository<T, ID> : CrudRepository<T, ID>
+```
+
+After:
+
+```kotlin
+import org.springframework.data.repository.CrudRepository
+
+interface UserRepository<T : Any, ID : Any> : CrudRepository<T, ID>
+```
