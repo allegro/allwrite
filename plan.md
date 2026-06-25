@@ -106,12 +106,12 @@ before finishing.
   The `!is K.CompilationUnit` approach broke with Kotlin 2.4 ("Check for instance is always true" error).
 - **Test results:** All 15 tests pass (13 Kotlin + 2 non-Kotlin no-change)
 
-### 3. Wire into Spring Boot 4.0 recipe list
+### 3. Wire into Spring Boot 4.0 recipe list — ✅ DONE
 
-- The `SpringBoot4_0` class is an `IsolatedSpringRecipe` that delegates to OpenRewrite's built-in migration.
-- Our custom recipe should be added to the Spring Boot 4.0 migration. Check how other recipes are composed and register
-  this one accordingly.
-- Alternatively, it may need to be a standalone recipe if it doesn't fit the `IsolatedSpringRecipe` pattern.
+- Overrode `getRecipeList()` in `SpringBoot4_0` to append `AddNonNullableTypeBoundsToSpringRepositories()` to the
+  parent's recipe list (`super.getRecipeList() + AddNonNullableTypeBoundsToSpringRepositories()`)
+- This means the recipe runs as part of the Spring Boot 4.0 migration, after OpenRewrite's built-in recipes
+- Compilation and all 15 recipe tests pass
 
 ### 4. Run tests and verify
 
