@@ -75,11 +75,13 @@ before finishing.
     - Already bounded: `interface Repo<T : Any, ID : Any> : CrudRepository<T, ID>` → no change
     - Partial: one param already has `: Any`, the other doesn't
     - Different repository types: `Repository`, `ListCrudRepository`, `PagingAndSortingRepository`,
-      `ListPagingAndSortingRepository`, `ReactiveCrudRepository`, `ReactiveSortingRepository`
+      `ListPagingAndSortingRepository`, `ReactiveCrudRepository`, `ReactiveSortingRepository`,
+      `JpaRepository`, `MongoRepository`, `ReactiveMongoRepository`
     - Multiple type params with extra non-repo params (e.g. `<T, ID, Extra>` where only T and ID need bounds)
     - Class (not interface) extending a repository
     - Existing bound other than `Any` (e.g. `T : Serializable`) — should NOT add `: Any`
     - Non-repository interface — no change
+    - Interface extending a non-repository interface — no change
     - Java repository interface — no change (Kotlin-only recipe)
     - Groovy repository interface — no change (Kotlin-only recipe)
 
@@ -99,12 +101,13 @@ before finishing.
     5. For any matched type parameter that has no existing upper bound, add `: Any` bound
 - **FQN matching:** Uses `TypeUtils.isAssignableTo` with the full list of 10 Spring Data repository FQNs
 - **Visibility:** `INTERNAL`
-- **Classpath:** `spring-data-commons-3` (added `org.springframework.data:spring-data-commons:3.5.+` to
-  `allwrite-recipes/build.gradle.kts` `recipeDependencies`)
+- **Classpath:** `spring-data-commons-3`, `spring-data-jpa-3`, `spring-data-mongodb-4` (added
+  `org.springframework.data:spring-data-commons:3.5.+`, `org.springframework.data:spring-data-jpa:3.5.+`,
+  `org.springframework.data:spring-data-mongodb:4.5.+` to `allwrite-recipes/build.gradle.kts` `recipeDependencies`)
 - **Kotlin-only guard:** Overrides `visitCompilationUnit` with `if (!cursor.isKotlin()) return cu` using the existing
   `Cursor.isKotlin()` extension from `recipes/util/Cursor.kt` (which checks `firstEnclosing(K::class.java) != null`).
   The `!is K.CompilationUnit` approach broke with Kotlin 2.4 ("Check for instance is always true" error).
-- **Test results:** All 15 tests pass (13 Kotlin + 2 non-Kotlin no-change)
+- **Test results:** All 19 tests pass (15 Kotlin + 2 non-Kotlin no-change + 2 non-repository no-change)
 
 ### 3. Wire into Spring Boot 4.0 recipe list — ✅ DONE
 
@@ -115,7 +118,7 @@ before finishing.
 
 ### 4. Run tests and verify — ✅ DONE
 
-- Full `./gradlew :allwrite-recipes:test` suite passes (including all 15 `AddNonNullableTypeBoundsToSpringRepositories` tests)
+- Full `./gradlew :allwrite-recipes:test` suite passes (including all 19 `AddNonNullableTypeBoundsToSpringRepositories` tests)
 
 ### 5. Update RECIPES.md — ✅ DONE
 
@@ -136,7 +139,9 @@ before finishing.
    `J.TypeParameter.bounds = [J.Identifier("Any")]`
    with type `kotlin.Any`; `bounds = null` when unbounded.
 2. ~~**Type resolution without classpath:**~~ ✅ RESOLVED: The recipe implements `ClasspathAwareRecipe` with
-   `requireOnClasspath() = listOf("spring-data-commons-3")` and uses `TypeUtils.isAssignableTo` for robust FQN matching.
+   `requireOnClasspath() = listOf("spring-data-commons-3", "spring-data-jpa-3", "spring-data-mongodb-4")` and uses
+   `TypeUtils.isAssignableTo` for robust FQN matching. Note: `spring-data-mongodb` uses major version 4.x (not 3.x)
+   for Spring Boot 3 compatibility.
 3. ~~**Printing modified Kotlin AST:**~~ ✅ RESOLVED (spike): the `KotlinTemplate` limitation does not apply here —
    direct
    AST mutation of `J.TypeParameter` prints correctly **provided** the `TypeReferencePrefix` marker is added (see Step

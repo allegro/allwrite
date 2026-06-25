@@ -34,7 +34,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : CrudRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -47,7 +47,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : CrudRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -65,7 +65,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : CrudRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
     }
@@ -87,7 +87,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : Repository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -105,7 +105,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : ListCrudRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -123,7 +123,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : PagingAndSortingRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -141,7 +141,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : ListPagingAndSortingRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -159,7 +159,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : ReactiveCrudRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -177,7 +177,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : ReactiveSortingRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -195,7 +195,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : JpaRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -213,7 +213,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : MongoRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -231,7 +231,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any> : ReactiveMongoRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
     }
@@ -253,7 +253,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Any, ID : Any, Extra> : CrudRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
     }
@@ -275,7 +275,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     abstract class Repo<T : Any, ID : Any> : CrudRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
     }
@@ -293,7 +293,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T : Serializable, ID : Any> : CrudRepository<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -304,7 +304,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
                     beforeAndAfter = """
                     interface NotARepo<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -317,7 +317,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface NotARepo<T, ID> : SomeInterface<T, ID>
                     """.trimIndent(),
-                )
+                ),
             )
         }
     }
@@ -334,7 +334,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     public interface Repo<T, ID> extends CrudRepository<T, ID> {}
                     """.trimIndent(),
-                )
+                ),
             )
         }
 
@@ -347,7 +347,7 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
 
                     interface Repo<T, ID> extends CrudRepository<T, ID> {}
                     """.trimIndent(),
-                )
+                ),
             )
         }
     }

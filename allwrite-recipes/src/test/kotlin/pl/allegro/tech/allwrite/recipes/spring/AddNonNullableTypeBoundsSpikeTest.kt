@@ -35,7 +35,7 @@ class AddNonNullableTypeBoundsSpikeTest : RewriteTest {
             ctx,
             """
             interface Repo<T, ID> : org.springframework.data.repository.CrudRepository<T, ID>
-            """.trimIndent()
+            """.trimIndent(),
         )
         val cu = sources.toList().first() as K.CompilationUnit
         println("=== CompilationUnit statements ===")
@@ -59,7 +59,7 @@ class AddNonNullableTypeBoundsSpikeTest : RewriteTest {
             println("    name type: ${tp.name::class.simpleName}")
             println("    bounds: ${tp.bounds}")
             tp.bounds?.forEach { bound ->
-                println("      bound: ${bound}, class=${bound::class.simpleName}")
+                println("      bound: $bound, class=${bound::class.simpleName}")
                 if (bound is J.Identifier) {
                     println("        identifier: simpleName=${bound.simpleName}, type=${bound.type}")
                 }
@@ -74,7 +74,7 @@ class AddNonNullableTypeBoundsSpikeTest : RewriteTest {
             if (impl is J.ParameterizedType) {
                 val clazz = impl.clazz
                 println("    clazz class: ${clazz::class.java.name}")
-                println("    clazz: ${clazz}")
+                println("    clazz: $clazz")
                 if (clazz is J.FieldAccess) {
                     println("    fieldAccess name: ${clazz.name}")
                     println("    fieldAccess target: ${clazz.target}")
@@ -95,7 +95,7 @@ class AddNonNullableTypeBoundsSpikeTest : RewriteTest {
             ctx,
             """
             interface Repo<T : Any, ID : Any> : org.springframework.data.repository.CrudRepository<T, ID>
-            """.trimIndent()
+            """.trimIndent(),
         )
         val cu = sources.toList().first() as K.CompilationUnit
         val classDecl = cu.statements.first() as J.ClassDeclaration
@@ -110,7 +110,7 @@ class AddNonNullableTypeBoundsSpikeTest : RewriteTest {
             println("    padding.bounds.before: ${tp.padding.bounds?.before}")
             println("    padding.bounds.markers: ${tp.padding.bounds?.markers}")
             tp.bounds?.forEach { bound ->
-                println("      bound: ${bound}, class=${bound::class.simpleName}")
+                println("      bound: $bound, class=${bound::class.simpleName}")
                 if (bound is J.Identifier) {
                     println("        identifier: simpleName=${bound.simpleName}, type=${bound.type}, prefix='${bound.prefix}'")
                 }
@@ -128,7 +128,7 @@ class AddNonNullableTypeBoundsSpikeTest : RewriteTest {
                 after = """
                 interface Repo<T : Any, ID : Any> : org.springframework.data.repository.CrudRepository<T, ID>
                 """.trimIndent(),
-            )
+            ),
         )
     }
 
@@ -139,12 +139,13 @@ class AddNonNullableTypeBoundsSpikeTest : RewriteTest {
                 beforeAndAfter = """
                 interface Repo<T : Any, ID : Any> : org.springframework.data.repository.CrudRepository<T, ID>
                 """.trimIndent(),
-            )
+            ),
         )
     }
 }
 
 class SpikeAddAnyBoundRecipe : Recipe() {
+
     override fun getDisplayName(): String = "Spike: Add Any bound"
     override fun getDescription(): String = "Spike test for adding : Any bounds to type parameters."
 
@@ -199,13 +200,13 @@ class SpikeAddAnyBoundRecipe : Recipe() {
                     emptyList(),
                     "Any",
                     JavaType.buildType("kotlin.Any"),
-                    null
+                    null,
                 )
                 var newTp = tp.withBounds(listOf<TypeTree>(anyIdentifier))
                 val boundsContainer = newTp.padding.bounds!!.withBefore(Space.format(" "))
                 newTp = newTp.padding.withBounds(boundsContainer)
                 newTp = newTp.withMarkers(
-                    newTp.markers.add(TypeReferencePrefix(UUID.randomUUID(), Space.EMPTY))
+                    newTp.markers.add(TypeReferencePrefix(UUID.randomUUID(), Space.EMPTY)),
                 )
                 return newTp
             }

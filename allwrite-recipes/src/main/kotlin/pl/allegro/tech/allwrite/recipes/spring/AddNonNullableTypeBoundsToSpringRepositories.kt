@@ -20,14 +20,13 @@ public class AddNonNullableTypeBoundsToSpringRepositories :
     AllwriteRecipe(
         displayName = "Add non-nullable type bounds to Spring Data repository type parameters (Kotlin)",
         description = "Adds `: Any` upper bounds to type parameters of Kotlin classes/interfaces extending Spring Data " +
-                "repository interfaces, as required by Spring Framework 7 / Spring Boot 4 JSpecify nullability annotations. " +
-                "This recipe only applies to Kotlin source files.",
+            "repository interfaces, as required by Spring Framework 7 / Spring Boot 4 JSpecify nullability annotations. " +
+            "This recipe only applies to Kotlin source files.",
         visibility = RecipeVisibility.INTERNAL,
     ),
     ClasspathAwareRecipe {
 
-    override fun requireOnClasspath(): List<String> =
-        listOf("spring-data-commons-3", "spring-data-jpa-3", "spring-data-mongodb-4")
+    override fun requireOnClasspath(): List<String> = listOf("spring-data-commons-3", "spring-data-jpa-3", "spring-data-mongodb-4")
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> =
         object : JavaIsoVisitor<ExecutionContext>() {
@@ -104,18 +103,19 @@ public class AddNonNullableTypeBoundsToSpringRepositories :
                     emptyList(),
                     "Any",
                     JavaType.buildType("kotlin.Any"),
-                    null
+                    null,
                 )
                 var newTp = tp.withBounds(listOf<TypeTree>(anyIdentifier))
                 newTp = newTp.padding.withBounds(newTp.padding.bounds!!.withBefore(Space.format(" ")))
                 newTp = newTp.withMarkers(
-                    newTp.markers.add(TypeReferencePrefix(UUID.randomUUID(), Space.EMPTY))
+                    newTp.markers.add(TypeReferencePrefix(UUID.randomUUID(), Space.EMPTY)),
                 )
                 return newTp
             }
         }
 
     private companion object {
+
         val SPRING_DATA_REPOSITORY_FQNS = listOf(
             "org.springframework.data.repository.Repository",
             "org.springframework.data.repository.CrudRepository",
