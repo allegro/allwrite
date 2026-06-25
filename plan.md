@@ -135,13 +135,12 @@ before finishing.
 1. ~~**Kotlin AST representation of type bounds:**~~ ✅ RESOLVED (spike):
    `J.TypeParameter.bounds = [J.Identifier("Any")]`
    with type `kotlin.Any`; `bounds = null` when unbounded.
-2. **Type resolution without classpath:** The recipe might not need Spring Data on the classpath if it only inspects
-   supertype names (text-based). But for robust FQN matching, classpath is needed → implement `ClasspathAwareRecipe`.
-   (Spike confirmed simple-name matching works classpath-free, but FQN matching is preferred for the full repo list.)
+2. ~~**Type resolution without classpath:**~~ ✅ RESOLVED: The recipe implements `ClasspathAwareRecipe` with
+   `requireOnClasspath() = listOf("spring-data-commons-3")` and uses `TypeUtils.isAssignableTo` for robust FQN matching.
 3. ~~**Printing modified Kotlin AST:**~~ ✅ RESOLVED (spike): the `KotlinTemplate` limitation does not apply here —
    direct
    AST mutation of `J.TypeParameter` prints correctly **provided** the `TypeReferencePrefix` marker is added (see Step
    0).
-4. **Type-param ↔ supertype mapping (still open):** the MVP currently bounds *every* unbounded type param on a matching
-   class. The plan's algorithm (Step 2) intends to bound only params actually passed to the repository supertype. Decide
-   in Step 1/2 whether to scope strictly to those params or bound all (e.g. for `<T, ID, Extra>`).
+4. ~~**Type-param ↔ supertype mapping:**~~ ✅ RESOLVED: `findTypeParamsPassedToRepository()` collects only type param
+   names actually passed to the repository supertype. Only those are bounded — extra params (e.g. `Extra` in
+   `<T, ID, Extra>`) are left untouched.
