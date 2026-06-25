@@ -27,7 +27,7 @@ public class AddNonNullableTypeBoundsToSpringRepositories :
     ClasspathAwareRecipe {
 
     override fun requireOnClasspath(): List<String> =
-        listOf("spring-data-commons-3")
+        listOf("spring-data-commons-3", "spring-data-jpa-3", "spring-data-mongodb-4")
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> =
         object : JavaIsoVisitor<ExecutionContext>() {

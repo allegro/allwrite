@@ -180,6 +180,60 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
                 )
             )
         }
+
+        @Test
+        fun `should add Any bound for JpaRepository`() {
+            rewriteRun(
+                kotlin(
+                    before = """
+                    import org.springframework.data.jpa.repository.JpaRepository
+
+                    interface Repo<T, ID> : JpaRepository<T, ID>
+                    """.trimIndent(),
+                    after = """
+                    import org.springframework.data.jpa.repository.JpaRepository
+
+                    interface Repo<T : Any, ID : Any> : JpaRepository<T, ID>
+                    """.trimIndent(),
+                )
+            )
+        }
+
+        @Test
+        fun `should add Any bound for MongoRepository`() {
+            rewriteRun(
+                kotlin(
+                    before = """
+                    import org.springframework.data.mongodb.repository.MongoRepository
+
+                    interface Repo<T, ID> : MongoRepository<T, ID>
+                    """.trimIndent(),
+                    after = """
+                    import org.springframework.data.mongodb.repository.MongoRepository
+
+                    interface Repo<T : Any, ID : Any> : MongoRepository<T, ID>
+                    """.trimIndent(),
+                )
+            )
+        }
+
+        @Test
+        fun `should add Any bound for ReactiveMongoRepository`() {
+            rewriteRun(
+                kotlin(
+                    before = """
+                    import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+
+                    interface Repo<T, ID> : ReactiveMongoRepository<T, ID>
+                    """.trimIndent(),
+                    after = """
+                    import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+
+                    interface Repo<T : Any, ID : Any> : ReactiveMongoRepository<T, ID>
+                    """.trimIndent(),
+                )
+            )
+        }
     }
 
     @Nested
@@ -249,6 +303,19 @@ class AddNonNullableTypeBoundsToSpringRepositoriesTest : RewriteTest {
                 kotlin(
                     beforeAndAfter = """
                     interface NotARepo<T, ID>
+                    """.trimIndent(),
+                )
+            )
+        }
+
+        @Test
+        fun `should not modify interface that extends a non-repository interface`() {
+            rewriteRun(
+                kotlin(
+                    beforeAndAfter = """
+                    interface SomeInterface<T, ID>
+
+                    interface NotARepo<T, ID> : SomeInterface<T, ID>
                     """.trimIndent(),
                 )
             )
