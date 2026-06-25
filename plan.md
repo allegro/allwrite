@@ -61,20 +61,25 @@ This is a Kotlin-specific recipe that uses OpenRewrite's Kotlin AST (`rewrite-ko
 **Status of the throwaway spike test:** kept on disk pending review; delete (or fold useful cases into the real test)
 before finishing.
 
-### 1. Write the test first (`AddNonNullableTypeBoundsToSpringRepositoriesTest.kt`)
+### 1. Write the test first (`AddNonNullableTypeBoundsToSpringRepositoriesTest.kt`) — ✅ DONE
 
 - **Location:**
   `allwrite-recipes/src/test/kotlin/pl/allegro/tech/allwrite/recipes/spring/AddNonNullableTypeBoundsToSpringRepositoriesTest.kt`
 - **Framework:** JUnit 5 + OpenRewrite `RewriteTest`
-- **Test cases:**
+- **Stub recipe created:** `AddNonNullableTypeBoundsToSpringRepositories.kt` (compiles, no-op visitor)
+- **Parser classpath:** added `org.springframework.data:spring-data-commons:3.5.+` to
+  `allwrite-recipes/build.gradle.kts`
+- **Test results (TDD red):** 13 tests total — 10 fail (expecting transformations), 3 pass (no-change cases)
+- **Test cases implemented:**
     - Basic case: `interface Repo<T, ID> : CrudRepository<T, ID>` → adds `: Any` to both
     - Already bounded: `interface Repo<T : Any, ID : Any> : CrudRepository<T, ID>` → no change
     - Partial: one param already has `: Any`, the other doesn't
-    - Different repository types: `MongoRepository`, `JpaRepository`, `ReactiveCrudRepository`, etc.
-    - Custom intermediate interfaces that extend a repository
+    - Different repository types: `Repository`, `ListCrudRepository`, `PagingAndSortingRepository`,
+      `ListPagingAndSortingRepository`, `ReactiveCrudRepository`, `ReactiveSortingRepository`
     - Multiple type params with extra non-repo params (e.g. `<T, ID, Extra>` where only T and ID need bounds)
     - Class (not interface) extending a repository
     - Existing bound other than `Any` (e.g. `T : Serializable`) — should NOT add `: Any`
+    - Non-repository interface — no change
 
 ### 2. Implement the recipe (`AddNonNullableTypeBoundsToSpringRepositories.kt`)
 
@@ -135,13 +140,16 @@ before finishing.
 
 ## Open Questions / Risks
 
-1. ~~**Kotlin AST representation of type bounds:**~~ ✅ RESOLVED (spike): `J.TypeParameter.bounds = [J.Identifier("Any")]`
+1. ~~**Kotlin AST representation of type bounds:**~~ ✅ RESOLVED (spike):
+   `J.TypeParameter.bounds = [J.Identifier("Any")]`
    with type `kotlin.Any`; `bounds = null` when unbounded.
 2. **Type resolution without classpath:** The recipe might not need Spring Data on the classpath if it only inspects
    supertype names (text-based). But for robust FQN matching, classpath is needed → implement `ClasspathAwareRecipe`.
    (Spike confirmed simple-name matching works classpath-free, but FQN matching is preferred for the full repo list.)
-3. ~~**Printing modified Kotlin AST:**~~ ✅ RESOLVED (spike): the `KotlinTemplate` limitation does not apply here — direct
-   AST mutation of `J.TypeParameter` prints correctly **provided** the `TypeReferencePrefix` marker is added (see Step 0).
+3. ~~**Printing modified Kotlin AST:**~~ ✅ RESOLVED (spike): the `KotlinTemplate` limitation does not apply here —
+   direct
+   AST mutation of `J.TypeParameter` prints correctly **provided** the `TypeReferencePrefix` marker is added (see Step
+   0).
 4. **Type-param ↔ supertype mapping (still open):** the MVP currently bounds *every* unbounded type param on a matching
    class. The plan's algorithm (Step 2) intends to bound only params actually passed to the repository supertype. Decide
    in Step 1/2 whether to scope strictly to those params or bound all (e.g. for `<T, ID, Extra>`).
