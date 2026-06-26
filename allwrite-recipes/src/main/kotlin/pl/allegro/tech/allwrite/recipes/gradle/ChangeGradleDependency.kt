@@ -83,67 +83,85 @@ private class ChangeTomlVersionCatalogDependency(
     val newArtifactId: String?,
     val newVersion: String?,
 ) : TomlIsoVisitor<ExecutionContext>() {
+    private val sectionHandlers: List<VersionCatalogSectionHandler> = listOf(
+        VersionsSectionHandler(),
+        PluginsSectionHandler(),
+        LibrariesSectionHandler(),
+    )
 
     override fun visitKeyValue(keyValue: Toml.KeyValue, p: ExecutionContext): Toml.KeyValue {
         val table = cursor.firstEnclosing(Toml.Table::class.java) ?: return keyValue
-        val tableName = table.name()
-        if (tableName == VERSION_CATALOG_TABLE_VERSIONS) {
-            return updateVersionsEntry(keyValue)
-        }
-        if (tableName == VERSION_CATALOG_TABLE_PLUGINS) {
-            return updatePluginEntry(keyValue)
-        }
-        if (tableName != VERSION_CATALOG_TABLE_LIBS) return keyValue
-
-        val library = keyValue.valueToLibrary() ?: return keyValue
-        val entryName = keyValue.stringKey() ?: return keyValue
-        val isMatchedDependency = StringUtils.matchesGlob(library.group, oldGroupId) && StringUtils.matchesGlob(library.name, oldArtifactId)
-        val renamedVersionRef = renameVersionRef(library.version)
-
-        if (!isMatchedDependency) {
-            return if (renamedVersionRef != library.version) {
-                library.copy(version = renamedVersionRef).toTomlEntry(entryName).withPrefix(keyValue.prefix)
-            } else {
-                keyValue
-            }
-        }
-
-        val targetLibrary = Library(
-            group = newGroupId ?: library.group,
-            name = newArtifactId ?: library.name,
-            version = when {
-                library.version is VersionRef -> renamedVersionRef
-                newVersion != null -> PlainVersion(newVersion)
-                else -> renamedVersionRef
-            },
-        )
-        val targetEntryName = when {
-            entryName == oldArtifactId && newArtifactId != null -> newArtifactId
-            else -> entryName
-        }
-        return targetLibrary.toTomlEntry(targetEntryName).withPrefix(keyValue.prefix)
-    }
-
-    private fun updateVersionsEntry(keyValue: Toml.KeyValue): Toml.KeyValue {
-        val entryName = keyValue.stringKey() ?: return keyValue
-        val value = keyValue.stringValue() ?: return keyValue
-        if (entryName != oldArtifactId) return keyValue
-        val targetEntryName = newArtifactId ?: entryName
-        val targetValue = newVersion ?: value
-        return kv(targetEntryName, targetValue).withPrefix(keyValue.prefix)
-    }
-
-    private fun updatePluginEntry(keyValue: Toml.KeyValue): Toml.KeyValue {
-        val plugin = keyValue.valueToPlugin() ?: return keyValue
-        val entryName = keyValue.stringKey() ?: return keyValue
-        val renamedVersionRef = renameVersionRef(plugin.version)
-        if (renamedVersionRef == plugin.version) return keyValue
-        return Plugin(id = plugin.id, version = renamedVersionRef).toTomlEntry(entryName).withPrefix(keyValue.prefix)
+        val handler = sectionHandlers.firstOrNull { it.supports(table.name()) } ?: return keyValue
+        return handler.handle(keyValue)
     }
 
     private fun renameVersionRef(version: Version?): Version? {
         if (version !is VersionRef) return version
         if (version.ref != oldArtifactId || newArtifactId == null) return version
         return VersionRef(newArtifactId)
+    }
+
+    private interface VersionCatalogSectionHandler {
+        fun supports(tableName: String?): Boolean
+        fun handle(keyValue: Toml.KeyValue): Toml.KeyValue
+    }
+
+    private inner class LibrariesSectionHandler : VersionCatalogSectionHandler {
+        override fun supports(tableName: String?): Boolean = tableName == VERSION_CATALOG_TABLE_LIBS
+
+        override fun handle(keyValue: Toml.KeyValue): Toml.KeyValue {
+            val library = keyValue.valueToLibrary() ?: return keyValue
+            val entryName = keyValue.stringKey() ?: return keyValue
+            val isMatchedDependency = StringUtils.matchesGlob(library.group, oldGroupId) && StringUtils.matchesGlob(library.name, oldArtifactId)
+            val renamedVersionRef = renameVersionRef(library.version)
+
+            if (!isMatchedDependency) {
+                return if (renamedVersionRef != library.version) {
+                    library.copy(version = renamedVersionRef).toTomlEntry(entryName).withPrefix(keyValue.prefix)
+                } else {
+                    keyValue
+                }
+            }
+
+            val targetLibrary = Library(
+                group = newGroupId ?: library.group,
+                name = newArtifactId ?: library.name,
+                version = when {
+                    library.version is VersionRef -> renamedVersionRef
+                    newVersion != null -> PlainVersion(newVersion)
+                    else -> renamedVersionRef
+                },
+            )
+            val targetEntryName = when {
+                entryName == oldArtifactId && newArtifactId != null -> newArtifactId
+                else -> entryName
+            }
+            return targetLibrary.toTomlEntry(targetEntryName).withPrefix(keyValue.prefix)
+        }
+    }
+
+    private inner class VersionsSectionHandler : VersionCatalogSectionHandler {
+        override fun supports(tableName: String?): Boolean = tableName == VERSION_CATALOG_TABLE_VERSIONS
+
+        override fun handle(keyValue: Toml.KeyValue): Toml.KeyValue {
+            val entryName = keyValue.stringKey() ?: return keyValue
+            val value = keyValue.stringValue() ?: return keyValue
+            if (entryName != oldArtifactId) return keyValue
+            val targetEntryName = newArtifactId ?: entryName
+            val targetValue = newVersion ?: value
+            return kv(targetEntryName, targetValue).withPrefix(keyValue.prefix)
+        }
+    }
+
+    private inner class PluginsSectionHandler : VersionCatalogSectionHandler {
+        override fun supports(tableName: String?): Boolean = tableName == VERSION_CATALOG_TABLE_PLUGINS
+
+        override fun handle(keyValue: Toml.KeyValue): Toml.KeyValue {
+            val plugin = keyValue.valueToPlugin() ?: return keyValue
+            val entryName = keyValue.stringKey() ?: return keyValue
+            val renamedVersionRef = renameVersionRef(plugin.version)
+            if (renamedVersionRef == plugin.version) return keyValue
+            return Plugin(id = plugin.id, version = renamedVersionRef).toTomlEntry(entryName).withPrefix(keyValue.prefix)
+        }
     }
 }

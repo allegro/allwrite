@@ -60,8 +60,7 @@ class ChangeGradleDependencyTest : RewriteTest {
                 [libraries]
                 jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version = "3.1.4" }
                 """.trimIndent(),
-                { path("gradle/libs.versions.toml") },
-            ),
+            ) { path("gradle/libs.versions.toml") },
         )
     }
 
@@ -83,8 +82,7 @@ class ChangeGradleDependencyTest : RewriteTest {
                 [libraries]
                 jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version.ref = "jackson-module-blackbird" }
                 """.trimIndent(),
-                { path("gradle/libs.versions.toml") },
-            ),
+            ) { path("gradle/libs.versions.toml") },
         )
     }
 
@@ -109,8 +107,7 @@ class ChangeGradleDependencyTest : RewriteTest {
                 [libraries]
                 junit = { group = "org.junit.jupiter", name = "junit-jupiter", version = "5.10.0" }
                 """.trimIndent(),
-                { path("gradle/libs.versions.toml") },
-            ),
+            ) { path("gradle/libs.versions.toml") },
         )
     }
 
@@ -136,8 +133,7 @@ class ChangeGradleDependencyTest : RewriteTest {
                 jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version.ref = "jackson-module-blackbird" }
                 jackson-bom = { group = "com.fasterxml.jackson", name = "jackson-bom", version.ref = "jackson-bom" }
                 """.trimIndent(),
-                { path("gradle/libs.versions.toml") },
-            ),
+            ) { path("gradle/libs.versions.toml") },
         )
     }
 
@@ -156,8 +152,7 @@ class ChangeGradleDependencyTest : RewriteTest {
                 [libraries]
                 jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version = "2.17.2" }
                 """.trimIndent(),
-                { path("gradle/libs.versions.toml") },
-            ),
+            ) { path("gradle/libs.versions.toml") },
         )
     }
 
