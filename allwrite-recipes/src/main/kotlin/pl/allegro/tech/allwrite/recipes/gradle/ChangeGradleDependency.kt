@@ -14,7 +14,6 @@ import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.toml.Builders.kv
 import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
-import pl.allegro.tech.allwrite.recipes.toml.stringValue
 import kotlin.io.path.Path
 
 public class ChangeGradleDependency(
@@ -26,7 +25,7 @@ public class ChangeGradleDependency(
     public val newGroupId: String? = null,
     @Option(description = "The new artifact ID to use. Defaults to the existing artifact ID.", required = false, example = "rewrite-testing-frameworks")
     public val newArtifactId: String? = null,
-    @Option(description = "An exact version number or node-style semver selector used to select the version number.", required = false, example = "3.1.4")
+    @Option(description = "The new version to set. When omitted, the version is removed from the dependency.", required = false, example = "3.1.4")
     public val newVersion: String? = null,
 ) : AllwriteRecipe(
     displayName = "Change Gradle dependency with TOML support",
@@ -98,6 +97,7 @@ private class ChangeTomlVersionCatalogDependency(
 
     private fun renameVersionRef(version: Version?): Version? {
         if (version !is VersionRef) return version
+        if (newVersion == null) return version
         if (version.ref != oldArtifactId || newArtifactId == null) return version
         return VersionRef(newArtifactId)
     }
@@ -128,6 +128,7 @@ private class ChangeTomlVersionCatalogDependency(
                 group = newGroupId ?: library.group,
                 name = newArtifactId ?: library.name,
                 version = when {
+                    newVersion == null -> null
                     library.version is VersionRef -> renamedVersionRef
                     newVersion != null -> PlainVersion(newVersion)
                     else -> renamedVersionRef
@@ -145,12 +146,11 @@ private class ChangeTomlVersionCatalogDependency(
         override fun supports(tableName: String?): Boolean = tableName == VERSION_CATALOG_TABLE_VERSIONS
 
         override fun handle(keyValue: Toml.KeyValue): Toml.KeyValue {
+            if (newVersion == null) return keyValue
             val entryName = keyValue.stringKey() ?: return keyValue
-            val value = keyValue.stringValue() ?: return keyValue
             if (entryName != oldArtifactId) return keyValue
             val targetEntryName = newArtifactId ?: entryName
-            val targetValue = newVersion ?: value
-            return kv(targetEntryName, targetValue).withPrefix(keyValue.prefix)
+            return kv(targetEntryName, newVersion).withPrefix(keyValue.prefix)
         }
     }
 
@@ -158,6 +158,7 @@ private class ChangeTomlVersionCatalogDependency(
         override fun supports(tableName: String?): Boolean = tableName == VERSION_CATALOG_TABLE_PLUGINS
 
         override fun handle(keyValue: Toml.KeyValue): Toml.KeyValue {
+            if (newVersion == null) return keyValue
             val plugin = keyValue.valueToPlugin() ?: return keyValue
             val entryName = keyValue.stringKey() ?: return keyValue
             val renamedVersionRef = renameVersionRef(plugin.version)

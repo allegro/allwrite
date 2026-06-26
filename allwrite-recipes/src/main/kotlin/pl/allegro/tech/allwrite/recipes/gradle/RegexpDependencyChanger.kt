@@ -76,18 +76,23 @@ internal class RegexpDependencyChanger(
 
         val updatedText = StringBuffer()
         do {
+            val shouldWriteVersion = strategy.includeVersion && newVersion != null
             val replacement =
                 buildString {
                     append(newGroupId)
                     append(matcher.group("separator1"))
                     append(matcher.group("nameKey") ?: "")
                     append(newArtifactId)
-                    append(matcher.group("separator2"))
-                    if (strategy.includeVersionKey) {
+                    if (shouldWriteVersion || !strategy.includeVersion) {
+                        append(matcher.group("separator2"))
+                    } else {
+                        append(trimVersionSeparator(matcher.group("separator2")))
+                    }
+                    if (strategy.includeVersionKey && shouldWriteVersion) {
                         append(matcher.group("versionKey") ?: "")
                     }
-                    if (strategy.includeVersion) {
-                        append(newVersion ?: matcher.group("version"))
+                    if (shouldWriteVersion) {
+                        append(newVersion)
                     }
                 }
             matcher.appendReplacement(updatedText, Matcher.quoteReplacement(replacement))
@@ -96,4 +101,6 @@ internal class RegexpDependencyChanger(
         matcher.appendTail(updatedText)
         return updatedText.toString()
     }
+
+    private fun trimVersionSeparator(separator: String): String = separator.replace(Regex("[,:\\s]+$"), "")
 }

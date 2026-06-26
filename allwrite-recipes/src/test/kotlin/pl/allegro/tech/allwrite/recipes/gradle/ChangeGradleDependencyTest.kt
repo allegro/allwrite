@@ -59,6 +59,48 @@ class ChangeGradleDependencyTest : RewriteTest {
     }
 
     @Test
+    fun `should drop version when new version is null in build gradle`() {
+        rewriteRun(
+            { spec ->
+                spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
+            },
+            buildGradle(
+                before = """
+                dependencies {
+                    implementation "com.fasterxml.jackson.module:jackson-module-afterburner:2.17.2"
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation "tools.jackson.module:jackson-module-blackbird"
+                }
+                """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
+    @Test
+    fun `should drop version when new version is null in build gradle kts`() {
+        rewriteRun(
+            { spec ->
+                spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
+            },
+            buildGradleKts(
+                before = """
+                dependencies {
+                    implementation("com.fasterxml.jackson.module:jackson-module-afterburner:2.17.2")
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation("tools.jackson.module:jackson-module-blackbird")
+                }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
+
+    @Test
     fun `should change versionless dependency in build gradle`() {
         rewriteRun(
             buildGradle(
@@ -184,7 +226,7 @@ class ChangeGradleDependencyTest : RewriteTest {
     }
 
     @Test
-    fun `should keep version unchanged when new version is null`() {
+    fun `should drop version when new version is null in toml`() {
         rewriteRun(
             { spec ->
                 spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
@@ -196,7 +238,7 @@ class ChangeGradleDependencyTest : RewriteTest {
                 """.trimIndent(),
                 after = """
                 [libraries]
-                jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version = "2.17.2" }
+                jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird" }
                 """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
         )
