@@ -23,9 +23,11 @@ change but made no changes."
 - Web search confirms no such recipe exists in the broader OpenRewrite ecosystem either
 - The custom recipe must cover **all three languages**: Java, Groovy, and Kotlin
 
-## Phase 2: Write Real Tests (spike confirmed gap)
+## Phase 2: Write Real Tests (spike confirmed gap) ✅ DONE
 
 **File:** `allwrite-recipes/src/test/kotlin/pl/allegro/tech/allwrite/recipes/spring/ReplaceStatusCodeValueTest.kt`
+
+**Minimal recipe stub (for compilation):** `allwrite-recipes/src/main/kotlin/pl/allegro/tech/allwrite/recipes/spring/ReplaceStatusCodeValue.kt`
 
 **Test cases (Java):**
 
