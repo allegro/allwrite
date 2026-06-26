@@ -23,7 +23,7 @@ public class ReplaceStatusCodeValue :
     ),
     ClasspathAwareRecipe {
 
-    override fun requireOnClasspath(): List<String> = listOf("spring-web-6", "spring-core-6", "spring-beans-6")
+    override fun requireOnClasspath(): List<String> = listOf("spring-web-6", "spring-core-6")
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
         val javaVisitor = object : JavaVisitor<ExecutionContext>() {
