@@ -66,8 +66,7 @@ public class ReplaceStatusCodeValue :
                 return TypeUtils.isOfClassType(type, "java.lang.Object")
             }
 
-            private fun springWebParser(ctx: ExecutionContext) =
-                JavaParser.fromJavaVersion().classpathFromResources(ctx, "spring-web-6", "spring-core-6")
+            private fun springWebParser(ctx: ExecutionContext) = JavaParser.fromJavaVersion().classpathFromResources(ctx, "spring-web-6", "spring-core-6")
 
             override fun visitFieldAccess(fieldAccess: J.FieldAccess, ctx: ExecutionContext): J {
                 val fa = super.visitFieldAccess(fieldAccess, ctx) as J.FieldAccess
