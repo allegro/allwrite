@@ -16,8 +16,8 @@ internal class RegexpDependencyChanger(
             "(?<nameKey>name[:=\\s'\"]+)?" +
             "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
             "(?<separator2>['\",:\\s]+)" +
-            "(?<versionKey>version(.ref)?[:=\\s'\"]+)?" +
-            "(?<version>[^('|\")]+)"
+            "(?<versionKey>version(\\.ref)?[:=\\s'\"]+)?" +
+            "(?<version>(?!version[-.])[^('|\")]+)"
 
     fun update(originalText: String): String {
         val matcher = Pattern.compile(regexpDependencyDeclaration, Pattern.MULTILINE).matcher(originalText)

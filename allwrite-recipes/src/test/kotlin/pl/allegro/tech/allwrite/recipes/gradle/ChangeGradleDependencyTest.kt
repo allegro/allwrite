@@ -156,6 +156,26 @@ class ChangeGradleDependencyTest : RewriteTest {
         )
     }
 
+    @Test
+    fun `should rename plugin version ref in toml`() {
+        rewriteRun(
+            toml(
+                before = """
+                 [versions]
+                 jackson-module-afterburner = "2.17.2"
+                 [plugins]
+                 some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-afterburner" }
+                 """.trimIndent(),
+                after = """
+                 [versions]
+                 jackson-module-blackbird = "3.1.4"
+                 [plugins]
+                 some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-blackbird" }
+                 """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
     private fun recipe(newVersion: String? = "3.1.4"): ChangeGradleDependency =
         ChangeGradleDependency(
             oldGroupId = "com.fasterxml.jackson.module",

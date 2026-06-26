@@ -26,7 +26,7 @@ public class ChangeGradleDependency(
     public val newGroupId: String? = null,
     @Option(description = "The new artifact ID to use. Defaults to the existing artifact ID.", required = false, example = "rewrite-testing-frameworks")
     public val newArtifactId: String? = null,
-    @Option(description = "An exact version number or node-style semver selector used to select the version number.", required = false, example = "29.X")
+    @Option(description = "An exact version number or node-style semver selector used to select the version number.", required = false, example = "3.1.4")
     public val newVersion: String? = null,
 ) : AllwriteRecipe(
     displayName = "Change Gradle dependency with TOML support",
