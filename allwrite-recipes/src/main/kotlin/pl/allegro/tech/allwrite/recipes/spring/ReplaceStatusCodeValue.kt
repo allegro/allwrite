@@ -48,8 +48,7 @@ public class ReplaceStatusCodeValue :
                 return isResponseEntityOrUnresolved(selectType)
             }
 
-            private fun hasRealArguments(m: J.MethodInvocation): Boolean =
-                m.arguments.any { it !is J.Empty }
+            private fun hasRealArguments(m: J.MethodInvocation): Boolean = m.arguments.any { it !is J.Empty }
 
             private fun isResponseEntityOrUnresolved(type: JavaType): Boolean {
                 if (TypeUtils.isAssignableTo("org.springframework.http.ResponseEntity", type)) return true
