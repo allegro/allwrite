@@ -93,6 +93,42 @@ class ReplaceStatusCodeValueTest : RewriteTest {
     }
 
     @Test
+    fun `should replace unqualified getStatusCodeValue() in ResponseEntity subclass in Java`() {
+        rewriteRun(
+            java(
+                before = """
+                import org.springframework.http.ResponseEntity;
+                import org.springframework.http.HttpStatusCode;
+
+                class CustomResponseEntity extends ResponseEntity<String> {
+                    CustomResponseEntity(String body, HttpStatusCode status) {
+                        super(body, status);
+                    }
+
+                    int extractStatus() {
+                        return getStatusCodeValue();
+                    }
+                }
+                """.trimIndent(),
+                after = """
+                import org.springframework.http.ResponseEntity;
+                import org.springframework.http.HttpStatusCode;
+
+                class CustomResponseEntity extends ResponseEntity<String> {
+                    CustomResponseEntity(String body, HttpStatusCode status) {
+                        super(body, status);
+                    }
+
+                    int extractStatus() {
+                        return getStatusCode().value();
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
     fun `should replace statusCodeValue property access in Groovy`() {
         rewriteRun(
             groovy(
@@ -375,6 +411,78 @@ class ReplaceStatusCodeValueTest : RewriteTest {
                     void test() {
                         NotResponseEntity response = new NotResponseEntity()
                         int status = response.getStatusCodeValue()
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should replace unqualified getStatusCodeValue() in ResponseEntity subclass in Groovy`() {
+        rewriteRun(
+            groovy(
+                before = """
+                import org.springframework.http.ResponseEntity
+                import org.springframework.http.HttpStatusCode
+
+                class CustomResponseEntity extends ResponseEntity<String> {
+                    CustomResponseEntity(String body, HttpStatusCode status) {
+                        super(body, status)
+                    }
+
+                    int extractStatus() {
+                        return getStatusCodeValue()
+                    }
+                }
+                """.trimIndent(),
+                after = """
+                import org.springframework.http.ResponseEntity
+                import org.springframework.http.HttpStatusCode
+
+                class CustomResponseEntity extends ResponseEntity<String> {
+                    CustomResponseEntity(String body, HttpStatusCode status) {
+                        super(body, status)
+                    }
+
+                    int extractStatus() {
+                        return getStatusCode().value()
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should replace unqualified statusCodeValue property in ResponseEntity subclass in Groovy`() {
+        rewriteRun(
+            groovy(
+                before = """
+                import org.springframework.http.ResponseEntity
+                import org.springframework.http.HttpStatusCode
+
+                class CustomResponseEntity extends ResponseEntity<String> {
+                    CustomResponseEntity(String body, HttpStatusCode status) {
+                        super(body, status)
+                    }
+
+                    int extractStatus() {
+                        return statusCodeValue
+                    }
+                }
+                """.trimIndent(),
+                after = """
+                import org.springframework.http.ResponseEntity
+                import org.springframework.http.HttpStatusCode
+
+                class CustomResponseEntity extends ResponseEntity<String> {
+                    CustomResponseEntity(String body, HttpStatusCode status) {
+                        super(body, status)
+                    }
+
+                    int extractStatus() {
+                        return getStatusCode().value()
                     }
                 }
                 """.trimIndent(),
@@ -682,6 +790,38 @@ class ReplaceStatusCodeValueTest : RewriteTest {
                         val response = NotResponseEntity()
                         val status: Int = response.getStatusCodeValue()
                     }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should not crash on unqualified getStatusCodeValue() in ResponseEntity subclass in Kotlin`() {
+        rewriteRun(
+            kotlin(
+                beforeAndAfter = """
+                import org.springframework.http.ResponseEntity
+                import org.springframework.http.HttpStatusCode
+
+                class CustomResponseEntity(body: String?, status: HttpStatusCode) : ResponseEntity<String>(body, status) {
+                    fun extractStatus(): Int = getStatusCodeValue()
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should not crash on unqualified statusCodeValue in ResponseEntity subclass in Kotlin`() {
+        rewriteRun(
+            kotlin(
+                beforeAndAfter = """
+                import org.springframework.http.ResponseEntity
+                import org.springframework.http.HttpStatusCode
+
+                class CustomResponseEntity(body: String?, status: HttpStatusCode) : ResponseEntity<String>(body, status) {
+                    fun extractStatus(): Int = statusCodeValue
                 }
                 """.trimIndent(),
             ),
