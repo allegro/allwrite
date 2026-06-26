@@ -10,16 +10,20 @@ internal class RegexpDependencyChanger(
     private val newArtifactId: String,
     private val newVersion: String?,
 ) {
-    private data class ReplacementStrategy(
-        val name: String,
+    private enum class RuleType {
+        VERSION_KEY,
+        VERSION_VALUE,
+        VERSIONLESS,
+    }
+
+    private data class Rule(
+        val type: RuleType,
         val pattern: Pattern,
-        val includeVersionKey: Boolean,
-        val includeVersion: Boolean,
     )
 
-    private val replacementStrategies: List<ReplacementStrategy> = listOf(
-        ReplacementStrategy(
-            name = "version-key-value",
+    private val rules: List<Rule> = listOf(
+        Rule(
+            type = RuleType.VERSION_KEY,
             pattern = Pattern.compile(
                 "(?<group>${Pattern.quote(oldGroupId)})" +
                     "(?<separator1>['\",:\\s]+)" +
@@ -30,11 +34,9 @@ internal class RegexpDependencyChanger(
                     "(?<version>[^('|\")]+)",
                 Pattern.MULTILINE,
             ),
-            includeVersionKey = true,
-            includeVersion = true,
         ),
-        ReplacementStrategy(
-            name = "version-value",
+        Rule(
+            type = RuleType.VERSION_VALUE,
             pattern = Pattern.compile(
                 "(?<group>${Pattern.quote(oldGroupId)})" +
                     "(?<separator1>['\",:\\s]+)" +
@@ -44,11 +46,9 @@ internal class RegexpDependencyChanger(
                     "(?<version>[^()'\"\\s,}]+)",
                 Pattern.MULTILINE,
             ),
-            includeVersionKey = false,
-            includeVersion = true,
         ),
-        ReplacementStrategy(
-            name = "versionless",
+        Rule(
+            type = RuleType.VERSIONLESS,
             pattern = Pattern.compile(
                 "(?<group>${Pattern.quote(oldGroupId)})" +
                     "(?<separator1>['\",:\\s]+)" +
@@ -58,48 +58,49 @@ internal class RegexpDependencyChanger(
                     "(?=[,)\\]}\\s]|$)",
                 Pattern.MULTILINE,
             ),
-            includeVersionKey = false,
-            includeVersion = false,
         ),
     )
 
     fun update(originalText: String): String =
-        replacementStrategies.fold(originalText) { currentText, strategy ->
-            replaceMatchingDeclaration(currentText, strategy)
+        rules.fold(originalText) { currentText, rule ->
+            applyRule(currentText, rule)
         }
 
-    private fun replaceMatchingDeclaration(originalText: String, strategy: ReplacementStrategy): String {
-        val matcher = strategy.pattern.matcher(originalText)
+    private fun applyRule(originalText: String, rule: Rule): String {
+        val matcher = rule.pattern.matcher(originalText)
         if (!matcher.find()) {
             return originalText
         }
 
         val updatedText = StringBuffer()
         do {
-            val shouldWriteVersion = strategy.includeVersion && newVersion != null
-            val replacement =
-                buildString {
-                    append(newGroupId)
-                    append(matcher.group("separator1"))
-                    append(matcher.group("nameKey") ?: "")
-                    append(newArtifactId)
-                    if (shouldWriteVersion || !strategy.includeVersion) {
-                        append(matcher.group("separator2"))
-                    } else {
-                        append(trimVersionSeparator(matcher.group("separator2")))
-                    }
-                    if (strategy.includeVersionKey && shouldWriteVersion) {
-                        append(matcher.group("versionKey") ?: "")
-                    }
-                    if (shouldWriteVersion) {
-                        append(newVersion)
-                    }
-                }
+            val replacement = buildReplacement(matcher, rule.type)
             matcher.appendReplacement(updatedText, Matcher.quoteReplacement(replacement))
         } while (matcher.find())
 
         matcher.appendTail(updatedText)
         return updatedText.toString()
+    }
+
+    private fun buildReplacement(matcher: Matcher, type: RuleType): String {
+        val separator2 = matcher.group("separator2")
+        val separatorBeforeVersion = if (newVersion == null && type != RuleType.VERSIONLESS) trimVersionSeparator(separator2) else separator2
+
+        return buildString {
+            append(newGroupId)
+            append(matcher.group("separator1"))
+            append(matcher.group("nameKey") ?: "")
+            append(newArtifactId)
+            append(separatorBeforeVersion)
+
+            if (newVersion != null && type == RuleType.VERSION_KEY) {
+                append(matcher.group("versionKey") ?: "")
+            }
+
+            if (newVersion != null && type != RuleType.VERSIONLESS) {
+                append(newVersion)
+            }
+        }
     }
 
     private fun trimVersionSeparator(separator: String): String = separator.replace(Regex("[,:\\s]+$"), "")
