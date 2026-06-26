@@ -161,17 +161,19 @@ class ChangeGradleDependencyTest : RewriteTest {
         rewriteRun(
             toml(
                 before = """
-                 [versions]
-                 jackson-module-afterburner = "2.17.2"
-                 [plugins]
-                 some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-afterburner" }
-                 """.trimIndent(),
+                [versions]
+                jackson-module-afterburner = "2.17.2"
+
+                [plugins]
+                some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-afterburner" }
+                """.trimIndent(),
                 after = """
-                 [versions]
-                 jackson-module-blackbird = "3.1.4"
-                 [plugins]
-                 some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-blackbird" }
-                 """.trimIndent(),
+                [versions]
+                jackson-module-blackbird = "3.1.4"
+
+                [plugins]
+                some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-blackbird" }
+                """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
         )
     }
