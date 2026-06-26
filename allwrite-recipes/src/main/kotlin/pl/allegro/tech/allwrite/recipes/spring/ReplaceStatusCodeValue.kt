@@ -7,6 +7,7 @@ import org.openrewrite.java.JavaTemplate
 import org.openrewrite.java.JavaVisitor
 import org.openrewrite.java.MethodMatcher
 import org.openrewrite.java.tree.J
+import org.openrewrite.java.tree.JavaType
 import org.openrewrite.java.tree.TypeUtils
 import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
@@ -42,9 +43,17 @@ public class ReplaceStatusCodeValue :
 
             private fun matchesGetStatusCodeValue(m: J.MethodInvocation): Boolean {
                 if (methodMatcher.matches(m)) return true
-                if (m.simpleName != "getStatusCodeValue" || m.arguments.isNotEmpty()) return false
-                val selectType = m.select?.type ?: return false
-                return TypeUtils.isAssignableTo("org.springframework.http.ResponseEntity", selectType)
+                if (m.simpleName != "getStatusCodeValue" || hasRealArguments(m)) return false
+                val selectType = m.select?.type ?: return true
+                return isResponseEntityOrUnresolved(selectType)
+            }
+
+            private fun hasRealArguments(m: J.MethodInvocation): Boolean =
+                m.arguments.any { it !is J.Empty }
+
+            private fun isResponseEntityOrUnresolved(type: JavaType): Boolean {
+                if (TypeUtils.isAssignableTo("org.springframework.http.ResponseEntity", type)) return true
+                return TypeUtils.isOfClassType(type, "java.lang.Object")
             }
 
             override fun visitFieldAccess(fieldAccess: J.FieldAccess, ctx: ExecutionContext): J {
@@ -65,7 +74,8 @@ public class ReplaceStatusCodeValue :
             private fun matchesStatusCodeValueProperty(fa: J.FieldAccess): Boolean {
                 if (fa.simpleName != "statusCodeValue") return false
                 if (propertyMatcher.matches(fa)) return true
-                return TypeUtils.isAssignableTo("org.springframework.http.ResponseEntity", fa.target.type)
+                val targetType = fa.target.type ?: return true
+                return isResponseEntityOrUnresolved(targetType)
             }
         }
         return DelegatingJVisitor(javaVisitor)

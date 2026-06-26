@@ -81,6 +81,35 @@ Modelled after `rewrite-spring`'s `MigrateResponseStatusExceptionGetRawStatusCod
 **All 15 tests pass.** (The spike test `ReplaceStatusCodeValueSpikeTest` still fails as expected — it tests the upstream
 `UpgradeSpringBoot_4_0` recipe which doesn't handle this case.)
 
+## Phase 6: Fix for `def`/`var`/`val` with unresolved types ✅ DONE
+
+**Problem:** When `def` is used in Groovy (or `val`/`var` without explicit type in Kotlin) and the
+`ResponseEntity`-returning method is in a superclass, OpenRewrite resolves the variable type to `java.lang.Object`
+instead of `ResponseEntity`. The recipe's `TypeUtils.isAssignableTo` check failed because `Object` is not assignable
+to `ResponseEntity`. Additionally, in Groovy's AST, no-arg method calls include a `J.Empty` sentinel in the arguments
+list, causing the `arguments.isNotEmpty()` check to reject valid matches.
+
+**Fixes applied:**
+
+1. Added `isResponseEntityOrUnresolved()` helper that accepts both `ResponseEntity` types AND `java.lang.Object`
+   (which Groovy assigns to `def` variables with unresolved types)
+2. Changed `m.arguments.isNotEmpty()` to `hasRealArguments(m)` which filters out `J.Empty` sentinels
+3. Added null-type fallback (returns `true` when type is completely null)
+
+**New tests added (9 total):**
+
+- `def` + `.statusCodeValue` in Groovy
+- `def` + `.getStatusCodeValue()` in Groovy
+- `def` + superclass method + `.statusCodeValue` in Groovy (Spock-style)
+- `def` + superclass method + `.getStatusCodeValue()` in Groovy (Spock-style)
+- inferred `val` + `.statusCodeValue` in Kotlin
+- inferred `val` + `.getStatusCodeValue()` in Kotlin
+- inferred `var` + `.statusCodeValue` in Kotlin
+- inferred `val` + superclass method + `.statusCodeValue` in Kotlin
+- inferred `val` + superclass method + `.getStatusCodeValue()` in Kotlin
+
+**All 24 tests pass.** Full recipe module suite: 392 tests, 0 failures.
+
 ## Phase 4: Integration into SpringBoot4_0 ✅ DONE
 
 - Overrode `getRecipeList()` in `SpringBoot4_0` to append `ReplaceStatusCodeValue()` to the upstream recipe list
