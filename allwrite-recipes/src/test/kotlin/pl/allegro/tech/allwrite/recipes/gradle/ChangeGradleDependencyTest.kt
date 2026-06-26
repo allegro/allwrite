@@ -8,9 +8,19 @@ import pl.allegro.tech.allwrite.recipes.buildGradleKts
 import pl.allegro.tech.allwrite.recipes.toml
 
 class ChangeGradleDependencyTest : RewriteTest {
+
     override fun defaults(spec: RecipeSpec) {
         spec.recipe(recipe()).validateRecipeSerialization(false)
     }
+
+    private fun recipe(newVersion: String? = "3.1.4"): ChangeGradleDependency =
+        ChangeGradleDependency(
+            oldGroupId = "com.fasterxml.jackson.module",
+            oldArtifactId = "jackson-module-afterburner",
+            newGroupId = "tools.jackson.module",
+            newArtifactId = "jackson-module-blackbird",
+            newVersion = newVersion,
+        )
 
     @Test
     fun `should change dependency in build gradle`() {
@@ -42,6 +52,42 @@ class ChangeGradleDependencyTest : RewriteTest {
                 after = """
                 dependencies {
                     implementation("tools.jackson.module:jackson-module-blackbird:3.1.4")
+                }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
+
+    @Test
+    fun `should change versionless dependency in build gradle`() {
+        rewriteRun(
+            buildGradle(
+                before = """
+                dependencies {
+                    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation "tools.jackson.module:jackson-module-blackbird"
+                }
+                """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
+    @Test
+    fun `should change versionless dependency in build gradle kts`() {
+        rewriteRun(
+            buildGradleKts(
+                before = """
+                dependencies {
+                    implementation("com.fasterxml.jackson.module:jackson-module-afterburner")
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation("tools.jackson.module:jackson-module-blackbird")
                 }
                 """.trimIndent(),
             ) { path("build.gradle.kts") },
@@ -177,13 +223,4 @@ class ChangeGradleDependencyTest : RewriteTest {
             ) { path("gradle/libs.versions.toml") },
         )
     }
-
-    private fun recipe(newVersion: String? = "3.1.4"): ChangeGradleDependency =
-        ChangeGradleDependency(
-            oldGroupId = "com.fasterxml.jackson.module",
-            oldArtifactId = "jackson-module-afterburner",
-            newGroupId = "tools.jackson.module",
-            newArtifactId = "jackson-module-blackbird",
-            newVersion = newVersion,
-        )
 }

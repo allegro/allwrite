@@ -10,17 +10,59 @@ internal class RegexpDependencyChanger(
     private val newArtifactId: String,
     private val newVersion: String?,
 ) {
-    private val regexpDependencyDeclaration =
-        "(?<group>${Pattern.quote(oldGroupId)})" +
-            "(?<separator1>['\",:\\s]+)" +
-            "(?<nameKey>name[:=\\s'\"]+)?" +
-            "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
-            "(?<separator2>['\",:\\s]+)" +
-            "(?<versionKey>version(\\.ref)?[:=\\s'\"]+)?" +
-            "(?<version>(?!version[-.])[^('|\")]+)"
+    private val replacementStrategies: List<ReplacementStrategy> = listOf(
+        ReplacementStrategy(
+            name = "version-key-value",
+            pattern = Pattern.compile(
+                "(?<group>${Pattern.quote(oldGroupId)})" +
+                    "(?<separator1>['\",:\\s]+)" +
+                    "(?<nameKey>name[:=\\s'\"]+)?" +
+                    "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
+                    "(?<separator2>['\",:\\s]+)" +
+                    "(?<versionKey>version(\\.ref)?[:=\\s'\"]+)" +
+                    "(?<version>[^('|\")]+)",
+                Pattern.MULTILINE,
+            ),
+            includeVersionKey = true,
+            includeVersion = true,
+        ),
+        ReplacementStrategy(
+            name = "version-value",
+            pattern = Pattern.compile(
+                "(?<group>${Pattern.quote(oldGroupId)})" +
+                    "(?<separator1>['\",:\\s]+)" +
+                    "(?<nameKey>name[:=\\s'\"]+)?" +
+                    "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
+                    "(?<separator2>['\",:\\s]+)" +
+                    "(?<version>[^()'\"\\s,}]+)",
+                Pattern.MULTILINE,
+            ),
+            includeVersionKey = false,
+            includeVersion = true,
+        ),
+        ReplacementStrategy(
+            name = "versionless",
+            pattern = Pattern.compile(
+                "(?<group>${Pattern.quote(oldGroupId)})" +
+                    "(?<separator1>['\",:\\s]+)" +
+                    "(?<nameKey>name[:=\\s'\"]+)?" +
+                    "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
+                    "(?<separator2>['\",:\\s]+)" +
+                    "(?=[,)\\]}\\s]|$)",
+                Pattern.MULTILINE,
+            ),
+            includeVersionKey = false,
+            includeVersion = false,
+        ),
+    )
 
-    fun update(originalText: String): String {
-        val matcher = Pattern.compile(regexpDependencyDeclaration, Pattern.MULTILINE).matcher(originalText)
+    fun update(originalText: String): String =
+        replacementStrategies.fold(originalText) { currentText, strategy ->
+            replaceMatchingDeclaration(currentText, strategy)
+        }
+
+    private fun replaceMatchingDeclaration(originalText: String, strategy: ReplacementStrategy): String {
+        val matcher = strategy.pattern.matcher(originalText)
         if (!matcher.find()) {
             return originalText
         }
@@ -34,8 +76,12 @@ internal class RegexpDependencyChanger(
                     append(matcher.group("nameKey") ?: "")
                     append(newArtifactId)
                     append(matcher.group("separator2"))
-                    append(matcher.group("versionKey") ?: "")
-                    append(newVersion ?: matcher.group("version"))
+                    if (strategy.includeVersionKey) {
+                        append(matcher.group("versionKey") ?: "")
+                    }
+                    if (strategy.includeVersion) {
+                        append(newVersion ?: matcher.group("version"))
+                    }
                 }
             matcher.appendReplacement(updatedText, Matcher.quoteReplacement(replacement))
         } while (matcher.find())
@@ -43,4 +89,11 @@ internal class RegexpDependencyChanger(
         matcher.appendTail(updatedText)
         return updatedText.toString()
     }
+
+    private data class ReplacementStrategy(
+        val name: String,
+        val pattern: Pattern,
+        val includeVersionKey: Boolean,
+        val includeVersion: Boolean,
+    )
 }
