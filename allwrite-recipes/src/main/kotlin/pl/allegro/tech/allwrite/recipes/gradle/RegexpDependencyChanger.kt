@@ -10,6 +10,13 @@ internal class RegexpDependencyChanger(
     private val newArtifactId: String,
     private val newVersion: String?,
 ) {
+    private data class ReplacementStrategy(
+        val name: String,
+        val pattern: Pattern,
+        val includeVersionKey: Boolean,
+        val includeVersion: Boolean,
+    )
+
     private val replacementStrategies: List<ReplacementStrategy> = listOf(
         ReplacementStrategy(
             name = "version-key-value",
@@ -89,11 +96,4 @@ internal class RegexpDependencyChanger(
         matcher.appendTail(updatedText)
         return updatedText.toString()
     }
-
-    private data class ReplacementStrategy(
-        val name: String,
-        val pattern: Pattern,
-        val includeVersionKey: Boolean,
-        val includeVersion: Boolean,
-    )
 }
