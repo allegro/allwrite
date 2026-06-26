@@ -27,13 +27,7 @@ public class ChangeGradleDependency(
     @Option(description = "The new artifact ID to use. Defaults to the existing artifact ID.", required = false, example = "rewrite-testing-frameworks")
     public val newArtifactId: String? = null,
     @Option(description = "An exact version number or node-style semver selector used to select the version number.", required = false, example = "29.X")
-    public val newVersion: String? = null,
-    @Option(description = "Allows version selection beyond the original Node Semver semantics.", required = false, example = "-jre")
-    public val versionPattern: String? = null,
-    @Option(description = "If the new dependency has a managed version, this flag explicitly sets the version on the dependency.", required = false)
-    public val overrideManagedVersion: Boolean? = null,
-    @Option(description = "Also update the dependency management section. The default is true.", required = false)
-    public val changeManagedDependency: Boolean? = null,
+    public val newVersion: String? = null
 ) : AllwriteRecipe(
     displayName = "Change Gradle dependency with TOML support",
     description = "Changes Gradle dependencies and also updates matching entries in gradle/libs.versions.toml.",
