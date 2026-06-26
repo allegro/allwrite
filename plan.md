@@ -1,40 +1,37 @@
-# Plan: Replace `statusCodeValue` in Groovy/Kotlin files
+# Plan: Replace `statusCodeValue` in Groovy/Kotlin/Java files
 
 ## Problem
 
-`ResponseEntity.getStatusCodeValue()` (Java) / `.statusCodeValue` (Groovy property access) was removed in Spring Framework 7 / Spring Boot 4. The replacement is
-`.getStatusCode().value()` (Java) / `.statusCode.value()` (Groovy).
+`ResponseEntity.getStatusCodeValue()` (Java) / `.statusCodeValue` (Groovy/Kotlin property access) was removed in Spring Framework 7 / Spring Boot 4. The
+replacement is
+`.getStatusCode().value()` (Java) / `.statusCode.value()` (Groovy/Kotlin).
 
-OpenRewrite's `UpgradeSpringBoot_4_0` (via `rewrite-spring` 6.30.3) handles this for Java. We need to verify whether it also covers Groovy and Kotlin files. If
-not, we implement a custom recipe.
+## Phase 1: Spike Test (Verification) ✅ DONE
 
-## Phase 1: Spike Test (Verification)
-
-**Goal:** Determine if the existing `UpgradeSpringBoot_4_0` recipe (from `rewrite-spring`) already handles `statusCodeValue` replacement in Groovy and Kotlin
-files.
+**Goal:** Determine if the existing `UpgradeSpringBoot_4_0` recipe (from `rewrite-spring`) already handles `statusCodeValue` replacement.
 
 **File:** `allwrite-recipes/src/test/kotlin/pl/allegro/tech/allwrite/recipes/spring/ReplaceStatusCodeValueSpikeTest.kt`
 
-**Approach:**
+**Result:** The recipe does NOT handle this transformation for ANY language (Java, Groovy, or Kotlin). All tests failed with "Recipe was expected to make a
+change but made no changes."
 
-1. Write a `RewriteTest` that loads the `UpgradeSpringBoot_4_0` recipe (or the specific sub-recipe that handles `statusCodeValue` in Java)
-2. Provide Groovy source specs using `groovy()` helper with:
-    - `.statusCodeValue` property access → expected: `.statusCode.value()`
-    - `.getStatusCodeValue()` method call → expected: `.getStatusCode().value()`
-3. Provide Kotlin source specs using `kotlin()` helper with:
-    - `.statusCodeValue` property access → expected: `.statusCode.value()`
-    - `.getStatusCodeValue()` method call → expected: `.getStatusCode().value()`
-4. Run the spike test with `./gradlew :allwrite-recipes:test --tests "*SpikeTest*"`
-5. Observe results:
-    - If tests **pass** → recipe already covers these languages, no further work needed
-    - If tests **fail** (no transformation applied) → proceed to Phase 2
+**Additional findings:**
 
-**Pattern reference:** See existing tests in `DeleteSpringPropertyFromSpringAnnotationsTest.kt` and `RenameTaskExecutorBeanTest.kt` for how `groovy()` and
-`kotlin()` source specs are used with `RewriteTest`.
+- `rewrite-spring` 6.30.3 contains NO recipe for `ResponseEntity.getStatusCodeValue()` / `.statusCodeValue`
+- The only related recipe is `MigrateResponseStatusExceptionGetRawStatusCodeMethod` (Spring Framework 6.0 migration) which handles
+  `ResponseStatusException.getRawStatusCode()` → `getStatusCode().value()` — a **different class**
+- Web search confirms no such recipe exists in the broader OpenRewrite ecosystem either
+- The custom recipe must cover **all three languages**: Java, Groovy, and Kotlin
 
-## Phase 2: Write Real Tests (if spike fails)
+## Phase 2: Write Real Tests (spike confirmed gap)
 
 **File:** `allwrite-recipes/src/test/kotlin/pl/allegro/tech/allwrite/recipes/spring/ReplaceStatusCodeValueTest.kt`
+
+**Test cases (Java):**
+
+- `.getStatusCodeValue()` method call → `.getStatusCode().value()`
+- No change when `getStatusCodeValue()` is not from `ResponseEntity`
+- Handles chained calls (e.g., `response.getStatusCodeValue() == 200`)
 
 **Test cases (Groovy):**
 
@@ -51,7 +48,7 @@ files.
 
 **Test structure:** JUnit 5 + `RewriteTest` interface (standard for `allwrite-recipes` module)
 
-## Phase 3: Implementation (if spike fails)
+## Phase 3: Implementation (spike confirmed gap)
 
 **File:** `allwrite-recipes/src/main/kotlin/pl/allegro/tech/allwrite/recipes/spring/ReplaceStatusCodeValue.kt`
 
