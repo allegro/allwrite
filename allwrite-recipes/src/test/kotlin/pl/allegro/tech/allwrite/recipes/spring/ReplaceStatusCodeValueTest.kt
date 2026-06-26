@@ -112,7 +112,7 @@ class ReplaceStatusCodeValueTest : RewriteTest {
                 class Example {
                     void test() {
                         ResponseEntity<String> response = ResponseEntity.ok("hello")
-                        int status = response.getStatusCode().value()
+                        int status = response.statusCode.value()
                     }
                 }
                 """.trimIndent(),
@@ -208,7 +208,7 @@ class ReplaceStatusCodeValueTest : RewriteTest {
                 class Example {
                     boolean test() {
                         ResponseEntity<String> response = ResponseEntity.ok("hello")
-                        return response.getStatusCode().value() == 200
+                        return response.statusCode.value() == 200
                     }
                 }
                 """.trimIndent(),
@@ -264,7 +264,7 @@ class ReplaceStatusCodeValueTest : RewriteTest {
                 class Example {
                     fun test() {
                         val response: ResponseEntity<String> = ResponseEntity.ok("hello")
-                        val status: Int = response.getStatusCode().value()
+                        val status: Int = response.statusCode.value()
                     }
                 }
                 """.trimIndent(),
@@ -360,7 +360,7 @@ class ReplaceStatusCodeValueTest : RewriteTest {
                 class Example {
                     fun test(): Boolean {
                         val response: ResponseEntity<String> = ResponseEntity.ok("hello")
-                        return response.getStatusCode().value() == 200
+                        return response.statusCode.value() == 200
                     }
                 }
                 """.trimIndent(),

@@ -70,11 +70,13 @@ Modelled after `rewrite-spring`'s `MigrateResponseStatusExceptionGetRawStatusCod
 - `DelegatingJVisitor(javaVisitor)` dispatches the single `JavaVisitor` across Java, Kotlin, and Groovy compilation units
 - Reused existing project infrastructure: `KotlinPropertyMatcher`, `DelegatingJVisitor`, `ClasspathAwareRecipe`
 
-**Test adjustments:**
+**Output behavior:**
 
-- Property access (`.statusCodeValue`) in Groovy/Kotlin is replaced with `.getStatusCode().value()` (not `.statusCode.value()`)
-  because `JavaTemplate` produces a standard method-call chain. This is semantically correct and avoids Groovy printer
-  parenthesis issues.
+- Property access (`.statusCodeValue`) in Groovy/Kotlin is replaced with idiomatic `.statusCode.value()` — achieved by
+  renaming the `J.FieldAccess` node from `statusCodeValue` to `statusCode` (preserving property-style rendering by
+  Groovy/Kotlin printers) and wrapping with `#{any(org.springframework.http.HttpStatusCode)}.value()` template.
+- Explicit method calls (`.getStatusCodeValue()`) in all languages are replaced with `.getStatusCode().value()` via
+  `JavaTemplate("#{any()}.getStatusCode().value()")`.
 
 **All 15 tests pass.** (The spike test `ReplaceStatusCodeValueSpikeTest` still fails as expected — it tests the upstream
 `UpgradeSpringBoot_4_0` recipe which doesn't handle this case.)

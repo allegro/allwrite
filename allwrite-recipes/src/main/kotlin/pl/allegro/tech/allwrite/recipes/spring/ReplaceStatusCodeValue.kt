@@ -51,10 +51,15 @@ public class ReplaceStatusCodeValue :
                 val fa = super.visitFieldAccess(fieldAccess, ctx) as J.FieldAccess
                 if (!matchesStatusCodeValueProperty(fa)) return fa
 
-                return JavaTemplate.builder("#{any()}.getStatusCode().value()")
+                val statusCodeAccess = fa.withName(
+                    fa.name
+                        .withSimpleName("statusCode")
+                        .withFieldType(fa.name.fieldType?.withName("statusCode")),
+                )
+                return JavaTemplate.builder("#{any(org.springframework.http.HttpStatusCode)}.value()")
                     .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "spring-web-6", "spring-core-6"))
                     .build()
-                    .apply(updateCursor(fa), fa.coordinates.replace(), fa.target)
+                    .apply(updateCursor(fa), fa.coordinates.replace(), statusCodeAccess)
             }
 
             private fun matchesStatusCodeValueProperty(fa: J.FieldAccess): Boolean {
