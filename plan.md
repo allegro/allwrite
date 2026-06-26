@@ -50,35 +50,34 @@ change but made no changes."
 
 **Test structure:** JUnit 5 + `RewriteTest` interface (standard for `allwrite-recipes` module)
 
-## Phase 3: Implementation (spike confirmed gap)
+## Phase 3: Implementation ✅ DONE
 
 **File:** `allwrite-recipes/src/main/kotlin/pl/allegro/tech/allwrite/recipes/spring/ReplaceStatusCodeValue.kt`
 
-**Possible approaches (decide based on spike findings):**
+**Approach chosen: Option A — Type-aware `JavaVisitor` with `JavaTemplate` + `DelegatingJVisitor`**
 
-### Option A: OpenRewrite Groovy/Kotlin Visitor
+Modelled after `rewrite-spring`'s `MigrateResponseStatusExceptionGetRawStatusCodeMethod`, which uses the same
+`#{any()}.getStatusCode().value()` template pattern.
 
-- Use `GroovyVisitor` / `KotlinVisitor` to find method invocations / property accesses
-- Replace AST nodes for `getStatusCodeValue()` → `getStatusCode().value()`
-- Replace property access `statusCodeValue` → `statusCode.value()`
-- More precise, type-aware, but more complex
+**Implementation details:**
 
-### Option B: Text-based `FindAndReplace`
+- `MethodMatcher("org.springframework.http.ResponseEntity getStatusCodeValue()")` for Java method calls
+- Fallback matching via `TypeUtils.isAssignableTo` on the select expression type (handles Groovy/Kotlin cases where
+  `MethodMatcher` doesn't fully resolve types)
+- `KotlinPropertyMatcher` + `TypeUtils.isAssignableTo` for `J.FieldAccess` nodes (Kotlin/Groovy `.statusCodeValue` property access)
+- `JavaTemplate.builder("#{any()}.getStatusCode().value()")` with `classpathFromResources(ctx, "spring-web-6", "spring-core-6")`
+  applied at both `J.MethodInvocation.coordinates.replace()` and `J.FieldAccess.coordinates.replace()`
+- `DelegatingJVisitor(javaVisitor)` dispatches the single `JavaVisitor` across Java, Kotlin, and Groovy compilation units
+- Reused existing project infrastructure: `KotlinPropertyMatcher`, `DelegatingJVisitor`, `ClasspathAwareRecipe`
 
-- Use `org.openrewrite.text.FindAndReplace` with regex
-- Pattern: `\.statusCodeValue\b` → `.statusCode.value()`
-- Pattern: `\.getStatusCodeValue\(\)` → `.getStatusCode().value()`
-- `filePattern = "**/*.groovy"` and `"**/*.kt"`
-- Simpler, less precise (no type checking), but effective for common patterns
-- Project already has a `FindAndReplace` wrapper in `recipes/util/`
+**Test adjustments:**
 
-### Option C: Composite recipe (declarative YAML)
+- Property access (`.statusCodeValue`) in Groovy/Kotlin is replaced with `.getStatusCode().value()` (not `.statusCode.value()`)
+  because `JavaTemplate` produces a standard method-call chain. This is semantically correct and avoids Groovy printer
+  parenthesis issues.
 
-- Define in `META-INF/rewrite/` as a declarative recipe combining text-based replacements
-- Good if the fix is purely textual
-
-**Decision criteria:** If type-awareness is needed (to avoid false positives), go with Option A. If the pattern is distinctive enough (`.statusCodeValue` is
-unique to Spring's `ResponseEntity`), Option B or C is simpler and sufficient.
+**All 15 tests pass.** (The spike test `ReplaceStatusCodeValueSpikeTest` still fails as expected — it tests the upstream
+`UpgradeSpringBoot_4_0` recipe which doesn't handle this case.)
 
 ## Phase 4: Integration into SpringBoot4_0
 
