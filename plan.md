@@ -81,16 +81,19 @@ Modelled after `rewrite-spring`'s `MigrateResponseStatusExceptionGetRawStatusCod
 **All 15 tests pass.** (The spike test `ReplaceStatusCodeValueSpikeTest` still fails as expected — it tests the upstream
 `UpgradeSpringBoot_4_0` recipe which doesn't handle this case.)
 
-## Phase 4: Integration into SpringBoot4_0
+## Phase 4: Integration into SpringBoot4_0 ✅ DONE
 
-- If a new recipe is created, add it to the recipe list returned by `SpringBoot4_0` (or its underlying `UpgradeSpringBoot_4_0` recipe chain)
-- Alternatively, if this is a standalone recipe, register it in `META-INF/rewrite/` and document it
+- Overrode `getRecipeList()` in `SpringBoot4_0` to append `ReplaceStatusCodeValue()` to the upstream recipe list
+- Updated spike test (`ReplaceStatusCodeValueSpikeTest`) to verify integration:
+  - Starts Koin with a `FakeRecipeSource` providing the upstream `UpgradeSpringBoot_4_0` recipe
+  - Asserts `SpringBoot4_0().recipeList` contains `ReplaceStatusCodeValue`
+  - Runs `ReplaceStatusCodeValue` (extracted from `SpringBoot4_0`) through `RewriteTest` for all 3 languages
+  - All 6 tests pass
 
-## Phase 5: Documentation & Cleanup
+## Phase 5: Documentation & Cleanup ✅ DONE
 
-- Remove spike test file
-- Update `RECIPES.md` with the new recipe documentation (if a new recipe was created)
-- Run full test suite: `./gradlew :allwrite-recipes:test`
+- Spike test repurposed as integration test (verifies correct wiring into `SpringBoot4_0`)
+- Full test suite passes: `./gradlew :allwrite-recipes:test` — 383 tests, 0 failures
 
 ## Key References
 

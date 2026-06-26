@@ -593,3 +593,60 @@ public class MyService {
     public MyService(@Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {}
 }
 ```
+
+### `pl.allegro.tech.allwrite.recipes.spring.ReplaceStatusCodeValue`
+
+Replaces deprecated `ResponseEntity.getStatusCodeValue()` / `.statusCodeValue` with `getStatusCode().value()` / `.statusCode.value()` as required by Spring
+Framework 7 / Spring Boot 4. Works across Java, Groovy, and Kotlin source files. Included in the `SpringBoot4_0` upgrade recipe.
+
+Before (Java):
+
+```java
+import org.springframework.http.ResponseEntity;
+
+class Example {
+    void test() {
+        ResponseEntity<String> response = ResponseEntity.ok("hello");
+        int status = response.getStatusCodeValue();
+    }
+}
+```
+
+After (Java):
+
+```java
+import org.springframework.http.ResponseEntity;
+
+class Example {
+    void test() {
+        ResponseEntity<String> response = ResponseEntity.ok("hello");
+        int status = response.getStatusCode().value();
+    }
+}
+```
+
+Before (Kotlin/Groovy):
+
+```kotlin
+import org.springframework.http.ResponseEntity
+
+class Example {
+    fun test() {
+        val response: ResponseEntity<String> = ResponseEntity.ok("hello")
+        val status: Int = response.statusCodeValue
+    }
+}
+```
+
+After (Kotlin/Groovy):
+
+```kotlin
+import org.springframework.http.ResponseEntity
+
+class Example {
+    fun test() {
+        val response: ResponseEntity<String> = ResponseEntity.ok("hello")
+        val status: Int = response.statusCode.value()
+    }
+}
+```
