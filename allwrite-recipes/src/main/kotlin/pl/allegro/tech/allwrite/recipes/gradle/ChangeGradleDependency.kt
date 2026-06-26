@@ -27,7 +27,7 @@ public class ChangeGradleDependency(
     @Option(description = "The new artifact ID to use. Defaults to the existing artifact ID.", required = false, example = "rewrite-testing-frameworks")
     public val newArtifactId: String? = null,
     @Option(description = "An exact version number or node-style semver selector used to select the version number.", required = false, example = "29.X")
-    public val newVersion: String? = null
+    public val newVersion: String? = null,
 ) : AllwriteRecipe(
     displayName = "Change Gradle dependency with TOML support",
     description = "Changes Gradle dependencies and also updates matching entries in gradle/libs.versions.toml.",
@@ -44,7 +44,8 @@ public class ChangeGradleDependency(
         return object : TreeVisitor<Tree, ExecutionContext>() {
             override fun isAcceptable(sourceFile: SourceFile, ctx: ExecutionContext): Boolean =
                 sourceFile.isBuildGradleFile() ||
-                    sourceFile is Toml.Document && sourceFile.sourcePath == TOML_VERSION_CATALOG_PATH
+                    sourceFile is Toml.Document &&
+                    sourceFile.sourcePath == TOML_VERSION_CATALOG_PATH
 
             override fun visit(tree: Tree?, ctx: ExecutionContext): Tree? {
                 if (tree !is SourceFile) return tree
