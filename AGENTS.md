@@ -57,7 +57,7 @@ allwrite-cli  -->  allwrite-runtime  -->  allwrite-api
 |---|---|
 | `allwrite-api` | Public API layer. Incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`). Published as a Maven artifact. |
 | `allwrite-spi` | Published SPI for recipe authors. Base classes (`AllwriteRecipe`, `AllwriteScanningRecipe`), `RecipeMetadata`, tag generation (including `dependabot-artifact`). |
-| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`. |
+| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`. Gradle dependency rewriting now uses dedicated helpers for build scripts and TOML catalogs. |
 | `allwrite-runtime` | Domain layer. Outgoing port interfaces and OpenRewrite-backed implementations. Depends on `allwrite-api`. |
 | `allwrite-cli` | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring. |
 | `allwrite-completions` | Build-time annotation processor for shell completion generation. |
@@ -95,6 +95,7 @@ allwrite/
 │   │   ├── recipes/properties/      Properties file recipes
 │   │   ├── recipes/toml/            TOML utilities
 │   │   └── recipes/util/            Shared recipe utilities
+│   │   └── recipes/gradle/*DependencyRewriter.kt  Dedicated helpers for Gradle dependency transforms
 │   ├── src/main/resources/META-INF/rewrite/   Declarative YAML recipes
 │   ├── src/test/kotlin/              Unit tests (JUnit 5 + RewriteTest)
 │   └── src/testFixtures/kotlin/      Test fixture classes

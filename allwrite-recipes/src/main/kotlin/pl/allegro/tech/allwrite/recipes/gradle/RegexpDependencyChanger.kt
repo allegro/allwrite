@@ -31,7 +31,7 @@ internal class RegexpDependencyChanger(
                     "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
                     "(?<separator2>['\",:\\s]+)" +
                     "(?<versionKey>version(\\.ref)?[:=\\s'\"]+)" +
-                    "(?<version>[^('|\")]+)",
+                    "(?<version>[^()'\"\\s,}]+)",
                 Pattern.MULTILINE,
             ),
         ),
