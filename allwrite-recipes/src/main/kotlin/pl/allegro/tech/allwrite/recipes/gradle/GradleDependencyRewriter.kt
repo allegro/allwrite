@@ -65,7 +65,12 @@ internal class GradleDependencyRewriter(
         return BuildGradleInterpolatedDependencyRewrite(updatedText, existingVersionVariable)
     }
 
-    private fun addBuildGradleVersionVariableDefinition(originalText: String, existingVersionVariable: String, newVersionVariable: String, version: String): String {
+    private fun addBuildGradleVersionVariableDefinition(
+        originalText: String,
+        existingVersionVariable: String,
+        newVersionVariable: String,
+        version: String,
+    ): String {
         if (buildGradleVersionVariableDefinitionExists(originalText, newVersionVariable)) return originalText
         val pattern =
             Regex(

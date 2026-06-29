@@ -694,6 +694,39 @@ class ChangeGradleDependencyTest : RewriteTest {
     }
 
     @Test
+    fun `should sanitize dotted toml version refs`() {
+        rewriteRun(
+            { spec ->
+                spec.recipe(
+                    ChangeGradleDependency(
+                        oldGroupId = "com.fasterxml.jackson.module",
+                        oldArtifactId = "jackson-module-afterburner",
+                        newGroupId = "tools.jackson.module",
+                        newArtifactId = "jackson.module.blackbird",
+                        newVersion = "3.1.4",
+                    ),
+                ).validateRecipeSerialization(false)
+            },
+            toml(
+                before = """
+                [versions]
+                jackson-module-afterburner = "2.17.2"
+
+                [libraries]
+                jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson-module-afterburner" }
+                """.trimIndent(),
+                after = """
+                [versions]
+                jackson-module-blackbird = "3.1.4"
+
+                [libraries]
+                jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson.module.blackbird", version.ref = "jackson-module-blackbird" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
     fun `should not rewrite unrelated plugin version ref in toml`() {
         rewriteRun(
             toml(

@@ -85,7 +85,7 @@ internal class TomlVersionCatalogDependencyRewriter(
 
                 val entryName = keyValue.stringKey() ?: return@forEach
                 val version = library.version as? VersionRef ?: return@forEach
-                planVersionRefChange(document, keyValue, version.ref, newArtifactId ?: entryName)
+                planVersionRefChange(document, keyValue, version.ref, targetVersionRef(entryName))
             }
     }
 
@@ -102,7 +102,7 @@ internal class TomlVersionCatalogDependencyRewriter(
 
                 val entryName = keyValue.stringKey() ?: return@forEach
                 pluginVersionRefs += version.ref
-                planVersionRefChange(document, keyValue, version.ref, newArtifactId ?: entryName)
+                planVersionRefChange(document, keyValue, version.ref, targetVersionRef(entryName))
             }
     }
 
@@ -167,7 +167,7 @@ internal class TomlVersionCatalogDependencyRewriter(
                 version = when {
                     library.version == null -> null
                     newVersion == null -> null
-                    library.version is VersionRef -> VersionRef(newArtifactId ?: entryName)
+                    library.version is VersionRef -> VersionRef(targetVersionRef(entryName))
                     else -> PlainVersion(newVersion)
                 },
             )
@@ -217,5 +217,9 @@ internal class TomlVersionCatalogDependencyRewriter(
 
     private fun Toml.Document.tables(): List<Toml.Table> = values.filterIsInstance<Toml.Table>()
 
-    private fun targetEntryName(entryName: String): String = if (entryName == oldArtifactId && newArtifactId != null) newArtifactId else entryName
+    private fun targetVersionRef(entryName: String): String =
+        (newArtifactId ?: entryName).toVersionCatalogName()
+
+    private fun targetEntryName(entryName: String): String =
+        if (entryName == oldArtifactId && newArtifactId != null) newArtifactId.toVersionCatalogName() else entryName
 }
