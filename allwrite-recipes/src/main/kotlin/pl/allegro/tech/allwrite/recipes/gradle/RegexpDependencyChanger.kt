@@ -85,6 +85,7 @@ internal class RegexpDependencyChanger(
     private fun buildReplacement(matcher: Matcher, type: RuleType): String {
         val separator2 = matcher.group("separator2")
         val separatorBeforeVersion = if (newVersion == null && type != RuleType.VERSIONLESS) trimVersionSeparator(separator2) else separator2
+        val quotedVersion = shouldQuoteVersion(type, matcher)
 
         return buildString {
             append(newGroupId)
@@ -98,9 +99,25 @@ internal class RegexpDependencyChanger(
             }
 
             if (newVersion != null && type != RuleType.VERSIONLESS) {
+                if (quotedVersion) {
+                    append('"')
+                }
                 append(newVersion)
+                if (quotedVersion) {
+                    append('"')
+                }
             }
         }
+    }
+
+    private fun shouldQuoteVersion(type: RuleType, matcher: Matcher): Boolean {
+        if (type != RuleType.VERSION_KEY) return false
+        val versionKey = matcher.group("versionKey")
+        return newVersion != null &&
+            versionKey != null &&
+            !versionKey.endsWith("'") &&
+            !versionKey.endsWith('"') &&
+            newVersion.contains('.')
     }
 
     private fun trimVersionSeparator(separator: String): String = separator.replace(Regex("[,:\\s]+$"), "")

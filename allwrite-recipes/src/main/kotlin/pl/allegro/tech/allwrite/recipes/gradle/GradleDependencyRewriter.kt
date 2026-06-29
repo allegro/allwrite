@@ -20,12 +20,10 @@ internal class GradleDependencyRewriter(
     private fun updateText(originalText: String): String {
         val interpolation = rewriteGroovyVersionInterpolation(originalText)
         val versionedText = regexpDependencyChanger.update(interpolation.text)
-        val restoredText = interpolation.replacementLine?.let { versionedText.replace(INTERPOLATED_DEPENDENCY_PLACEHOLDER, it) } ?: versionedText
-
         return interpolation.existingVersionVariable?.let { existingVersionVariable ->
-            val version = newVersion ?: return@let restoredText
-            addGroovyVersionVariable(restoredText, existingVersionVariable, newArtifactId.toVersionVariableName(), version)
-        } ?: restoredText
+            val version = newVersion ?: return@let versionedText
+            addGroovyVersionVariable(versionedText, existingVersionVariable, newArtifactId.toVersionVariableName(), version)
+        } ?: versionedText
     }
 
     private fun rewriteGroovyVersionInterpolation(originalText: String): GroovyInterpolationRewrite {
@@ -38,32 +36,33 @@ internal class GradleDependencyRewriter(
             )
 
         var matchedVersionVariable: String? = null
-        var matchedIndent: String? = null
-        var matchedConfiguration: String? = null
         val updatedText = interpolationPattern.replace(originalText) { matchResult ->
             matchedVersionVariable = matchedVersionVariable ?: matchResult.groups["versionVariable"]?.value
-            matchedIndent = matchedIndent ?: matchResult.groups["indent"]?.value
-            matchedConfiguration = matchedConfiguration ?: matchResult.groups["configuration"]?.value
-            INTERPOLATED_DEPENDENCY_PLACEHOLDER
+            val indent = matchResult.groups["indent"]?.value.orEmpty()
+            val configuration = matchResult.groups["configuration"]?.value.orEmpty()
+            buildString {
+                append(indent)
+                append(configuration)
+                append(" group: '")
+                append(newGroupId)
+                append("', name: '")
+                append(newArtifactId)
+                if (newVersion != null) {
+                    append("', version: \"")
+                    append('$')
+                    append('{')
+                    append(versionVariable)
+                    append("}\"")
+                } else {
+                    append("'")
+                }
+            }
         }
 
-        val existingVersionVariable = matchedVersionVariable ?: return GroovyInterpolationRewrite(originalText, null, null)
-        val indent = matchedIndent ?: return GroovyInterpolationRewrite(originalText, null, null)
-        val configuration = matchedConfiguration ?: return GroovyInterpolationRewrite(originalText, null, null)
-        val replacementLine = buildString {
-            append(indent)
-            append(configuration)
-            append(" group: '")
-            append(newGroupId)
-            append("', name: '")
-            append(newArtifactId)
-            append("', version: \"")
-            append('$')
-            append('{')
-            append(versionVariable)
-            append("}\"")
-        }
-        return GroovyInterpolationRewrite(updatedText, existingVersionVariable, replacementLine)
+        val existingVersionVariable =
+            matchedVersionVariable?.takeIf { newVersion != null }
+                ?: return GroovyInterpolationRewrite(updatedText, null)
+        return GroovyInterpolationRewrite(updatedText, existingVersionVariable)
     }
 
     private fun addGroovyVersionVariable(originalText: String, existingVersionVariable: String, newVersionVariable: String, version: String): String {
@@ -89,7 +88,4 @@ internal class GradleDependencyRewriter(
 private data class GroovyInterpolationRewrite(
     val text: String,
     val existingVersionVariable: String?,
-    val replacementLine: String?,
 )
-
-private const val INTERPOLATED_DEPENDENCY_PLACEHOLDER = "__ALLWRITE_INTERPOLATED_DEPENDENCY__"
