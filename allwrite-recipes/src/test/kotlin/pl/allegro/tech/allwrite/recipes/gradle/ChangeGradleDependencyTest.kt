@@ -620,6 +620,30 @@ class ChangeGradleDependencyTest : RewriteTest {
     }
 
     @Test
+    fun `should update existing target version entry in toml`() {
+        rewriteRun(
+            toml(
+                before = """
+                [versions]
+                jackson-module-afterburner = "2.17.2"
+                jackson-module-blackbird = "1.0.0"
+
+                [libraries]
+                jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson-module-afterburner" }
+                """.trimIndent(),
+                after = """
+                [versions]
+                jackson-module-afterburner = "2.17.2"
+                jackson-module-blackbird = "3.1.4"
+
+                [libraries]
+                jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version.ref = "jackson-module-blackbird" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
     fun `should not change non matching dependency in build gradle`() {
         rewriteRun(
             buildGradle(

@@ -111,9 +111,18 @@ internal class TomlVersionCatalogDependencyRewriter(
                 versionRefOverrides[currentRef] = targetRef
             }
             currentRef == targetRef -> versionRefUpdates[targetRef] = version
+            versionEntryExists(document, targetRef) -> versionRefUpdates[targetRef] = version
             else -> versionRefRenames[currentRef] = targetRef
         }
     }
+
+    private fun versionEntryExists(document: Toml.Document, versionName: String): Boolean =
+        document.tables()
+            .firstOrNull { it.name() == VERSION_CATALOG_TABLE_VERSIONS }
+            ?.values
+            ?.asSequence()
+            ?.filterIsInstance<Toml.KeyValue>()
+            ?.any { it.stringKey() == versionName } == true
 
     private fun isTargetLibrary(library: Library): Boolean =
         StringUtils.matchesGlob(library.group, oldGroupId) && StringUtils.matchesGlob(library.name, oldArtifactId)
