@@ -217,8 +217,7 @@ internal class TomlVersionCatalogDependencyRewriter(
 
     private fun Toml.Document.tables(): List<Toml.Table> = values.filterIsInstance<Toml.Table>()
 
-    private fun targetVersionRef(entryName: String): String =
-        (newArtifactId ?: entryName).toVersionCatalogName()
+    private fun targetVersionRef(entryName: String): String = (newArtifactId ?: entryName).toVersionCatalogName()
 
     private fun targetEntryName(entryName: String): String =
         if (entryName == oldArtifactId && newArtifactId != null) newArtifactId.toVersionCatalogName() else entryName
