@@ -26,12 +26,14 @@ internal class TomlVersionCatalogDependencyRewriter(
     private val versionRefOverrides = mutableMapOf<String, String>()
     private val versionRefUpdates = mutableMapOf<String, String>()
     private val versionEntriesToAdd = mutableMapOf<String, String>()
+    private val pluginVersionRefs = mutableSetOf<String>()
 
     override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document {
         versionRefRenames.clear()
         versionRefOverrides.clear()
         versionRefUpdates.clear()
         versionEntriesToAdd.clear()
+        pluginVersionRefs.clear()
         planVersionRefChanges(document)
         return super.visitDocument(document, p)
     }
@@ -99,6 +101,7 @@ internal class TomlVersionCatalogDependencyRewriter(
                 if (version.ref != oldArtifactId) return@forEach
 
                 val entryName = keyValue.stringKey() ?: return@forEach
+                pluginVersionRefs += version.ref
                 planVersionRefChange(document, keyValue, version.ref, newArtifactId ?: entryName)
             }
     }
@@ -195,6 +198,7 @@ internal class TomlVersionCatalogDependencyRewriter(
             if (newVersion == null) return keyValue
             val plugin = keyValue.valueToPlugin() ?: return keyValue
             val versionRef = plugin.version as? VersionRef ?: return keyValue
+            if (versionRef.ref !in pluginVersionRefs) return keyValue
             versionRefOverrides[versionRef.ref]?.let { targetRef ->
                 val entryName = keyValue.stringKey() ?: return keyValue
                 return Plugin(id = plugin.id, version = VersionRef(targetRef))

@@ -18,15 +18,15 @@ internal class GradleDependencyRewriter(
     }
 
     private fun updateText(originalText: String): String {
-        val interpolation = rewriteGroovyVersionInterpolation(originalText)
+        val interpolation = rewriteBuildGradleInterpolatedDependency(originalText)
         val versionedText = regexpDependencyChanger.update(interpolation.text)
         return interpolation.existingVersionVariable?.let { existingVersionVariable ->
             val version = newVersion ?: return@let versionedText
-            addGroovyVersionVariable(versionedText, existingVersionVariable, newArtifactId.toVersionVariableName(), version)
+            addBuildGradleVersionVariableDefinition(versionedText, existingVersionVariable, newArtifactId.toVersionVariableName(), version)
         } ?: versionedText
     }
 
-    private fun rewriteGroovyVersionInterpolation(originalText: String): GroovyInterpolationRewrite {
+    private fun rewriteBuildGradleInterpolatedDependency(originalText: String): BuildGradleInterpolatedDependencyRewrite {
         val versionVariable = newArtifactId.toVersionVariableName()
         val interpolationPattern =
             Regex(
@@ -61,12 +61,12 @@ internal class GradleDependencyRewriter(
 
         val existingVersionVariable =
             matchedVersionVariable?.takeIf { newVersion != null }
-                ?: return GroovyInterpolationRewrite(updatedText, null)
-        return GroovyInterpolationRewrite(updatedText, existingVersionVariable)
+                ?: return BuildGradleInterpolatedDependencyRewrite(updatedText, null)
+        return BuildGradleInterpolatedDependencyRewrite(updatedText, existingVersionVariable)
     }
 
-    private fun addGroovyVersionVariable(originalText: String, existingVersionVariable: String, newVersionVariable: String, version: String): String {
-        if (groovyVersionVariableExists(originalText, newVersionVariable)) return originalText
+    private fun addBuildGradleVersionVariableDefinition(originalText: String, existingVersionVariable: String, newVersionVariable: String, version: String): String {
+        if (buildGradleVersionVariableDefinitionExists(originalText, newVersionVariable)) return originalText
         val pattern =
             Regex(
                 """(?m)^(?<indent>\s*)${Regex.escape(existingVersionVariable)}\s*=\s*['"][^'"]*['"]\s*$""",
@@ -82,7 +82,7 @@ internal class GradleDependencyRewriter(
         }
     }
 
-    private fun groovyVersionVariableExists(originalText: String, versionVariable: String): Boolean =
+    private fun buildGradleVersionVariableDefinitionExists(originalText: String, versionVariable: String): Boolean =
         Regex("""(?m)^\s*${Regex.escape(versionVariable)}\s*=\s*['"][^'"]*['"]\s*$""").containsMatchIn(originalText)
 
     private fun String.toVersionVariableName(): String {
@@ -91,7 +91,7 @@ internal class GradleDependencyRewriter(
     }
 }
 
-private data class GroovyInterpolationRewrite(
+private data class BuildGradleInterpolatedDependencyRewrite(
     val text: String,
     val existingVersionVariable: String?,
 )

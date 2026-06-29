@@ -694,6 +694,35 @@ class ChangeGradleDependencyTest : RewriteTest {
     }
 
     @Test
+    fun `should not rewrite unrelated plugin version ref in toml`() {
+        rewriteRun(
+            toml(
+                before = """
+                [versions]
+                jackson = "2.17.2"
+
+                [plugins]
+                some-plugin = { id = "com.example.plugin", version.ref = "jackson" }
+
+                [libraries]
+                jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+                """.trimIndent(),
+                after = """
+                [versions]
+                jackson = "2.17.2"
+                jackson-module-blackbird = "3.1.4"
+
+                [plugins]
+                some-plugin = { id = "com.example.plugin", version.ref = "jackson" }
+
+                [libraries]
+                jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version.ref = "jackson-module-blackbird" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
     fun `should update existing target version entry in toml`() {
         rewriteRun(
             toml(
