@@ -173,6 +173,27 @@ class ChangeGradleDependencyTest : RewriteTest {
     }
 
     @Test
+    fun `should quote hyphenated version in build gradle`() {
+        rewriteRun(
+            { spec ->
+                spec.recipe(recipe(newVersion = "3-SNAPSHOT")).validateRecipeSerialization(false)
+            },
+            buildGradle(
+                before = """
+                dependencies {
+                    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.kotlin
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation group: 'tools.jackson.module', name: 'jackson-module-blackbird', version: "3-SNAPSHOT"
+                }
+                """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
+    @Test
     fun `should change dependency with interpolated version in build gradle`() {
         rewriteRun(
             buildGradle(
