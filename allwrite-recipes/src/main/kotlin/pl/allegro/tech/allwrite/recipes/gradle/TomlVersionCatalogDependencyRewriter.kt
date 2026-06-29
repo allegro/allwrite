@@ -52,14 +52,6 @@ internal class TomlVersionCatalogDependencyRewriter(
             .filterIsInstance<Toml.KeyValue>()
             .mapNotNull { it.stringKey() }
             .toSet()
-        val newEntries = versionEntriesToAdd
-            .map { (name, value) ->
-                visited.values
-                    .filterIsInstance<Toml.KeyValue>()
-                    .firstOrNull { it.stringKey() == name }
-                    ?.withValue(literal(value).withPrefix(Space.SINGLE_SPACE))
-                    ?: kv(name, value).withPrefix(Space.format("\n"))
-            }
         val updatedValues = visited.values.map { value ->
             val keyValue = value as? Toml.KeyValue ?: return@map value
             val key = keyValue.stringKey() ?: return@map value
@@ -67,7 +59,9 @@ internal class TomlVersionCatalogDependencyRewriter(
                 keyValue.withValue(literal(version).withPrefix(Space.SINGLE_SPACE))
             } ?: value
         }
-        val missingEntries = newEntries.filterNot { it.stringKey() in existingKeys }
+        val missingEntries = versionEntriesToAdd
+            .filterKeys { it !in existingKeys }
+            .map { (name, value) -> kv(name, value).withPrefix(Space.format("\n")) }
         return visited.withValues(updatedValues + missingEntries)
     }
 
