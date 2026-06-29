@@ -30,8 +30,10 @@ internal class RegexpDependencyChanger(
                     "(?<nameKey>name[:=\\s'\"]+)?" +
                     "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
                     "(?<separator2>['\",:\\s]+)" +
-                    "(?<versionKey>version(\\.ref)?[:=\\s'\"]+)" +
-                    "(?<version>\\$\\{[^}]+}|[^()'\"\\s,}]+)",
+                    "(?<versionKey>version(\\.ref)?[:=\\s]+)" +
+                    "(?<versionQuote>['\"]?)" +
+                    "(?<version>\\$\\{[^}]+}|[^()'\"\\s,}]+)" +
+                    "['\"]?",
                 Pattern.MULTILINE,
             ),
         ),
@@ -99,15 +101,17 @@ internal class RegexpDependencyChanger(
 
             if (newVersion != null && type != RuleType.VERSIONLESS) {
                 if (type == RuleType.VERSION_KEY) {
-                    append('"')
+                    append(matcher.group("versionQuote").orDoubleQuote())
                 }
                 append(newVersion)
                 if (type == RuleType.VERSION_KEY) {
-                    append('"')
+                    append(matcher.group("versionQuote").orDoubleQuote())
                 }
             }
         }
     }
+
+    private fun String?.orDoubleQuote(): String = if (isNullOrEmpty()) "\"" else this
 
     private fun trimVersionSeparator(separator: String): String = separator.replace(Regex("[,:\\s]+$"), "")
 }

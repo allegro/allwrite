@@ -173,6 +173,81 @@ class ChangeGradleDependencyTest : RewriteTest {
     }
 
     @Test
+    fun `should change quoted dependency version in build gradle`() {
+        rewriteRun(
+            buildGradle(
+                before = """
+                dependencies {
+                    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: '2.17.2'
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation group: 'tools.jackson.module', name: 'jackson-module-blackbird', version: '3.1.4'
+                }
+                """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
+    @Test
+    fun `should change double quoted dependency version in build gradle`() {
+        rewriteRun(
+            buildGradle(
+                before = """
+                dependencies {
+                    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: "2.17.2"
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation group: 'tools.jackson.module', name: 'jackson-module-blackbird', version: "3.1.4"
+                }
+                """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
+    @Test
+    fun `should change dependency with version expression in build gradle kts`() {
+        rewriteRun(
+            buildGradleKts(
+                before = """
+                dependencies {
+                    implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version = versions.kotlin)
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation(group = "tools.jackson.module", name = "jackson-module-blackbird", version = "3.1.4")
+                }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
+
+    @Test
+    fun `should drop version from version expression in build gradle kts`() {
+        rewriteRun(
+            { spec ->
+                spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
+            },
+            buildGradleKts(
+                before = """
+                dependencies {
+                    implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version = versions.kotlin)
+                }
+                """.trimIndent(),
+                after = """
+                dependencies {
+                    implementation(group = "tools.jackson.module", name = "jackson-module-blackbird")
+                }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
+
+    @Test
     fun `should quote hyphenated version in build gradle`() {
         rewriteRun(
             { spec ->
