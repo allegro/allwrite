@@ -66,7 +66,7 @@ internal class GradleDependencyRewriter(
     }
 
     private fun addGroovyVersionVariable(originalText: String, existingVersionVariable: String, newVersionVariable: String, version: String): String {
-        if (originalText.contains("$newVersionVariable =")) return originalText
+        if (groovyVersionVariableExists(originalText, newVersionVariable)) return originalText
         val pattern =
             Regex(
                 """(?m)^(?<indent>\s*)${Regex.escape(existingVersionVariable)}\s*=\s*['"][^'"]*['"]\s*$""",
@@ -82,7 +82,13 @@ internal class GradleDependencyRewriter(
         }
     }
 
-    private fun String.toVersionVariableName(): String = replace('-', '_')
+    private fun groovyVersionVariableExists(originalText: String, versionVariable: String): Boolean =
+        Regex("""(?m)^\s*${Regex.escape(versionVariable)}\s*=\s*['"][^'"]*['"]\s*$""").containsMatchIn(originalText)
+
+    private fun String.toVersionVariableName(): String {
+        val sanitized = replace(Regex("[^A-Za-z0-9_]"), "_")
+        return if (sanitized.firstOrNull()?.isDigit() == true) "_$sanitized" else sanitized
+    }
 }
 
 private data class GroovyInterpolationRewrite(

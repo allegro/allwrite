@@ -333,6 +333,80 @@ class ChangeGradleDependencyTest : RewriteTest {
     }
 
     @Test
+    fun `should not duplicate existing version variable in build gradle`() {
+        rewriteRun(
+            buildGradle(
+                before = """
+                buildscript {
+                    ext {
+                        jackson_module_blackbird='1.0.0'
+                        jackson = '2.18.3'
+                    }
+                }
+
+                dependencies {
+                    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: "${'$'}{jackson}"
+                }
+                """.trimIndent(),
+                after = """
+                buildscript {
+                    ext {
+                        jackson_module_blackbird='1.0.0'
+                        jackson = '2.18.3'
+                    }
+                }
+
+                dependencies {
+                    implementation group: 'tools.jackson.module', name: 'jackson-module-blackbird', version: "${'$'}{jackson_module_blackbird}"
+                }
+                """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
+    @Test
+    fun `should sanitize version variable name in build gradle`() {
+        rewriteRun(
+            { spec ->
+                spec.recipe(
+                    ChangeGradleDependency(
+                        oldGroupId = "com.fasterxml.jackson.module",
+                        oldArtifactId = "jackson-module-afterburner",
+                        newGroupId = "tools.jackson.module",
+                        newArtifactId = "jackson.module.blackbird",
+                        newVersion = "3.1.4",
+                    ),
+                ).validateRecipeSerialization(false)
+            },
+            buildGradle(
+                before = """
+                buildscript {
+                    ext {
+                        jackson = '2.18.3'
+                    }
+                }
+
+                dependencies {
+                    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: "${'$'}{jackson}"
+                }
+                """.trimIndent(),
+                after = """
+                buildscript {
+                    ext {
+                        jackson = '2.18.3'
+                        jackson_module_blackbird = '3.1.4'
+                    }
+                }
+
+                dependencies {
+                    implementation group: 'tools.jackson.module', name: 'jackson.module.blackbird', version: "${'$'}{jackson_module_blackbird}"
+                }
+                """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
+    @Test
     fun `should drop version from interpolated dependency in build gradle`() {
         rewriteRun(
             { spec ->
