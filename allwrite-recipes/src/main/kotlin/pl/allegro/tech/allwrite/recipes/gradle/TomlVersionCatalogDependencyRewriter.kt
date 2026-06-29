@@ -6,6 +6,7 @@ import org.openrewrite.toml.TomlIsoVisitor
 import org.openrewrite.toml.tree.Space
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.recipes.toml.Builders.kv
+import pl.allegro.tech.allwrite.recipes.toml.Builders.literal
 import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 
@@ -46,9 +47,28 @@ internal class TomlVersionCatalogDependencyRewriter(
         if (visited.name() != VERSION_CATALOG_TABLE_VERSIONS) return visited
         if (versionEntriesToAdd.isEmpty()) return visited
 
+        val existingKeys = visited.values
+            .asSequence()
+            .filterIsInstance<Toml.KeyValue>()
+            .mapNotNull { it.stringKey() }
+            .toSet()
         val newEntries = versionEntriesToAdd
-            .map { (name, value) -> kv(name, value).withPrefix(Space.format("\n")) }
-        return visited.withValues(visited.values + newEntries)
+            .map { (name, value) ->
+                visited.values
+                    .filterIsInstance<Toml.KeyValue>()
+                    .firstOrNull { it.stringKey() == name }
+                    ?.withValue(literal(value).withPrefix(Space.SINGLE_SPACE))
+                    ?: kv(name, value).withPrefix(Space.format("\n"))
+            }
+        val updatedValues = visited.values.map { value ->
+            val keyValue = value as? Toml.KeyValue ?: return@map value
+            val key = keyValue.stringKey() ?: return@map value
+            versionEntriesToAdd[key]?.let { version ->
+                keyValue.withValue(literal(version).withPrefix(Space.SINGLE_SPACE))
+            } ?: value
+        }
+        val missingEntries = newEntries.filterNot { it.stringKey() in existingKeys }
+        return visited.withValues(updatedValues + missingEntries)
     }
 
     private fun planVersionRefChanges(document: Toml.Document) {
@@ -89,12 +109,7 @@ internal class TomlVersionCatalogDependencyRewriter(
             }
     }
 
-    private fun planVersionRefChange(
-        document: Toml.Document,
-        keyValue: Toml.KeyValue,
-        currentRef: String,
-        targetRef: String,
-    ) {
+    private fun planVersionRefChange(document: Toml.Document, keyValue: Toml.KeyValue, currentRef: String, targetRef: String) {
         val version = newVersion ?: return
         when {
             isVersionRefShared(document, currentRef, keyValue) -> {
