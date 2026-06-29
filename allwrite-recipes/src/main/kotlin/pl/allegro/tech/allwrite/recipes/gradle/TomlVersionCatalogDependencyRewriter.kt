@@ -25,14 +25,12 @@ internal class TomlVersionCatalogDependencyRewriter(
     private val versionRefOverrides = mutableMapOf<String, String>()
     private val versionRefUpdates = mutableMapOf<String, String>()
     private val versionEntriesToAdd = mutableMapOf<String, String>()
-    private val versionEntriesToPrepend = mutableSetOf<String>()
 
     override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document {
         versionRefRenames.clear()
         versionRefOverrides.clear()
         versionRefUpdates.clear()
         versionEntriesToAdd.clear()
-        versionEntriesToPrepend.clear()
         planVersionRefChanges(document)
         return super.visitDocument(document, p)
     }
@@ -50,12 +48,7 @@ internal class TomlVersionCatalogDependencyRewriter(
 
         val newEntries = versionEntriesToAdd
             .map { (name, value) -> kv(name, value).withPrefix(Space.format("\n")) }
-        val values = if (versionEntriesToPrepend.isNotEmpty()) {
-            newEntries + visited.values
-        } else {
-            visited.values + newEntries
-        }
-        return visited.withValues(values)
+        return visited.withValues(visited.values + newEntries)
     }
 
     private fun planVersionRefChanges(document: Toml.Document) {
@@ -92,7 +85,7 @@ internal class TomlVersionCatalogDependencyRewriter(
                 if (version.ref != oldArtifactId) return@forEach
 
                 val entryName = keyValue.stringKey() ?: return@forEach
-                planVersionRefChange(document, keyValue, version.ref, newArtifactId ?: entryName, prependVersionEntry = true)
+                planVersionRefChange(document, keyValue, version.ref, newArtifactId ?: entryName)
             }
     }
 
@@ -101,16 +94,12 @@ internal class TomlVersionCatalogDependencyRewriter(
         keyValue: Toml.KeyValue,
         currentRef: String,
         targetRef: String,
-        prependVersionEntry: Boolean = false,
     ) {
         val version = newVersion ?: return
         when {
             isVersionRefShared(document, currentRef, keyValue) -> {
                 versionEntriesToAdd[targetRef] = version
                 versionRefOverrides[currentRef] = targetRef
-                if (prependVersionEntry) {
-                    versionEntriesToPrepend += targetRef
-                }
             }
             currentRef == targetRef -> versionRefUpdates[targetRef] = version
             else -> versionRefRenames[currentRef] = targetRef

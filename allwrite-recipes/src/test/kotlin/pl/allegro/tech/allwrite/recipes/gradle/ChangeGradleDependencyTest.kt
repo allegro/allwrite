@@ -702,8 +702,8 @@ class ChangeGradleDependencyTest : RewriteTest {
                 """.trimIndent(),
                 after = """
                 [versions]
-                jackson-module-blackbird = "3.1.4"
                 jackson-module-afterburner = "2.17.2"
+                jackson-module-blackbird = "3.1.4"
 
                 [plugins]
                 some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-blackbird" }
