@@ -684,4 +684,35 @@ class ChangeGradleDependencyTest : RewriteTest {
             ) { path("gradle/libs.versions.toml") },
         )
     }
+
+    @Test
+    fun `should split shared plugin version ref in toml`() {
+        rewriteRun(
+            toml(
+                before = """
+                [versions]
+                jackson-module-afterburner = "2.17.2"
+
+                [plugins]
+                some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-afterburner" }
+
+                [libraries]
+                jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson-module-afterburner" }
+                jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson-module-afterburner" }
+                """.trimIndent(),
+                after = """
+                [versions]
+                jackson-module-blackbird = "3.1.4"
+                jackson-module-afterburner = "2.17.2"
+
+                [plugins]
+                some-plugin = { id = "com.example.plugin", version.ref = "jackson-module-blackbird" }
+
+                [libraries]
+                jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version.ref = "jackson-module-blackbird" }
+                jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson-module-afterburner" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
 }

@@ -22,13 +22,17 @@ internal class TomlVersionCatalogDependencyRewriter(
         LibrariesSectionHandler(),
     )
     private val versionRefRenames = mutableMapOf<String, String>()
+    private val versionRefOverrides = mutableMapOf<String, String>()
     private val versionRefUpdates = mutableMapOf<String, String>()
     private val versionEntriesToAdd = mutableMapOf<String, String>()
+    private val versionEntriesToPrepend = mutableSetOf<String>()
 
     override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document {
         versionRefRenames.clear()
+        versionRefOverrides.clear()
         versionRefUpdates.clear()
         versionEntriesToAdd.clear()
+        versionEntriesToPrepend.clear()
         planVersionRefChanges(document)
         return super.visitDocument(document, p)
     }
@@ -44,16 +48,14 @@ internal class TomlVersionCatalogDependencyRewriter(
         if (visited.name() != VERSION_CATALOG_TABLE_VERSIONS) return visited
         if (versionEntriesToAdd.isEmpty()) return visited
 
-        val existingKeys = visited.values
-            .asSequence()
-            .filterIsInstance<Toml.KeyValue>()
-            .mapNotNull { it.stringKey() }
-            .toSet()
-        val missingEntries = versionEntriesToAdd
-            .filterKeys { it !in existingKeys }
+        val newEntries = versionEntriesToAdd
             .map { (name, value) -> kv(name, value).withPrefix(Space.format("\n")) }
-
-        return if (missingEntries.isEmpty()) visited else visited.withValues(visited.values + missingEntries)
+        val values = if (versionEntriesToPrepend.isNotEmpty()) {
+            newEntries + visited.values
+        } else {
+            visited.values + newEntries
+        }
+        return visited.withValues(values)
     }
 
     private fun planVersionRefChanges(document: Toml.Document) {
@@ -90,14 +92,26 @@ internal class TomlVersionCatalogDependencyRewriter(
                 if (version.ref != oldArtifactId) return@forEach
 
                 val entryName = keyValue.stringKey() ?: return@forEach
-                planVersionRefChange(document, keyValue, version.ref, newArtifactId ?: entryName)
+                planVersionRefChange(document, keyValue, version.ref, newArtifactId ?: entryName, prependVersionEntry = true)
             }
     }
 
-    private fun planVersionRefChange(document: Toml.Document, keyValue: Toml.KeyValue, currentRef: String, targetRef: String) {
+    private fun planVersionRefChange(
+        document: Toml.Document,
+        keyValue: Toml.KeyValue,
+        currentRef: String,
+        targetRef: String,
+        prependVersionEntry: Boolean = false,
+    ) {
         val version = newVersion ?: return
         when {
-            isVersionRefShared(document, currentRef, keyValue) -> versionEntriesToAdd[targetRef] = version
+            isVersionRefShared(document, currentRef, keyValue) -> {
+                versionEntriesToAdd[targetRef] = version
+                versionRefOverrides[currentRef] = targetRef
+                if (prependVersionEntry) {
+                    versionEntriesToPrepend += targetRef
+                }
+            }
             currentRef == targetRef -> versionRefUpdates[targetRef] = version
             else -> versionRefRenames[currentRef] = targetRef
         }
@@ -173,9 +187,15 @@ internal class TomlVersionCatalogDependencyRewriter(
         override fun handle(table: Toml.Table, keyValue: Toml.KeyValue): Toml.KeyValue {
             if (newVersion == null) return keyValue
             val plugin = keyValue.valueToPlugin() ?: return keyValue
+            val versionRef = plugin.version as? VersionRef ?: return keyValue
+            versionRefOverrides[versionRef.ref]?.let { targetRef ->
+                val entryName = keyValue.stringKey() ?: return keyValue
+                return Plugin(id = plugin.id, version = VersionRef(targetRef))
+                    .toTomlEntry(entryName)
+                    .withPrefix(keyValue.prefix)
+            }
             val renamedVersionRef =
-                (plugin.version as? VersionRef)
-                    ?.let { versionRefRenames[it.ref] }
+                versionRefRenames[versionRef.ref]
                     ?: return keyValue
             val entryName = keyValue.stringKey() ?: return keyValue
             return Plugin(id = plugin.id, version = VersionRef(renamedVersionRef))
