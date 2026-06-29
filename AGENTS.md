@@ -57,7 +57,7 @@ allwrite-cli  -->  allwrite-runtime  -->  allwrite-api
 |---|---|
 | `allwrite-api` | Public API layer. Incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`). Published as a Maven artifact. |
 | `allwrite-spi` | Published SPI for recipe authors. Base classes (`AllwriteRecipe`, `AllwriteScanningRecipe`), `RecipeMetadata`, tag generation (including `dependabot-artifact`). |
-| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`. Gradle dependency rewriting now uses dedicated helpers for build scripts and TOML catalogs. |
+| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`. |
 | `allwrite-runtime` | Domain layer. Outgoing port interfaces and OpenRewrite-backed implementations. Depends on `allwrite-api`. |
 | `allwrite-cli` | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring. |
 | `allwrite-completions` | Build-time annotation processor for shell completion generation. |
