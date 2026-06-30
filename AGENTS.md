@@ -92,6 +92,7 @@ allwrite/
 │   │   ├── recipes/spring/          Spring property/annotation recipes
 │   │   ├── recipes/java/            Java refactoring recipes
 │   │   ├── recipes/gradle/          Gradle dependency recipes
+│   │   │   └── *DependencyRewriter.kt  Dedicated helpers for Gradle dependency transforms
 │   │   ├── recipes/properties/      Properties file recipes
 │   │   ├── recipes/toml/            TOML utilities
 │   │   └── recipes/util/            Shared recipe utilities
