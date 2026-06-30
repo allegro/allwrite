@@ -14,7 +14,7 @@ class ChangeGradleDependencyTest {
         spec.recipe(recipe()).validateRecipeSerialization(false)
     }
 
-    private fun recipe(newVersion: String? = "3.1.4"): ChangeGradleDependency =
+    private fun recipe(newVersion: String = "3.1.4"): ChangeGradleDependency =
         ChangeGradleDependency(
             oldGroupId = "com.fasterxml.jackson.module",
             oldArtifactId = "jackson-module-afterburner",
@@ -28,7 +28,7 @@ class ChangeGradleDependencyTest {
             defaultSpec(spec)
         }
 
-        protected fun recipe(newVersion: String? = "3.1.4"): ChangeGradleDependency = this@ChangeGradleDependencyTest.recipe(newVersion)
+        protected fun recipe(newVersion: String = "3.1.4"): ChangeGradleDependency = this@ChangeGradleDependencyTest.recipe(newVersion)
     }
 
     @Nested
@@ -55,7 +55,7 @@ class ChangeGradleDependencyTest {
         fun `should drop version when new version is null in build gradle`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
+                    spec.recipe(recipe(newVersion = "")).validateRecipeSerialization(false)
                 },
                 buildGradle(
                     before = """
@@ -325,7 +325,7 @@ class ChangeGradleDependencyTest {
         fun `should drop version from interpolated dependency in build gradle`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
+                    spec.recipe(recipe(newVersion = "")).validateRecipeSerialization(false)
                 },
                 buildGradle(
                     before = """
@@ -435,7 +435,7 @@ class ChangeGradleDependencyTest {
         fun `should drop version when new version is null in build gradle kts`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
+                    spec.recipe(recipe(newVersion = "")).validateRecipeSerialization(false)
                 },
                 buildGradleKts(
                     before = """
@@ -492,7 +492,7 @@ class ChangeGradleDependencyTest {
         fun `should drop version from version expression in build gradle kts`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
+                    spec.recipe(recipe(newVersion = "")).validateRecipeSerialization(false)
                 },
                 buildGradleKts(
                     before = """
@@ -851,7 +851,7 @@ class ChangeGradleDependencyTest {
         fun `should drop version when new version is null in toml`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(newVersion = null)).validateRecipeSerialization(false)
+                    spec.recipe(recipe(newVersion = "")).validateRecipeSerialization(false)
                 },
                 toml(
                     before = """
