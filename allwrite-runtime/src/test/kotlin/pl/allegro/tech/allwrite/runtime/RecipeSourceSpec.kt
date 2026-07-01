@@ -45,6 +45,7 @@ class RecipeSourceSpec : BaseRuntimeSpec() {
 
     private fun createExternalRecipeJar(): Path {
         val jarPath = Files.createTempFile("external-recipe", ".jar")
+            .also { it.toFile().deleteOnExit() }
         JarOutputStream(Files.newOutputStream(jarPath)).use { jar ->
             jar.putNextEntry(JarEntry("META-INF/rewrite/external-recipe.yml"))
             jar.write(
