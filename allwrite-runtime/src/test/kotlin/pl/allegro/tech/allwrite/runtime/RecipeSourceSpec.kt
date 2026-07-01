@@ -7,6 +7,7 @@ import org.koin.test.inject
 import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
 import pl.allegro.tech.allwrite.runtime.fake.FakeExternalRecipeProvider
+import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.jar.JarEntry
@@ -56,7 +57,7 @@ class RecipeSourceSpec : BaseRuntimeSpec() {
                 recipeList:
                   - org.openrewrite.text.Find:
                       find: needle
-                """.trimIndent().toByteArray(),
+                """.trimIndent().toByteArray(UTF_8),
             )
             jar.closeEntry()
         }
