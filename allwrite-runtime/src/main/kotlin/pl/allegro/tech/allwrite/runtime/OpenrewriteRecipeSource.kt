@@ -16,37 +16,24 @@ internal class OpenrewriteRecipeSource(
     private val externalRecipeProvider: ExternalRecipeProvider?,
 ) : RecipeSource {
 
-    private val allwriteEnvironment = Environment.builder()
-        .scanRuntimeClasspath(ALLWRITE_PACKAGE)
-        .build()
+    private val environment: Environment = buildEnvironment()
 
-    private val openrewriteEnvironment = Environment.builder()
-        .scanRuntimeClasspath(OPEN_REWRITE_PACKAGE)
-        .build()
-
-    private val externalEnvironment: Environment = buildExternalEnvironment()
-
-    override fun findAll(includeInternal: Boolean): List<RecipeDescriptor> {
-        val environments = listOfNotNull(allwriteEnvironment, openrewriteEnvironment, externalEnvironment)
-        return environments
-            .flatMap(Environment::listRecipeDescriptors)
-            .distinct()
+    override fun findAll(includeInternal: Boolean): List<RecipeDescriptor> =
+        environment
+            .listRecipeDescriptors()
+            .distinctBy(RecipeDescriptor::getName)
             .filter { includeInternal || PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), ignoreCase = true) }
-    }
 
-    override fun get(recipe: String): Recipe =
-        when {
-            recipe.startsWith(ALLWRITE_PACKAGE) -> allwriteEnvironment.activateRecipes(recipe)
-            else -> externalEnvironment.activateRecipesOrNull(recipe) ?: openrewriteEnvironment.activateRecipes(recipe)
-        }
+    override fun get(recipe: String): Recipe = environment.activateRecipes(recipe)
 
-    private fun buildExternalEnvironment(): Environment {
+    private fun buildEnvironment(): Environment {
         val jarPaths = externalRecipeProvider?.get().orEmpty()
 
         val jarUrls = jarPaths.map { it.toUri().toURL() }.toTypedArray()
         val classLoader = URLClassLoader(jarUrls, Thread.currentThread().contextClassLoader)
 
         val builder = Environment.builder()
+            .scanRuntimeClasspath(ALLWRITE_PACKAGE, OPEN_REWRITE_PACKAGE)
         jarPaths.forEach { jarPath ->
             logger.debug { "Scanning external recipe JAR: $jarPath" }
             builder.scanJar(jarPath, emptyList(), classLoader)
@@ -61,10 +48,3 @@ internal class OpenrewriteRecipeSource(
         private const val OPEN_REWRITE_PACKAGE = "org.openrewrite"
     }
 }
-
-private fun Environment.activateRecipesOrNull(vararg recipes: String) =
-    try {
-        activateRecipes(*recipes)
-    } catch (_: Exception) {
-        null
-    }
