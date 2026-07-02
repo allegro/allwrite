@@ -14,12 +14,18 @@ class ChangeGradleDependencyTest {
         spec.recipe(recipe()).validateRecipeSerialization(false)
     }
 
-    private fun recipe(newVersion: String = "3.1.4"): ChangeGradleDependency =
+    private fun recipe(
+        oldGroupId: String = "com.fasterxml.jackson.module",
+        oldArtifactId: String = "jackson-module-afterburner",
+        newGroupId: String = "tools.jackson.module",
+        newArtifactId: String = "jackson-module-blackbird",
+        newVersion: String = "3.1.4",
+    ): ChangeGradleDependency =
         ChangeGradleDependency(
-            oldGroupId = "com.fasterxml.jackson.module",
-            oldArtifactId = "jackson-module-afterburner",
-            newGroupId = "tools.jackson.module",
-            newArtifactId = "jackson-module-blackbird",
+            oldGroupId = oldGroupId,
+            oldArtifactId = oldArtifactId,
+            newGroupId = newGroupId,
+            newArtifactId = newArtifactId,
             newVersion = newVersion,
         )
 
@@ -28,7 +34,14 @@ class ChangeGradleDependencyTest {
             defaultSpec(spec)
         }
 
-        protected fun recipe(newVersion: String = "3.1.4"): ChangeGradleDependency = this@ChangeGradleDependencyTest.recipe(newVersion)
+        protected fun recipe(
+            oldGroupId: String = "com.fasterxml.jackson.module",
+            oldArtifactId: String = "jackson-module-afterburner",
+            newGroupId: String = "tools.jackson.module",
+            newArtifactId: String = "jackson-module-blackbird",
+            newVersion: String = "3.1.4",
+        ): ChangeGradleDependency =
+            this@ChangeGradleDependencyTest.recipe(oldGroupId, oldArtifactId, newGroupId, newArtifactId, newVersion)
     }
 
     @Nested
@@ -102,6 +115,61 @@ class ChangeGradleDependencyTest {
                     after = """
                     dependencies {
                         implementation group: 'tools.jackson.module', name: 'jackson-module-blackbird'
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should change wildcard dependency in build gradle`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.*",
+                            oldArtifactId = "jackson-module-*",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradle(
+                    before = """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:2.17.2"
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation "tools.jackson.module:jackson-module-blackbird:3.1.4"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should change wildcard artifact dependency in build gradle`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.jakarta.rs",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.jakarta.rs",
+                            newArtifactId = "jackson-jaxrs-json-provider",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradle(
+                    before = """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.jakarta.rs:jackson-jaxrs-json-provider:2.17.2"
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation "tools.jackson.jakarta.rs:jackson-jaxrs-json-provider:3.1.4"
                     }
                     """.trimIndent(),
                 ) { path("build.gradle") },
@@ -579,6 +647,30 @@ class ChangeGradleDependencyTest {
         @Test
         fun `should change dependency in toml version value`() {
             rewriteRun(
+                toml(
+                    before = """
+                    [libraries]
+                    jackson-module-blackbird = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version = "2.17.2" }
+                    """.trimIndent(),
+                    after = """
+                    [libraries]
+                    jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird", version = "3.1.4" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should change wildcard dependency in toml version value`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.*",
+                            oldArtifactId = "jackson-module-*",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
                 toml(
                     before = """
                     [libraries]

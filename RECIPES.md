@@ -200,14 +200,14 @@ dependencies {
 
 ### `pl.allegro.tech.allwrite.recipes.gradle.ChangeGradleDependency`
 
-Changes a Gradle dependency's group ID, artifact ID, and optional version. It supports `build.gradle`, `build.gradle.kts`, and `gradle/libs.versions.toml`, updating matching version-catalog entries and refs when present.
+Changes a Gradle dependency's group ID, artifact ID, and optional version. It supports `build.gradle`, `build.gradle.kts`, and `gradle/libs.versions.toml`, updating matching version-catalog entries and refs when present. The old group and artifact IDs accept glob patterns, so `*` can match any coordinate segment.
 
 Options:
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `oldGroupId` | `String` | Yes | Dependency group ID to replace. |
-| `oldArtifactId` | `String` | Yes | Dependency artifact ID to replace. |
+| `oldGroupId` | `String` | Yes | Dependency group ID to replace. Accepts glob patterns. |
+| `oldArtifactId` | `String` | Yes | Dependency artifact ID to replace. Accepts glob patterns. |
 | `newGroupId` | `String` | No | Replacement group ID. Defaults to the old group ID. |
 | `newArtifactId` | `String` | No | Replacement artifact ID. Defaults to the old artifact ID. |
 | `newVersion` | `String` | No | Replacement version. If omitted, the version is removed. |
