@@ -4,8 +4,8 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 internal class RegexpDependencyChanger(
-    oldGroupId: String,
-    oldArtifactId: String,
+    private val oldGroupId: String,
+    private val oldArtifactId: String,
     private val newGroupId: String,
     private val newArtifactId: String,
     private val newVersion: String?,
@@ -25,10 +25,10 @@ internal class RegexpDependencyChanger(
         Rule(
             type = RuleType.VERSION_KEY,
             pattern = Pattern.compile(
-                "(?<group>${Pattern.quote(oldGroupId)})" +
+                "(?<group>${globToTokenRegex(oldGroupId)})" +
                     "(?<separator1>['\",:\\s]+)" +
                     "(?<nameKey>name[:=\\s'\"]+)?" +
-                    "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
+                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
                     "(?<separator2>['\",:\\s]+)" +
                     "(?<versionKey>version(\\.ref)?[:=\\s]+)" +
                     "(?<versionQuote>['\"]?)" +
@@ -40,10 +40,10 @@ internal class RegexpDependencyChanger(
         Rule(
             type = RuleType.VERSION_VALUE,
             pattern = Pattern.compile(
-                "(?<group>${Pattern.quote(oldGroupId)})" +
+                "(?<group>${globToTokenRegex(oldGroupId)})" +
                     "(?<separator1>['\",:\\s]+)" +
                     "(?<nameKey>name[:=\\s'\"]+)?" +
-                    "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
+                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
                     "(?<separator2>['\",:\\s]+)" +
                     "(?<version>\\$\\{[^}]+}|[^()'\"\\s,}]+)",
                 Pattern.MULTILINE,
@@ -52,10 +52,10 @@ internal class RegexpDependencyChanger(
         Rule(
             type = RuleType.VERSIONLESS,
             pattern = Pattern.compile(
-                "(?<group>${Pattern.quote(oldGroupId)})" +
+                "(?<group>${globToTokenRegex(oldGroupId)})" +
                     "(?<separator1>['\",:\\s]+)" +
                     "(?<nameKey>name[:=\\s'\"]+)?" +
-                    "(?<artifactId>${Pattern.quote(oldArtifactId)})" +
+                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
                     "(?<separator2>['\",:\\s]+)" +
                     "(?=[,)\\]}\\s]|$)",
                 Pattern.MULTILINE,
@@ -114,4 +114,15 @@ internal class RegexpDependencyChanger(
     private fun String?.orDoubleQuote(): String = if (isNullOrEmpty()) "\"" else this
 
     private fun trimVersionSeparator(separator: String): String = separator.replace(Regex("[,:\\s]+$"), "")
+
+    private fun globToTokenRegex(pattern: String): String =
+        buildString {
+            pattern.forEach { char ->
+                when (char) {
+                    '*' -> append("[^'\",:\\s]*")
+                    '?' -> append("[^'\",:\\s]")
+                    else -> append(Regex.escape(char.toString()))
+                }
+            }
+        }
 }
