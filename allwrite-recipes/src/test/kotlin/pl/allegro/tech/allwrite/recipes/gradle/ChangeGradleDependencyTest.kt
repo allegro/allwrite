@@ -40,8 +40,7 @@ class ChangeGradleDependencyTest {
             newGroupId: String = "tools.jackson.module",
             newArtifactId: String = "jackson-module-blackbird",
             newVersion: String = "3.1.4",
-        ): ChangeGradleDependency =
-            this@ChangeGradleDependencyTest.recipe(oldGroupId, oldArtifactId, newGroupId, newArtifactId, newVersion)
+        ): ChangeGradleDependency = this@ChangeGradleDependencyTest.recipe(oldGroupId, oldArtifactId, newGroupId, newArtifactId, newVersion)
     }
 
     @Nested

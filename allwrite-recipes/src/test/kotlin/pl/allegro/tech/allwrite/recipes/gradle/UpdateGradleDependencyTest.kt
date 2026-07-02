@@ -37,8 +37,7 @@ class UpdateGradleDependencyTest {
             artifactId: String = "jackson-module-afterburner",
             targetVersion: String = "3.1.4",
             sourceVersionPattern: String = "\\d+\\.\\d+\\.\\d+",
-        ): UpdateGradleDependency =
-            this@UpdateGradleDependencyTest.recipe(groupId, artifactId, targetVersion, sourceVersionPattern)
+        ): UpdateGradleDependency = this@UpdateGradleDependencyTest.recipe(groupId, artifactId, targetVersion, sourceVersionPattern)
     }
 
     @Nested
@@ -90,7 +89,6 @@ class UpdateGradleDependencyTest {
                 ) { path("build.gradle") },
             )
         }
-
     }
 
     @Nested
@@ -134,7 +132,6 @@ class UpdateGradleDependencyTest {
                 ) { path("build.gradle.kts") },
             )
         }
-
     }
 
     @Nested
@@ -176,6 +173,5 @@ class UpdateGradleDependencyTest {
                 ) { path("gradle/libs.versions.toml") },
             )
         }
-
     }
 }
