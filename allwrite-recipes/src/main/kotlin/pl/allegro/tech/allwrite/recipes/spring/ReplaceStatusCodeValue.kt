@@ -29,8 +29,8 @@ public class ReplaceStatusCodeValue :
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
         val javaVisitor = object : JavaVisitor<ExecutionContext>() {
-            private val methodMatcher = MethodMatcher("org.springframework.http.ResponseEntity getStatusCodeValue()")
-            private val propertyMatcher = KotlinPropertyMatcher("org.springframework.http.ResponseEntity getStatusCodeValue()")
+            private val methodMatcher = MethodMatcher("$RESPONSE_ENTITY_TYPE getStatusCodeValue()")
+            private val propertyMatcher = KotlinPropertyMatcher("$RESPONSE_ENTITY_TYPE getStatusCodeValue()")
 
             override fun visitMethodInvocation(method: J.MethodInvocation, ctx: ExecutionContext): J {
                 val m = super.visitMethodInvocation(method, ctx) as J.MethodInvocation
@@ -55,14 +55,20 @@ public class ReplaceStatusCodeValue :
             private fun matchesGetStatusCodeValue(m: J.MethodInvocation): Boolean {
                 if (methodMatcher.matches(m)) return true
                 if (m.simpleName != "getStatusCodeValue" || hasRealArguments(m)) return false
-                val selectType = m.select?.type ?: return true
-                return isResponseEntityOrUnresolved(selectType)
+                return isResponseEntityContext(m.select?.type)
             }
 
             private fun hasRealArguments(m: J.MethodInvocation): Boolean = m.arguments.any { it !is J.Empty }
 
+            private fun isResponseEntityContext(targetType: JavaType?): Boolean {
+                if (targetType != null) return isResponseEntityOrUnresolved(targetType)
+                val enclosingClass = cursor.firstEnclosing(J.ClassDeclaration::class.java) ?: return false
+                val classType = enclosingClass.type ?: return false
+                return TypeUtils.isAssignableTo(RESPONSE_ENTITY_TYPE, classType)
+            }
+
             private fun isResponseEntityOrUnresolved(type: JavaType): Boolean {
-                if (TypeUtils.isAssignableTo("org.springframework.http.ResponseEntity", type)) return true
+                if (TypeUtils.isAssignableTo(RESPONSE_ENTITY_TYPE, type)) return true
                 return TypeUtils.isOfClassType(type, "java.lang.Object")
             }
 
@@ -86,8 +92,7 @@ public class ReplaceStatusCodeValue :
             private fun matchesStatusCodeValueProperty(fa: J.FieldAccess): Boolean {
                 if (fa.simpleName != "statusCodeValue") return false
                 if (propertyMatcher.matches(fa)) return true
-                val targetType = fa.target.type ?: return true
-                return isResponseEntityOrUnresolved(targetType)
+                return isResponseEntityContext(fa.target.type)
             }
 
             override fun visitIdentifier(identifier: J.Identifier, ctx: ExecutionContext): J {
@@ -107,13 +112,17 @@ public class ReplaceStatusCodeValue :
                 val fieldType = id.fieldType
                 if (fieldType != null) {
                     val ownerType = fieldType.owner as? JavaType.FullyQualified ?: return false
-                    return TypeUtils.isAssignableTo("org.springframework.http.ResponseEntity", ownerType)
+                    return TypeUtils.isAssignableTo(RESPONSE_ENTITY_TYPE, ownerType)
                 }
                 val enclosingClass = cursor.firstEnclosing(J.ClassDeclaration::class.java) ?: return false
                 val classType = enclosingClass.type ?: return false
-                return TypeUtils.isAssignableTo("org.springframework.http.ResponseEntity", classType)
+                return TypeUtils.isAssignableTo(RESPONSE_ENTITY_TYPE, classType)
             }
         }
         return DelegatingJVisitor(javaVisitor)
+    }
+
+    private companion object {
+        const val RESPONSE_ENTITY_TYPE = "org.springframework.http.ResponseEntity"
     }
 }

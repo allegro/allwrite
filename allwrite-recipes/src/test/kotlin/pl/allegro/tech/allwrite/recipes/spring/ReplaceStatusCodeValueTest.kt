@@ -93,6 +93,45 @@ class ReplaceStatusCodeValueTest : RewriteTest {
     }
 
     @Test
+    fun `should not change unqualified getStatusCodeValue() in non-ResponseEntity class in Java`() {
+        rewriteRun(
+            java(
+                beforeAndAfter = """
+                class MyService {
+                    int getStatusCodeValue() { return 200; }
+
+                    int test() {
+                        return getStatusCodeValue();
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should not change unqualified getStatusCodeValue() inherited from non-ResponseEntity in Java`() {
+        rewriteRun(
+            java(
+                beforeAndAfter = """
+                class BaseService {
+                    int getStatusCodeValue() { return 200; }
+                }
+                """.trimIndent(),
+            ),
+            java(
+                beforeAndAfter = """
+                class MyService extends BaseService {
+                    int test() {
+                        return getStatusCodeValue();
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
     fun `should replace unqualified getStatusCodeValue() in ResponseEntity subclass in Java`() {
         rewriteRun(
             java(
@@ -411,6 +450,45 @@ class ReplaceStatusCodeValueTest : RewriteTest {
                     void test() {
                         NotResponseEntity response = new NotResponseEntity()
                         int status = response.getStatusCodeValue()
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should not change unqualified getStatusCodeValue() in non-ResponseEntity class in Groovy`() {
+        rewriteRun(
+            groovy(
+                beforeAndAfter = """
+                class MyService {
+                    int getStatusCodeValue() { return 200 }
+
+                    int test() {
+                        return getStatusCodeValue()
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should not change unqualified getStatusCodeValue() inherited from non-ResponseEntity in Groovy`() {
+        rewriteRun(
+            groovy(
+                beforeAndAfter = """
+                class BaseService {
+                    int getStatusCodeValue() { return 200 }
+                }
+                """.trimIndent(),
+            ),
+            groovy(
+                beforeAndAfter = """
+                class MyService extends BaseService {
+                    int test() {
+                        return getStatusCodeValue()
                     }
                 }
                 """.trimIndent(),
