@@ -6,8 +6,8 @@ import java.util.regex.Pattern
 internal class RegexpDependencyChanger(
     private val oldGroupId: String,
     private val oldArtifactId: String,
-    private val newGroupId: String,
-    private val newArtifactId: String,
+    private val newGroupId: String?,
+    private val newArtifactId: String?,
     private val newVersion: String?,
 ) {
     private enum class RuleType {
@@ -89,10 +89,10 @@ internal class RegexpDependencyChanger(
         val separatorBeforeVersion = if (newVersion == null && type != RuleType.VERSIONLESS) trimVersionSeparator(separator2) else separator2
 
         return buildString {
-            append(newGroupId)
+            append(newGroupId ?: matcher.group("group"))
             append(matcher.group("separator1"))
             append(matcher.group("nameKey") ?: "")
-            append(newArtifactId)
+            append(newArtifactId ?: matcher.group("artifactId"))
             append(separatorBeforeVersion)
 
             if (newVersion != null && type == RuleType.VERSION_KEY) {

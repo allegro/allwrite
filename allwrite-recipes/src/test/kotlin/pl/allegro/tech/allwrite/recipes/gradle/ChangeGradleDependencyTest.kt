@@ -520,6 +520,53 @@ class ChangeGradleDependencyTest {
         }
 
         @Test
+        fun `should change versionless jackson dependencies from recipe list in build gradle kts`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipes(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.dataformat",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.dataformat",
+                            newArtifactId = "",
+                            newVersion = "3.1.4",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.module",
+                            oldArtifactId = "jackson-module-kotlin",
+                            newGroupId = "tools.jackson.module",
+                            newArtifactId = "jackson-module-kotlin",
+                            newVersion = "3.1.4",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.datatype",
+                            oldArtifactId = "jackson-datatype-jsr310",
+                            newGroupId = "tools.jackson.core",
+                            newArtifactId = "jackson-databind",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradleKts(
+                    before = """
+                    dependencies {
+                        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-avro")
+                        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+                        implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation("tools.jackson.dataformat:jackson-dataformat-avro")
+                        implementation("tools.jackson.module:jackson-module-kotlin")
+                        implementation("tools.jackson.core:jackson-databind")
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+            )
+        }
+
+        @Test
         fun `should change versionless dependency in build gradle kts`() {
             rewriteRun(
                 buildGradleKts(
