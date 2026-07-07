@@ -34,8 +34,12 @@ public class AddNonNullableTypeBoundsToSpringRepositories :
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> =
         object : JavaIsoVisitor<ExecutionContext>() {
 
+            override fun visitCompilationUnit(cu: J.CompilationUnit, p: ExecutionContext): J.CompilationUnit {
+                if (!cursor.isKotlin()) return cu
+                return super.visitCompilationUnit(cu, p)
+            }
+
             override fun visitClassDeclaration(classDecl: J.ClassDeclaration, p: ExecutionContext): J.ClassDeclaration {
-                if (!cursor.isKotlin()) return classDecl
                 var cd = super.visitClassDeclaration(classDecl, p)
                 val typeParams = cd.typeParameters ?: return cd
 
