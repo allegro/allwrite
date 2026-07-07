@@ -1,5 +1,6 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
+import com.github.zafarkhaja.semver.Version
 import java.util.regex.Pattern
 
 internal class RegexpDependencyUpdater(
@@ -8,6 +9,7 @@ internal class RegexpDependencyUpdater(
     private val targetVersion: String,
     private val versionPattern: String,
 ) {
+    private val targetSemver = Version.parse(targetVersion, false)
 
     /** Regular expression matching dependency declaration in following formats:
      * - classpath("GROUP:ID:1.4.46")
@@ -41,7 +43,7 @@ internal class RegexpDependencyUpdater(
         val versionPattern = Pattern.compile(versionPattern)
         val versionMatcher = versionPattern.matcher(versionFound)
 
-        return if (versionMatcher.find()) {
+        return if (versionMatcher.find() && !targetSemver.isLowerThan(Version.parse(versionFound, false))) {
             // version found and it matches version pattern, replace the version
             matcher.replaceFirst("\${group}\${separator1}\${nameKey}\${artifactId}\${separator2}\${versionKey}$targetVersion")
         } else {
@@ -73,6 +75,10 @@ internal class RegexpDependencyUpdater(
 
         if (!versionPattern.matcher(variableMatcher.group("version")).find()) {
             // variable value doesn't match version pattern
+            return originalText
+        }
+
+        if (targetSemver.isLowerThan(Version.parse(variableMatcher.group("version"), false))) {
             return originalText
         }
 

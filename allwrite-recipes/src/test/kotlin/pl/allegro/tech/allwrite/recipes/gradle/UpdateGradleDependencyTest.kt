@@ -61,6 +61,60 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
+        fun `should skip update when target version is lower than current version`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(targetVersion = "3.5.0"))
+                        .validateRecipeSerialization(false)
+                        .expectedCyclesThatMakeChanges(0)
+                },
+                buildGradle(
+                    """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:4.1.0"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should skip update when target major version is lower than current version`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(targetVersion = "3.9.9"))
+                        .validateRecipeSerialization(false)
+                        .expectedCyclesThatMakeChanges(0)
+                },
+                buildGradle(
+                    """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:4.1.0"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should skip update when target minor version is lower than current version`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(targetVersion = "4.0.0"))
+                        .validateRecipeSerialization(false)
+                        .expectedCyclesThatMakeChanges(0)
+                },
+                buildGradle(
+                    """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:4.1.0"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
         fun `should update dependency version in build gradle variable`() {
             rewriteRun(
                 buildGradle(
@@ -169,6 +223,46 @@ class UpdateGradleDependencyTest {
                     after = """
                     [libraries]
                     jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version = "3.1.4" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should skip update when target version is lower than version ref value`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(targetVersion = "3.5.0"))
+                        .validateRecipeSerialization(false)
+                        .expectedCyclesThatMakeChanges(0)
+                },
+                toml(
+                    """
+                    [versions]
+                    jackson = "4.1.0"
+
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should skip update when target patch version is lower than version ref value`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(targetVersion = "4.1.0"))
+                        .validateRecipeSerialization(false)
+                        .expectedCyclesThatMakeChanges(0)
+                },
+                toml(
+                    """
+                    [versions]
+                    jackson = "4.1.1"
+
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
                     """.trimIndent(),
                 ) { path("gradle/libs.versions.toml") },
             )
