@@ -1,10 +1,17 @@
 package pl.allegro.tech.allwrite.runtime
 
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotContainAnyOf
 import org.koin.test.inject
 import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
+import pl.allegro.tech.allwrite.runtime.fake.FakeExternalRecipeProvider
+import java.nio.charset.StandardCharsets.UTF_8
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.jar.JarEntry
+import java.util.jar.JarOutputStream
 
 class RecipeSourceSpec : BaseRuntimeSpec() {
     init {
@@ -26,5 +33,38 @@ class RecipeSourceSpec : BaseRuntimeSpec() {
                 "pl.allegro.tech.allwrite.recipes.Java3rdPartyRecipe",
             )
         }
+
+        test("should resolve OpenRewrite recipes included in external declarative recipe") {
+            val externalJar = createExternalRecipeJar()
+            val recipeSource = OpenrewriteRecipeSource(FakeExternalRecipeProvider(listOf(externalJar)))
+
+            val recipe = recipeSource.get(EXTERNAL_COMPOSITE_RECIPE)
+
+            recipe.recipeList.map { it.name } shouldContain "org.openrewrite.text.Find"
+        }
+    }
+
+    private fun createExternalRecipeJar(): Path {
+        val jarPath = Files.createTempFile("external-recipe", ".jar")
+            .also { it.toFile().deleteOnExit() }
+        JarOutputStream(Files.newOutputStream(jarPath)).use { jar ->
+            jar.putNextEntry(JarEntry("META-INF/rewrite/external-recipe.yml"))
+            jar.write(
+                """
+                type: specs.openrewrite.org/v1beta/recipe
+                name: $EXTERNAL_COMPOSITE_RECIPE
+                displayName: External composite recipe
+                recipeList:
+                  - org.openrewrite.text.Find:
+                      find: needle
+                """.trimIndent().toByteArray(UTF_8),
+            )
+            jar.closeEntry()
+        }
+        return jarPath
+    }
+
+    private companion object {
+        const val EXTERNAL_COMPOSITE_RECIPE = "pl.allegro.tech.autoupgrades.recipes.ExternalCompositeRecipe"
     }
 }

@@ -20,6 +20,10 @@ recipeDependencies {
     parserClasspath("org.springframework:spring-web:6.+")
     parserClasspath("org.springframework:spring-test:6.+")
 
+    parserClasspath("org.springframework.data:spring-data-commons:3.5.+")
+    parserClasspath("org.springframework.data:spring-data-jpa:3.5.+")
+    parserClasspath("org.springframework.data:spring-data-mongodb:4.5.+")
+
     parserClasspath("jakarta.annotation:jakarta.annotation-api:2.+")
     parserClasspath("jakarta.inject:jakarta.inject-api:2.+")
 }

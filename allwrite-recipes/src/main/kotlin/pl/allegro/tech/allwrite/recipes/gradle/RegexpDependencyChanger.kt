@@ -1,0 +1,141 @@
+package pl.allegro.tech.allwrite.recipes.gradle
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+internal class RegexpDependencyChanger(
+    private val oldGroupId: String,
+    private val oldArtifactId: String,
+    private val newGroupId: String?,
+    private val newArtifactId: String?,
+    private val newVersion: String?,
+) {
+    private enum class RuleType {
+        VERSION_KEY,
+        VERSION_VALUE,
+        VERSIONLESS,
+    }
+
+    private data class Rule(
+        val type: RuleType,
+        val pattern: Pattern,
+    )
+
+    private val rules: List<Rule> = listOf(
+        Rule(
+            type = RuleType.VERSION_KEY,
+            pattern = Pattern.compile(
+                "(?<group>${globToTokenRegex(oldGroupId)})" +
+                    "(?<separator1>['\",:\\s]+)" +
+                    "(?<nameKey>name[:=\\s'\"]+)?" +
+                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
+                    "(?<separator2>['\",:\\s]+)" +
+                    "(?<versionKey>version(\\.ref)?[:=\\s]+)" +
+                    "(?<versionQuote>['\"]?)" +
+                    "(?<version>\\$\\{[^}]+}|[^()'\"\\s,}]+)" +
+                    "['\"]?",
+                Pattern.MULTILINE,
+            ),
+        ),
+        Rule(
+            type = RuleType.VERSION_VALUE,
+            pattern = Pattern.compile(
+                "(?<group>${globToTokenRegex(oldGroupId)})" +
+                    "(?<separator1>['\",: \\t]+)" +
+                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
+                    "(?<separator2>['\",: \\t]+)" +
+                    "(?<version>\\$\\{[^}]+}|[^()'\"\\s,}]+)",
+                Pattern.MULTILINE,
+            ),
+        ),
+        Rule(
+            type = RuleType.VERSIONLESS,
+            pattern = Pattern.compile(
+                "(?<group>${globToTokenRegex(oldGroupId)})" +
+                    "(?<separator1>['\",:\\s]+)" +
+                    "(?<nameKey>name[:=\\s'\"]+)?" +
+                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
+                    "(?<separator2>['\",:\\s]+)" +
+                    "(?=[,)\\]}\\s]|$)",
+                Pattern.MULTILINE,
+            ),
+        ),
+    )
+
+    fun update(originalText: String): String =
+        rules.fold(originalText) { currentText, rule ->
+            applyRule(currentText, rule)
+        }
+
+    private fun applyRule(originalText: String, rule: Rule): String {
+        val matcher = rule.pattern.matcher(originalText)
+        if (!matcher.find()) {
+            return originalText
+        }
+
+        val updatedText = StringBuffer()
+        do {
+            val replacement =
+                if (rule.type == RuleType.VERSION_VALUE && matcher.group().containsMapNotationNameKey()) {
+                    matcher.group()
+                } else {
+                    buildReplacement(matcher, rule.type)
+                }
+            matcher.appendReplacement(updatedText, Matcher.quoteReplacement(replacement))
+        } while (matcher.find())
+
+        matcher.appendTail(updatedText)
+        return updatedText.toString()
+    }
+
+    private fun buildReplacement(matcher: Matcher, type: RuleType): String {
+        val separator2 = matcher.group("separator2")
+        val separatorBeforeVersion = if (newVersion == null && type != RuleType.VERSIONLESS) trimVersionSeparator(separator2) else separator2
+
+        return buildString {
+            append(newGroupId ?: matcher.group("group"))
+            append(matcher.group("separator1"))
+            append(matcher.groupOrNull("nameKey") ?: "")
+            append(newArtifactId ?: matcher.group("artifactId"))
+            append(separatorBeforeVersion)
+
+            if (newVersion != null && type == RuleType.VERSION_KEY) {
+                append(matcher.groupOrNull("versionKey") ?: "")
+            }
+
+            if (newVersion != null && type != RuleType.VERSIONLESS) {
+                if (type == RuleType.VERSION_KEY) {
+                    append(matcher.groupOrNull("versionQuote").orDoubleQuote())
+                }
+                append(newVersion)
+                if (type == RuleType.VERSION_KEY) {
+                    append(matcher.groupOrNull("versionQuote").orDoubleQuote())
+                }
+            }
+        }
+    }
+
+    private fun String?.orDoubleQuote(): String = if (isNullOrEmpty()) "\"" else this
+
+    private fun String.containsMapNotationNameKey(): Boolean = contains("name:") || contains("name =")
+
+    private fun Matcher.groupOrNull(name: String): String? =
+        try {
+            group(name)
+        } catch (_: IllegalArgumentException) {
+            null
+        }
+
+    private fun trimVersionSeparator(separator: String): String = separator.replace(Regex("[,:\\s]+$"), "")
+
+    private fun globToTokenRegex(pattern: String): String =
+        buildString {
+            pattern.forEach { char ->
+                when (char) {
+                    '*' -> append("[^'\",:\\s]*")
+                    '?' -> append("[^'\",:\\s]")
+                    else -> append(Regex.escape(char.toString()))
+                }
+            }
+        }
+}

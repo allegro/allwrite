@@ -198,6 +198,38 @@ dependencies {
 }
 ```
 
+### `pl.allegro.tech.allwrite.recipes.gradle.ChangeGradleDependency`
+
+Changes a Gradle dependency's group ID, artifact ID, and optional version. It supports `build.gradle`, `build.gradle.kts`, and `gradle/libs.versions.toml`, updating matching version-catalog entries and refs when present. The old group and artifact IDs accept glob patterns, so `*` can match any coordinate segment.
+
+Options:
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `oldGroupId` | `String` | Yes | Dependency group ID to replace. Accepts glob patterns. |
+| `oldArtifactId` | `String` | Yes | Dependency artifact ID to replace. Accepts glob patterns. |
+| `newGroupId` | `String` | No | Replacement group ID. Defaults to the old group ID. |
+| `newArtifactId` | `String` | No | Replacement artifact ID. Defaults to the old artifact ID. |
+| `newVersion` | `String` | No | Replacement version. If omitted, the version is removed. |
+
+Before (with `oldGroupId = "com.fasterxml.jackson.module"`, `oldArtifactId = "jackson-module-afterburner"`):
+
+`build.gradle.kts`:
+```kotlin
+dependencies {
+    implementation("com.fasterxml.jackson.module:jackson-module-afterburner:2.17.2")
+}
+```
+
+After:
+
+`build.gradle.kts`:
+```kotlin
+dependencies {
+    implementation("tools.jackson.module:jackson-module-blackbird:3.1.4")
+}
+```
+
 ### `pl.allegro.tech.allwrite.recipes.gradle.UpdateGradleDependency `
 
 Updates dependency versions using regular expressions. Converts build files to plain text and applies regex-based replacements. Supports dependency declarations in multiple formats:
@@ -592,6 +624,28 @@ import org.springframework.stereotype.Component;
 public class MyService {
     public MyService(@Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {}
 }
+```
+
+### `pl.allegro.tech.allwrite.recipes.spring.AddNonNullableTypeBoundsToSpringRepositories`
+
+Adds `: Any` upper bounds to type parameters of Kotlin classes/interfaces extending Spring Data repository interfaces,
+as required by Spring Framework 7 / Spring Boot 4 JSpecify nullability annotations. Only applies to Kotlin source files.
+This recipe is automatically included in the Spring Boot 4.0 migration.
+
+Before:
+
+```kotlin
+import org.springframework.data.repository.CrudRepository
+
+interface UserRepository<T, ID> : CrudRepository<T, ID>
+```
+
+After:
+
+```kotlin
+import org.springframework.data.repository.CrudRepository
+
+interface UserRepository<T : Any, ID : Any> : CrudRepository<T, ID>
 ```
 
 ### `pl.allegro.tech.allwrite.recipes.spring.ReplaceStatusCodeValue`
