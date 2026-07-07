@@ -21,7 +21,10 @@ public class AddNonNullableTypeBoundsToSpringRepositories :
         displayName = "Add non-nullable type bounds to Spring Data repository type parameters (Kotlin)",
         description = "Adds `: Any` upper bounds to type parameters of Kotlin classes/interfaces extending Spring Data " +
             "repository interfaces, as required by Spring Framework 7 / Spring Boot 4 JSpecify nullability annotations. " +
-            "This recipe only applies to Kotlin source files.",
+            "This recipe only applies to Kotlin source files.\n\n" +
+            "Example:\n" +
+            "  Before: `interface UserRepository<T, ID> : CrudRepository<T, ID>`\n" +
+            "  After:  `interface UserRepository<T : Any, ID : Any> : CrudRepository<T, ID>`.",
         visibility = RecipeVisibility.INTERNAL,
     ),
     ClasspathAwareRecipe {
