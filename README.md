@@ -53,7 +53,7 @@ we would love to see your contribution! ❤️
 
 You can add external recipes to your local `allwrite`, they can be closed-source and stored in a private artifact repository.
 
-All you need to do: 
+All you need to do:
 - package your recipes to a JAR file
 - publish it somewhere
 - grab the URL to the published JAR
@@ -91,13 +91,13 @@ allwrite external rm custom-recipes
 To build and run from source without installing, use Gradle directly:
 
 ```bash
-./gradlew :allwrite-cli:run --args "run spring-boot/upgrade 3 4"
+./gradlew :allwrite-cli:run --args "run springBoot/upgrade 3 4"
 ```
 
 To run against a specific project directory:
 
 ```bash
-./gradlew :allwrite-cli:run --args "run spring-boot/upgrade 3 4" -Pworkdir=<path-to-projects>/some-project
+./gradlew :allwrite-cli:run --args "run springBoot/upgrade 3 4" -Pworkdir=<path-to-projects>/some-project
 ```
 
 Alternatively, build a local installation:
