@@ -56,6 +56,16 @@ internal fun Library.toTomlEntry(entryName: String) =
         }
     }.let { kv(entryName, it) }
 
+internal fun Plugin.toTomlEntry(entryName: String) =
+    buildMap {
+        put(VERSION_CATALOG_PARAM_ID, id)
+        when (version) {
+            is PlainVersion -> put(VERSION_CATALOG_PARAM_VERSION, version.version)
+            is VersionRef -> put(VERSION_CATALOG_PARAM_VERSION_REF, version.ref)
+            null -> {}
+        }
+    }.let { kv(entryName, it) }
+
 internal fun Toml.KeyValue.valueToLibrary(): Library? {
     val value = value as? Toml.Table
 

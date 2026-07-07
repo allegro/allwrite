@@ -41,6 +41,9 @@ allwrite-cli  -->  allwrite-runtime  -->  allwrite-api
       |                  |                     ^
       |                  v                     |
       |            allwrite-recipes -----------+
+      |                  |
+      |                  v
+      |            allwrite-spi
       |                  ^
       +-----> allwrite-completions
                     (annotation processor)
@@ -53,7 +56,8 @@ allwrite-cli  -->  allwrite-runtime  -->  allwrite-api
 | Module | Role |
 |---|---|
 | `allwrite-api` | Public API layer. Incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`). Published as a Maven artifact. |
-| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api`. |
+| `allwrite-spi` | Published SPI for recipe authors. Base classes (`AllwriteRecipe`, `AllwriteScanningRecipe`), `RecipeMetadata`, tag generation (including `dependabot-artifact`). |
+| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`. |
 | `allwrite-runtime` | Domain layer. Outgoing port interfaces and OpenRewrite-backed implementations. Depends on `allwrite-api`. |
 | `allwrite-cli` | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring. |
 | `allwrite-completions` | Build-time annotation processor for shell completion generation. |
@@ -88,12 +92,16 @@ allwrite/
 │   │   ├── recipes/spring/          Spring property/annotation recipes
 │   │   ├── recipes/java/            Java refactoring recipes
 │   │   ├── recipes/gradle/          Gradle dependency recipes
+│   │   │   └── *DependencyRewriter.kt  Dedicated helpers for Gradle dependency transforms
 │   │   ├── recipes/properties/      Properties file recipes
 │   │   ├── recipes/toml/            TOML utilities
 │   │   └── recipes/util/            Shared recipe utilities
 │   ├── src/main/resources/META-INF/rewrite/   Declarative YAML recipes
 │   ├── src/test/kotlin/              Unit tests (JUnit 5 + RewriteTest)
 │   └── src/testFixtures/kotlin/      Test fixture classes
+│
+├── allwrite-spi/
+│   └── src/main/kotlin/              Recipe base classes (AllwriteRecipe, AllwriteScanningRecipe, RecipeMetadata)
 │
 ├── allwrite-completions/
 │   └── src/main/kotlin/              kapt processors + generators
@@ -146,7 +154,7 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 - **Observer/Listener:** `CommandListener` instances notified after each command execution (telemetry)
 - **Recipe Strategy:** Recipes can implement `ParsingAwareRecipe` or `PostprocessingRecipe`. Base classes: `AllwriteRecipe`, `AllwriteScanningRecipe`
 - **Test Fakes over Mocks:** Heavy use of `Fake*` implementations for test isolation
-- **Tag-based Recipe Metadata:** Custom tag system (`visibility:public/internal`, `group:*`, `recipe:*`, `from:*`, `to:*`) for friendly names, version matching, visibility filtering
+- **Tag-based Recipe Metadata:** Custom tag system (`visibility:public/internal`, `group:*`, `action:*`, `from:*`, `to:*`, `dependabot-artifact:*`) for friendly names, version matching, visibility filtering, and Dependabot integration
 - **Declarative Recipes:** Recipes defined programmatically (Kotlin) or declaratively (YAML under `META-INF/rewrite/`)
 
 # Testing

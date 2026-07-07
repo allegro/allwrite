@@ -1,33 +1,33 @@
 [versions]
 jvm = "21"
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 ksp = "2.3.8"
-kotlinx-serialization = "1.7.1"
-openrewrite = "8.81.17"
+kotlinx-serialization = "1.11.0"
+openrewrite = "8.83.3"
 openrewrite-spring = "6.30.3"
 openrewrite-static-analysis = "2.34.1"
-openrewrite-build-plugins = "2.14.3"
+openrewrite-build-plugins = "2.19.2"
 test-logger = "4.0.0"
 slf4j = { strictly = "2.0.17" }
-logback = "1.5.32"
+logback = "1.5.34"
 koin = "4.0.0"
 koin-annotations = "2.3.1"
 clikt = "5.1.0"
 kotest = "5.9.1"
 kotest-extensions-koin = "1.3.0"
-kotlin-logging = "8.0.01"
-mockk = "1.14.9"
+kotlin-logging = "8.0.4"
+mockk = "1.14.11"
 axion-release = "1.21.1"
 assertj = "3.27.7"
-lombok = "1.18.44"
+lombok = "1.18.46"
 jsr305 = "3.0.2"
 jetbrains-annotations = "26.1.0"
 pgpainless = "2.0.3"
-ktor = "3.5.0"
+ktor = "3.5.1"
 jreleaser = "1.24.0"
 semver = "0.10.2"
 markout = "0.0.11"
-kotlinx-datetime = "0.7.1"
+kotlinx-datetime = "0.8.0"
 nexus-publish = "2.0.0"
 ktlint = "14.2.0"
 
@@ -123,7 +123,7 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
-apache-commons-compress = "org.apache.commons:commons-compress:1.26.2"
+apache-commons-compress = "org.apache.commons:commons-compress:1.28.0"
 pgpainless-core = { group = "org.pgpainless", name = "pgpainless-core", version.ref = "pgpainless" }
 pgpainless-sop = { group = "org.pgpainless", name = "pgpainless-sop", version.ref = "pgpainless" }
 
