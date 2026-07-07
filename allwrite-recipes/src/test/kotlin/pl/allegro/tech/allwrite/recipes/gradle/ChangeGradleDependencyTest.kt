@@ -176,6 +176,145 @@ class ChangeGradleDependencyTest {
         }
 
         @Test
+        fun `should preserve matched wildcard artifacts across multiple dependencies in build gradle`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.dataformat",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.dataformat",
+                            newArtifactId = "",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradle(
+                    before = """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-avro"
+                        testImplementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv"
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation "tools.jackson.dataformat:jackson-dataformat-avro"
+                        testImplementation "tools.jackson.dataformat:jackson-dataformat-csv"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should preserve matched wildcard artifact in versionless map dependency in build gradle`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.dataformat",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.dataformat",
+                            newArtifactId = "",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradle(
+                    before = """
+                    dependencies {
+                        implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-avro'
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation group: 'tools.jackson.dataformat', name: 'jackson-dataformat-avro'
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should handle wildcard preservation and artifact rename in same build gradle`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipes(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.dataformat",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.dataformat",
+                            newArtifactId = "",
+                            newVersion = "3.1.4",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.datatype",
+                            oldArtifactId = "jackson-datatype-jsr310",
+                            newGroupId = "tools.jackson.core",
+                            newArtifactId = "jackson-databind",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradle(
+                    before = """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-avro"
+                        runtimeOnly "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation "tools.jackson.dataformat:jackson-dataformat-avro"
+                        runtimeOnly "tools.jackson.core:jackson-databind"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should handle wildcard dependencies with mixed version state in build gradle`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.dataformat",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.dataformat",
+                            newArtifactId = "",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradle(
+                    before = """
+                    ext {
+                        jackson = '2.18.3'
+                    }
+
+                    dependencies {
+                        implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-avro"
+                        testImplementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.17.2"
+                        runtimeOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${'$'}{jackson}"
+                    }
+                    """.trimIndent(),
+                    after = """
+                    ext {
+                        jackson = '2.18.3'
+                    }
+
+                    dependencies {
+                        implementation "tools.jackson.dataformat:jackson-dataformat-avro"
+                        testImplementation "tools.jackson.dataformat:jackson-dataformat-csv:3.1.4"
+                        runtimeOnly "tools.jackson.dataformat:jackson-dataformat-yaml:3.1.4"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
         fun `should change dependency with version expression in build gradle`() {
             rewriteRun(
                 buildGradle(
@@ -513,6 +652,131 @@ class ChangeGradleDependencyTest {
                     after = """
                     dependencies {
                         implementation("tools.jackson.module:jackson-module-blackbird")
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+            )
+        }
+
+        @Test
+        fun `should change versionless jackson dependencies from recipe list in build gradle kts`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipes(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.dataformat",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.dataformat",
+                            newArtifactId = "",
+                            newVersion = "3.1.4",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.module",
+                            oldArtifactId = "jackson-module-kotlin",
+                            newGroupId = "tools.jackson.module",
+                            newArtifactId = "jackson-module-kotlin",
+                            newVersion = "3.1.4",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.datatype",
+                            oldArtifactId = "jackson-datatype-jsr310",
+                            newGroupId = "tools.jackson.core",
+                            newArtifactId = "jackson-databind",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradleKts(
+                    before = """
+                    dependencies {
+                        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-avro")
+                        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+                        implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation("tools.jackson.dataformat:jackson-dataformat-avro")
+                        implementation("tools.jackson.module:jackson-module-kotlin")
+                        implementation("tools.jackson.core:jackson-databind")
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+            )
+        }
+
+        @Test
+        fun `should preserve matched wildcard artifacts across multiple dependencies in build gradle kts`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.dataformat",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.dataformat",
+                            newArtifactId = "",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradleKts(
+                    before = """
+                    dependencies {
+                        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-avro")
+                        testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-csv")
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation("tools.jackson.dataformat:jackson-dataformat-avro")
+                        testImplementation("tools.jackson.dataformat:jackson-dataformat-csv")
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+            )
+        }
+
+        @Test
+        fun `should keep processing chained recipes across configurations in build gradle kts`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipes(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.dataformat",
+                            oldArtifactId = "*",
+                            newGroupId = "tools.jackson.dataformat",
+                            newArtifactId = "",
+                            newVersion = "3.1.4",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.module",
+                            oldArtifactId = "jackson-module-kotlin",
+                            newGroupId = "tools.jackson.module",
+                            newArtifactId = "jackson-module-kotlin",
+                            newVersion = "3.1.4",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.datatype",
+                            oldArtifactId = "jackson-datatype-jsr310",
+                            newGroupId = "tools.jackson.core",
+                            newArtifactId = "jackson-databind",
+                            newVersion = "3.1.4",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                buildGradleKts(
+                    before = """
+                    dependencies {
+                        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-avro")
+                        testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+                        runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation("tools.jackson.dataformat:jackson-dataformat-avro")
+                        testImplementation("tools.jackson.module:jackson-module-kotlin")
+                        runtimeOnly("tools.jackson.core:jackson-databind")
                     }
                     """.trimIndent(),
                 ) { path("build.gradle.kts") },

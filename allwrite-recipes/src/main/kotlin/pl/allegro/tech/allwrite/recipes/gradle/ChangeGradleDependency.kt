@@ -36,8 +36,8 @@ public class ChangeGradleDependency(
         val regexpDependencyChanger = RegexpDependencyChanger(
             oldGroupId = oldGroupId,
             oldArtifactId = oldArtifactId,
-            newGroupId = newGroupId.takeIf { it.isNotBlank() } ?: oldGroupId,
-            newArtifactId = newArtifactId.takeIf { it.isNotBlank() } ?: oldArtifactId,
+            newGroupId = newGroupId.takeIf { it.isNotBlank() },
+            newArtifactId = newArtifactId.takeIf { it.isNotBlank() },
             newVersion = newVersion.takeIf { it.isNotBlank() },
         )
         val gradleDependencyRewriter = GradleDependencyRewriter(

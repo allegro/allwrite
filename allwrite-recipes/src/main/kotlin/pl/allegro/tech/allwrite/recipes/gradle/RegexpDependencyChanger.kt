@@ -6,8 +6,8 @@ import java.util.regex.Pattern
 internal class RegexpDependencyChanger(
     private val oldGroupId: String,
     private val oldArtifactId: String,
-    private val newGroupId: String,
-    private val newArtifactId: String,
+    private val newGroupId: String?,
+    private val newArtifactId: String?,
     private val newVersion: String?,
 ) {
     private enum class RuleType {
@@ -41,10 +41,9 @@ internal class RegexpDependencyChanger(
             type = RuleType.VERSION_VALUE,
             pattern = Pattern.compile(
                 "(?<group>${globToTokenRegex(oldGroupId)})" +
-                    "(?<separator1>['\",:\\s]+)" +
-                    "(?<nameKey>name[:=\\s'\"]+)?" +
+                    "(?<separator1>['\",: \\t]+)" +
                     "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
-                    "(?<separator2>['\",:\\s]+)" +
+                    "(?<separator2>['\",: \\t]+)" +
                     "(?<version>\\$\\{[^}]+}|[^()'\"\\s,}]+)",
                 Pattern.MULTILINE,
             ),
@@ -76,7 +75,12 @@ internal class RegexpDependencyChanger(
 
         val updatedText = StringBuffer()
         do {
-            val replacement = buildReplacement(matcher, rule.type)
+            val replacement =
+                if (rule.type == RuleType.VERSION_VALUE && matcher.group().containsMapNotationNameKey()) {
+                    matcher.group()
+                } else {
+                    buildReplacement(matcher, rule.type)
+                }
             matcher.appendReplacement(updatedText, Matcher.quoteReplacement(replacement))
         } while (matcher.find())
 
@@ -89,29 +93,38 @@ internal class RegexpDependencyChanger(
         val separatorBeforeVersion = if (newVersion == null && type != RuleType.VERSIONLESS) trimVersionSeparator(separator2) else separator2
 
         return buildString {
-            append(newGroupId)
+            append(newGroupId ?: matcher.group("group"))
             append(matcher.group("separator1"))
-            append(matcher.group("nameKey") ?: "")
-            append(newArtifactId)
+            append(matcher.groupOrNull("nameKey") ?: "")
+            append(newArtifactId ?: matcher.group("artifactId"))
             append(separatorBeforeVersion)
 
             if (newVersion != null && type == RuleType.VERSION_KEY) {
-                append(matcher.group("versionKey") ?: "")
+                append(matcher.groupOrNull("versionKey") ?: "")
             }
 
             if (newVersion != null && type != RuleType.VERSIONLESS) {
                 if (type == RuleType.VERSION_KEY) {
-                    append(matcher.group("versionQuote").orDoubleQuote())
+                    append(matcher.groupOrNull("versionQuote").orDoubleQuote())
                 }
                 append(newVersion)
                 if (type == RuleType.VERSION_KEY) {
-                    append(matcher.group("versionQuote").orDoubleQuote())
+                    append(matcher.groupOrNull("versionQuote").orDoubleQuote())
                 }
             }
         }
     }
 
     private fun String?.orDoubleQuote(): String = if (isNullOrEmpty()) "\"" else this
+
+    private fun String.containsMapNotationNameKey(): Boolean = contains("name:") || contains("name =")
+
+    private fun Matcher.groupOrNull(name: String): String? =
+        try {
+            group(name)
+        } catch (_: IllegalArgumentException) {
+            null
+        }
 
     private fun trimVersionSeparator(separator: String): String = separator.replace(Regex("[,:\\s]+$"), "")
 
