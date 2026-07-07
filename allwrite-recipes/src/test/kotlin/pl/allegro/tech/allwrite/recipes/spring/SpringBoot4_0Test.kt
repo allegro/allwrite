@@ -10,10 +10,14 @@ import org.koin.dsl.module
 import org.openrewrite.InMemoryExecutionContext
 import org.openrewrite.Recipe
 import org.openrewrite.config.Environment
+import org.openrewrite.groovy.GroovyParser
+import org.openrewrite.java.JavaParser
 import org.openrewrite.kotlin.KotlinParser
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
 import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.recipes.groovy
+import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
 
@@ -52,17 +56,18 @@ class SpringBoot4_0Test : RewriteTest {
 
     override fun defaults(spec: RecipeSpec) {
         val ctx = InMemoryExecutionContext()
+        val classpath = arrayOf("spring-data-commons-3", "spring-data-jpa-3", "spring-data-mongodb-4", "spring-web-6", "spring-core-6")
         spec
             .recipe(recipe)
-            .parser(
-                KotlinParser.builder().classpathFromResources(ctx, "spring-data-commons-3", "spring-data-jpa-3", "spring-data-mongodb-4"),
-            )
+            .parser(JavaParser.fromJavaVersion().classpathFromResources(ctx, *classpath))
+            .parser(KotlinParser.builder().classpathFromResources(ctx, *classpath))
+            .parser(GroovyParser.builder().classpathFromResource(ctx, *classpath))
     }
 
     @Test
     fun `SpringBoot4_0 recipe list contains custom recipes`() {
         val recipeNames = recipe.recipeList.map { it::class.simpleName }
-        assertThat(recipeNames).contains("AddNonNullableTypeBoundsToSpringRepositories")
+        assertThat(recipeNames).contains("AddNonNullableTypeBoundsToSpringRepositories", "ReplaceStatusCodeValue")
     }
 
     @Test
@@ -78,6 +83,90 @@ class SpringBoot4_0Test : RewriteTest {
                 import org.springframework.data.repository.CrudRepository
 
                 interface UserRepository<T : Any, ID : Any> : CrudRepository<T, ID>
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should replace getStatusCodeValue() with getStatusCode() value() in Java`() {
+        rewriteRun(
+            java(
+                before = """
+                import org.springframework.http.ResponseEntity;
+
+                class Example {
+                    void test() {
+                        ResponseEntity<String> response = ResponseEntity.ok("hello");
+                        int status = response.getStatusCodeValue();
+                    }
+                }
+                """.trimIndent(),
+                after = """
+                import org.springframework.http.ResponseEntity;
+
+                class Example {
+                    void test() {
+                        ResponseEntity<String> response = ResponseEntity.ok("hello");
+                        int status = response.getStatusCode().value();
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should replace statusCodeValue property access with statusCode value() in Kotlin`() {
+        rewriteRun(
+            kotlin(
+                before = """
+                import org.springframework.http.ResponseEntity
+
+                class Example {
+                    fun test() {
+                        val response: ResponseEntity<String> = ResponseEntity.ok("hello")
+                        val status: Int = response.statusCodeValue
+                    }
+                }
+                """.trimIndent(),
+                after = """
+                import org.springframework.http.ResponseEntity
+
+                class Example {
+                    fun test() {
+                        val response: ResponseEntity<String> = ResponseEntity.ok("hello")
+                        val status: Int = response.statusCode.value()
+                    }
+                }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should replace statusCodeValue property access with statusCode value() in Groovy`() {
+        rewriteRun(
+            groovy(
+                before = """
+                import org.springframework.http.ResponseEntity
+
+                class Example {
+                    void test() {
+                        ResponseEntity<String> response = ResponseEntity.ok("hello")
+                        int status = response.statusCodeValue
+                    }
+                }
+                """.trimIndent(),
+                after = """
+                import org.springframework.http.ResponseEntity
+
+                class Example {
+                    void test() {
+                        ResponseEntity<String> response = ResponseEntity.ok("hello")
+                        int status = response.statusCode.value()
+                    }
+                }
                 """.trimIndent(),
             ),
         )
