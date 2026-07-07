@@ -3,6 +3,7 @@ package pl.allegro.tech.allwrite.runtime
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
+import org.openrewrite.config.ClasspathScanningLoader
 import org.openrewrite.config.Environment
 import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
@@ -27,16 +28,21 @@ internal class OpenrewriteRecipeSource(
     override fun get(recipe: String): Recipe = environment.activateRecipes(recipe)
 
     private fun buildEnvironment(): Environment {
-        val jarPaths = externalRecipeProvider?.get().orEmpty()
+        val externalJarPaths = externalRecipeProvider?.get().orEmpty()
 
-        val jarUrls = jarPaths.map { it.toUri().toURL() }.toTypedArray()
-        val classLoader = URLClassLoader(jarUrls, Thread.currentThread().contextClassLoader)
+        val externalJarUrls = externalJarPaths.map { it.toUri().toURL() }.toTypedArray()
+        val externalClassLoader = URLClassLoader(externalJarUrls, Thread.currentThread().contextClassLoader)
+
+        val allwriteLoader = ClasspathScanningLoader(null, arrayOf(ALLWRITE_PACKAGE))
 
         val builder = Environment.builder()
             .scanRuntimeClasspath(ALLWRITE_PACKAGE, OPEN_REWRITE_PACKAGE)
-        jarPaths.forEach { jarPath ->
-            logger.debug { "Scanning external recipe JAR: $jarPath" }
-            builder.scanJar(jarPath, emptyList(), classLoader)
+        externalJarPaths.forEach { externalJarPath ->
+            logger.debug { "Scanning external recipe JAR: $externalJarPath" }
+            builder.load(
+                ClasspathScanningLoader(externalJarPath, null, listOf(allwriteLoader), externalClassLoader),
+                listOf(allwriteLoader),
+            )
         }
         return builder.build()
     }
