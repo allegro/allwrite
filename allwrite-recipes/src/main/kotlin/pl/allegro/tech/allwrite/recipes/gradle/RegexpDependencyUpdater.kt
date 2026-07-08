@@ -1,13 +1,16 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
+import com.github.zafarkhaja.semver.Version
 import java.util.regex.Pattern
 
 internal class RegexpDependencyUpdater(
     groupId: String,
     artifactId: String,
-    private val targetVersion: String,
+    targetVersion: String,
     private val versionPattern: String,
 ) {
+    private val normalizedTargetVersion = targetVersion.trim()
+    private val targetSemver = parseSemver(normalizedTargetVersion) ?: error("Invalid target version: $targetVersion")
 
     /** Regular expression matching dependency declaration in following formats:
      * - classpath("GROUP:ID:1.4.46")
@@ -40,10 +43,11 @@ internal class RegexpDependencyUpdater(
         val versionFound = matcher.group("version")
         val versionPattern = Pattern.compile(versionPattern)
         val versionMatcher = versionPattern.matcher(versionFound)
+        val currentSemver = parseSemver(versionFound)
 
-        return if (versionMatcher.find()) {
+        return if (versionMatcher.find() && currentSemver != null && !targetSemver.isLowerThan(currentSemver)) {
             // version found and it matches version pattern, replace the version
-            matcher.replaceFirst("\${group}\${separator1}\${nameKey}\${artifactId}\${separator2}\${versionKey}$targetVersion")
+            matcher.replaceFirst($$"${group}${separator1}${nameKey}${artifactId}${separator2}${versionKey}$$normalizedTargetVersion")
         } else {
             updateVersionInVariable(originalText, versionFound, patternOptions, versionPattern)
         }
@@ -76,6 +80,17 @@ internal class RegexpDependencyUpdater(
             return originalText
         }
 
-        return variableMatcher.replaceFirst("\${variableName}\${separator}$targetVersion")
+        val currentSemver = parseSemver(variableMatcher.group("version")) ?: return originalText
+
+        if (targetSemver.isLowerThan(currentSemver)) {
+            return originalText
+        }
+
+        return variableMatcher.replaceFirst($$"${variableName}${separator}$$normalizedTargetVersion")
     }
+
+    private fun parseSemver(version: String): Version? =
+        runCatching {
+            Version.parse(version.trim(), false)
+        }.getOrNull()
 }

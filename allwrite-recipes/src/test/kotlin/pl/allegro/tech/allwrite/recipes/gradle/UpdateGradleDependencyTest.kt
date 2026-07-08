@@ -40,6 +40,42 @@ class UpdateGradleDependencyTest {
         ): UpdateGradleDependency = this@UpdateGradleDependencyTest.recipe(groupId, artifactId, targetVersion, sourceVersionPattern)
     }
 
+    private fun noChangeSpec(targetVersion: String): RecipeSpec.() -> Unit =
+        {
+            recipe(recipe(targetVersion = targetVersion))
+                .validateRecipeSerialization(false)
+                .expectedCyclesThatMakeChanges(0)
+        }
+
+    private fun groovyDependency(version: String) =
+        buildGradle(
+            """
+            dependencies {
+                implementation "com.fasterxml.jackson.module:jackson-module-afterburner:$version"
+            }
+            """.trimIndent(),
+        ) { path("build.gradle") }
+
+    private fun kotlinDependency(version: String) =
+        buildGradleKts(
+            """
+            dependencies {
+                implementation("com.fasterxml.jackson.module:jackson-module-afterburner:$version")
+            }
+            """.trimIndent(),
+        ) { path("build.gradle.kts") }
+
+    private fun tomlVersionRef(version: String) =
+        toml(
+            """
+            [versions]
+            jackson = "$version"
+
+            [libraries]
+            jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+            """.trimIndent(),
+        ) { path("gradle/libs.versions.toml") }
+
     @Nested
     inner class Groovy : BaseSpec() {
         @Test
@@ -58,6 +94,42 @@ class UpdateGradleDependencyTest {
                     """.trimIndent(),
                 ) { path("build.gradle") },
             )
+        }
+
+        @Test
+        fun `should trim whitespace around target version in build gradle`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(targetVersion = " 3.1.4 ")).validateRecipeSerialization(false)
+                },
+                buildGradle(
+                    before = """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:2.17.2"
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:3.1.4"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should skip major downgrade in build gradle`() {
+            rewriteRun(noChangeSpec("3.9.9"), groovyDependency("4.1.0"))
+        }
+
+        @Test
+        fun `should skip minor downgrade in build gradle`() {
+            rewriteRun(noChangeSpec("4.0.0"), groovyDependency("4.1.0"))
+        }
+
+        @Test
+        fun `should skip patch downgrade in build gradle`() {
+            rewriteRun(noChangeSpec("4.1.0"), groovyDependency("4.1.1"))
         }
 
         @Test
@@ -132,6 +204,21 @@ class UpdateGradleDependencyTest {
                 ) { path("build.gradle.kts") },
             )
         }
+
+        @Test
+        fun `should skip major downgrade in build gradle kts`() {
+            rewriteRun(noChangeSpec("3.9.9"), kotlinDependency("4.1.0"))
+        }
+
+        @Test
+        fun `should skip minor downgrade in build gradle kts`() {
+            rewriteRun(noChangeSpec("4.0.0"), kotlinDependency("4.1.0"))
+        }
+
+        @Test
+        fun `should skip patch downgrade in build gradle kts`() {
+            rewriteRun(noChangeSpec("4.1.0"), kotlinDependency("4.1.1"))
+        }
     }
 
     @Nested
@@ -159,6 +246,28 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
+        fun `should trim whitespace around toml version ref value`() {
+            rewriteRun(
+                toml(
+                    before = """
+                    [versions]
+                    jackson = " 2.17.2 "
+
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+                    """.trimIndent(),
+                    after = """
+                    [versions]
+                    jackson = " 3.1.4"
+
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
         fun `should update dependency version in toml plain version`() {
             rewriteRun(
                 toml(
@@ -172,6 +281,21 @@ class UpdateGradleDependencyTest {
                     """.trimIndent(),
                 ) { path("gradle/libs.versions.toml") },
             )
+        }
+
+        @Test
+        fun `should skip major downgrade in toml version ref`() {
+            rewriteRun(noChangeSpec("3.9.9"), tomlVersionRef("4.1.0"))
+        }
+
+        @Test
+        fun `should skip minor downgrade in toml version ref`() {
+            rewriteRun(noChangeSpec("4.0.0"), tomlVersionRef("4.1.0"))
+        }
+
+        @Test
+        fun `should skip patch downgrade in toml version ref`() {
+            rewriteRun(noChangeSpec("4.1.0"), tomlVersionRef("4.1.1"))
         }
     }
 }
