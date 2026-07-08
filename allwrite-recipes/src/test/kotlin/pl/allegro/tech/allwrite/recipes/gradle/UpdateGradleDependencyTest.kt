@@ -40,6 +40,41 @@ class UpdateGradleDependencyTest {
         ): UpdateGradleDependency = this@UpdateGradleDependencyTest.recipe(groupId, artifactId, targetVersion, sourceVersionPattern)
     }
 
+    private fun noChangeSpec(targetVersion: String): RecipeSpec.() -> Unit = {
+        recipe(recipe(targetVersion = targetVersion))
+            .validateRecipeSerialization(false)
+            .expectedCyclesThatMakeChanges(0)
+    }
+
+    private fun groovyDependency(version: String) =
+        buildGradle(
+            """
+            dependencies {
+                implementation "com.fasterxml.jackson.module:jackson-module-afterburner:$version"
+            }
+            """.trimIndent(),
+        ) { path("build.gradle") }
+
+    private fun kotlinDependency(version: String) =
+        buildGradleKts(
+            """
+            dependencies {
+                implementation("com.fasterxml.jackson.module:jackson-module-afterburner:$version")
+            }
+            """.trimIndent(),
+        ) { path("build.gradle.kts") }
+
+    private fun tomlVersionRef(version: String) =
+        toml(
+            """
+            [versions]
+            jackson = "$version"
+
+            [libraries]
+            jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+            """.trimIndent(),
+        ) { path("gradle/libs.versions.toml") }
+
     @Nested
     inner class Groovy : BaseSpec() {
         @Test
@@ -61,57 +96,18 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
-        fun `should skip update when target version is lower than current version`() {
-            rewriteRun(
-                { spec ->
-                    spec.recipe(recipe(targetVersion = "3.5.0"))
-                        .validateRecipeSerialization(false)
-                        .expectedCyclesThatMakeChanges(0)
-                },
-                buildGradle(
-                    """
-                    dependencies {
-                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:4.1.0"
-                    }
-                    """.trimIndent(),
-                ) { path("build.gradle") },
-            )
+        fun `should skip major downgrade in build gradle`() {
+            rewriteRun(noChangeSpec("3.9.9"), groovyDependency("4.1.0"))
         }
 
         @Test
-        fun `should skip update when target major version is lower than current version`() {
-            rewriteRun(
-                { spec ->
-                    spec.recipe(recipe(targetVersion = "3.9.9"))
-                        .validateRecipeSerialization(false)
-                        .expectedCyclesThatMakeChanges(0)
-                },
-                buildGradle(
-                    """
-                    dependencies {
-                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:4.1.0"
-                    }
-                    """.trimIndent(),
-                ) { path("build.gradle") },
-            )
+        fun `should skip minor downgrade in build gradle`() {
+            rewriteRun(noChangeSpec("4.0.0"), groovyDependency("4.1.0"))
         }
 
         @Test
-        fun `should skip update when target minor version is lower than current version`() {
-            rewriteRun(
-                { spec ->
-                    spec.recipe(recipe(targetVersion = "4.0.0"))
-                        .validateRecipeSerialization(false)
-                        .expectedCyclesThatMakeChanges(0)
-                },
-                buildGradle(
-                    """
-                    dependencies {
-                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:4.1.0"
-                    }
-                    """.trimIndent(),
-                ) { path("build.gradle") },
-            )
+        fun `should skip patch downgrade in build gradle`() {
+            rewriteRun(noChangeSpec("4.1.0"), groovyDependency("4.1.1"))
         }
 
         @Test
@@ -186,6 +182,21 @@ class UpdateGradleDependencyTest {
                 ) { path("build.gradle.kts") },
             )
         }
+
+        @Test
+        fun `should skip major downgrade in build gradle kts`() {
+            rewriteRun(noChangeSpec("3.9.9"), kotlinDependency("4.1.0"))
+        }
+
+        @Test
+        fun `should skip minor downgrade in build gradle kts`() {
+            rewriteRun(noChangeSpec("4.0.0"), kotlinDependency("4.1.0"))
+        }
+
+        @Test
+        fun `should skip patch downgrade in build gradle kts`() {
+            rewriteRun(noChangeSpec("4.1.0"), kotlinDependency("4.1.1"))
+        }
     }
 
     @Nested
@@ -229,43 +240,18 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
-        fun `should skip update when target version is lower than version ref value`() {
-            rewriteRun(
-                { spec ->
-                    spec.recipe(recipe(targetVersion = "3.5.0"))
-                        .validateRecipeSerialization(false)
-                        .expectedCyclesThatMakeChanges(0)
-                },
-                toml(
-                    """
-                    [versions]
-                    jackson = "4.1.0"
-
-                    [libraries]
-                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
-                    """.trimIndent(),
-                ) { path("gradle/libs.versions.toml") },
-            )
+        fun `should skip major downgrade in toml version ref`() {
+            rewriteRun(noChangeSpec("3.9.9"), tomlVersionRef("4.1.0"))
         }
 
         @Test
-        fun `should skip update when target patch version is lower than version ref value`() {
-            rewriteRun(
-                { spec ->
-                    spec.recipe(recipe(targetVersion = "4.1.0"))
-                        .validateRecipeSerialization(false)
-                        .expectedCyclesThatMakeChanges(0)
-                },
-                toml(
-                    """
-                    [versions]
-                    jackson = "4.1.1"
+        fun `should skip minor downgrade in toml version ref`() {
+            rewriteRun(noChangeSpec("4.0.0"), tomlVersionRef("4.1.0"))
+        }
 
-                    [libraries]
-                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
-                    """.trimIndent(),
-                ) { path("gradle/libs.versions.toml") },
-            )
+        @Test
+        fun `should skip patch downgrade in toml version ref`() {
+            rewriteRun(noChangeSpec("4.1.0"), tomlVersionRef("4.1.1"))
         }
     }
 }
