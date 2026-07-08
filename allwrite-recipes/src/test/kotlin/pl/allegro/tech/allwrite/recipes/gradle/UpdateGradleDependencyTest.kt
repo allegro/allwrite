@@ -40,11 +40,12 @@ class UpdateGradleDependencyTest {
         ): UpdateGradleDependency = this@UpdateGradleDependencyTest.recipe(groupId, artifactId, targetVersion, sourceVersionPattern)
     }
 
-    private fun noChangeSpec(targetVersion: String): RecipeSpec.() -> Unit = {
-        recipe(recipe(targetVersion = targetVersion))
-            .validateRecipeSerialization(false)
-            .expectedCyclesThatMakeChanges(0)
-    }
+    private fun noChangeSpec(targetVersion: String): RecipeSpec.() -> Unit =
+        {
+            recipe(recipe(targetVersion = targetVersion))
+                .validateRecipeSerialization(false)
+                .expectedCyclesThatMakeChanges(0)
+        }
 
     private fun groovyDependency(version: String) =
         buildGradle(
@@ -80,6 +81,27 @@ class UpdateGradleDependencyTest {
         @Test
         fun `should update dependency version in build gradle`() {
             rewriteRun(
+                buildGradle(
+                    before = """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:2.17.2"
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:3.1.4"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should trim whitespace around target version in build gradle`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(targetVersion = " 3.1.4 ")).validateRecipeSerialization(false)
+                },
                 buildGradle(
                     before = """
                     dependencies {
@@ -215,6 +237,28 @@ class UpdateGradleDependencyTest {
                     after = """
                     [versions]
                     jackson = "3.1.4"
+
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should trim whitespace around toml version ref value`() {
+            rewriteRun(
+                toml(
+                    before = """
+                    [versions]
+                    jackson = " 2.17.2 "
+
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+                    """.trimIndent(),
+                    after = """
+                    [versions]
+                    jackson = " 3.1.4"
 
                     [libraries]
                     jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }

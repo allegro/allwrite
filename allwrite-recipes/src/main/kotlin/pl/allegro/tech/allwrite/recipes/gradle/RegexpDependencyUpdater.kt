@@ -6,10 +6,11 @@ import java.util.regex.Pattern
 internal class RegexpDependencyUpdater(
     groupId: String,
     artifactId: String,
-    private val targetVersion: String,
+    targetVersion: String,
     private val versionPattern: String,
 ) {
-    private val targetSemver = Version.parse(targetVersion, false)
+    private val normalizedTargetVersion = targetVersion.trim()
+    private val targetSemver = parseSemver(normalizedTargetVersion) ?: error("Invalid target version: $targetVersion")
 
     /** Regular expression matching dependency declaration in following formats:
      * - classpath("GROUP:ID:1.4.46")
@@ -42,10 +43,11 @@ internal class RegexpDependencyUpdater(
         val versionFound = matcher.group("version")
         val versionPattern = Pattern.compile(versionPattern)
         val versionMatcher = versionPattern.matcher(versionFound)
+        val currentSemver = parseSemver(versionFound)
 
-        return if (versionMatcher.find() && !targetSemver.isLowerThan(Version.parse(versionFound, false))) {
+        return if (versionMatcher.find() && currentSemver != null && !targetSemver.isLowerThan(currentSemver)) {
             // version found and it matches version pattern, replace the version
-            matcher.replaceFirst("\${group}\${separator1}\${nameKey}\${artifactId}\${separator2}\${versionKey}$targetVersion")
+            matcher.replaceFirst($$"${group}${separator1}${nameKey}${artifactId}${separator2}${versionKey}$$normalizedTargetVersion")
         } else {
             updateVersionInVariable(originalText, versionFound, patternOptions, versionPattern)
         }
@@ -78,10 +80,17 @@ internal class RegexpDependencyUpdater(
             return originalText
         }
 
-        if (targetSemver.isLowerThan(Version.parse(variableMatcher.group("version"), false))) {
+        val currentSemver = parseSemver(variableMatcher.group("version")) ?: return originalText
+
+        if (targetSemver.isLowerThan(currentSemver)) {
             return originalText
         }
 
-        return variableMatcher.replaceFirst("\${variableName}\${separator}$targetVersion")
+        return variableMatcher.replaceFirst($$"${variableName}${separator}$$normalizedTargetVersion")
     }
+
+    private fun parseSemver(version: String): Version? =
+        runCatching {
+            Version.parse(version.trim(), false)
+        }.getOrNull()
 }
