@@ -97,7 +97,7 @@ private class AddQualifierAnnotation(
             return adjustKotlinSpaces(v)
         } else if (v.typeExpression != null) {
             val typePrefix = v.typeExpression!!.prefix
-            if (typePrefix == null || typePrefix.isEmpty) {
+            if (typePrefix.isEmpty) {
                 return v.withTypeExpression(v.typeExpression!!.withPrefix(SINGLE_SPACE))
             }
         }
@@ -108,14 +108,8 @@ private class AddQualifierAnnotation(
         // in Kotlin we may first want to add an annotation in front of modifiers
         if (v.modifiers.isNotEmpty()) {
             val firstModifier = v.modifiers[0]
-            if (firstModifier.prefix == null || firstModifier.prefix.isEmpty) {
+            if (firstModifier.prefix.isEmpty) {
                 return v.withModifiers(v.modifiers.mapFirst { it.withPrefix(SINGLE_SPACE) })
-            }
-        } else if (v.variables.isNotEmpty()) {
-            // if there are no modifiers, we are adding a space before the variable name
-            val variable = v.variables.first()
-            if (variable.prefix == null || variable.prefix.isEmpty) {
-                return v.withVariables(v.variables.mapFirst { it.withPrefix(SINGLE_SPACE) })
             }
         }
         return v
