@@ -60,7 +60,27 @@ The CLI command layer iterates and calls `execute()` per group.
 
 ### Should we split recursively (nested composites)?
 
-**No.** Only split the immediate `getRecipeList()` of the top-level `AllwriteRecipe`. No current examples of nested `ClasspathAwareRecipe` exist.
+**Yes, unbounded recursion.** When a sub-recipe is an `AllwriteRecipe` whose `recipeList` contains any `ClasspathAwareRecipe`, recursively expand its phases
+into the parent's phase list.
+
+**Rationale:** Clients may compose our recipes (e.g., `SpringBoot4_0`) inside their own external `AllwriteRecipe`. Without recursive splitting, the nested
+`ClasspathAwareRecipe` sub-recipes would never get isolated, and classpath conflicts would re-emerge.
+
+**Example:**
+
+```
+ClientMigration.recipeList = [SpringBoot4_0, SomeOtherRecipe]
+  └─ SpringBoot4_0.recipeList = [OR_SpringUpgrade, AddNonNullable, ReplaceStatusCode]
+
+Result phases:
+  Phase 1: {OR_SpringUpgrade}        (from expanding SpringBoot4_0)
+  Phase 2: {AddNonNullable}          (isolated, from SpringBoot4_0)
+  Phase 3: {ReplaceStatusCode}       (isolated, from SpringBoot4_0)
+  Phase 4: {SomeOtherRecipe}         (remaining top-level group)
+```
+
+**Detection:** A recipe "needs expansion" when `recipe is AllwriteRecipe && recipe.recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }`
+(recursive check for deeply nested cases).
 
 ### Input files — re-scan per pass or scan once?
 
@@ -110,16 +130,52 @@ Phase 4: ReplaceStatusCodeValue                                         # INFO
 
 When no `ClasspathAwareRecipe` sub-recipes exist — no splitting, existing behavior unchanged.
 
+### Nested recipe expansion logging
+
+When recursive expansion is triggered, log "Expanding nested recipe" at DEBUG level **at the point of encounter** (not all upfront):
+
+```
+Running recipe ClientMigration                                                    # INFO
+Detected ClasspathAware recipes, splitting into 8 isolated phases                 # INFO
+Expanding nested recipe SpringBoot4_0 (3 sub-phases)                              # DEBUG
+Phase 1: 2 non-classpath-aware recipes                                            # INFO
+Grouped recipes: [OR_UpgradeSpringBoot_4_0, OR_UpgradeSpringFramework_7_0]        # DEBUG
+Run finished with 12 files modified and 0 files deleted                           # INFO
+Phase 2: AddNonNullableTypeBounds                                                 # INFO
+Run finished with 3 files modified and 0 files deleted                            # INFO
+Phase 3: ReplaceStatusCodeValue                                                   # INFO
+Run finished with 2 files modified and 0 files deleted                            # INFO
+Phase 4: 1 non-classpath-aware recipes                                            # INFO
+Grouped recipes: [RemoveDeprecatedEndpoints]                                      # DEBUG
+Run finished with 1 files modified and 1 files deleted                            # INFO
+Expanding nested recipe KotlinUpgrade (3 sub-phases)                              # DEBUG
+Phase 5: 1 non-classpath-aware recipes                                            # INFO
+Grouped recipes: [OR_UpgradeKotlin_2_2]                                           # DEBUG
+Run finished with 8 files modified and 0 files deleted                            # INFO
+Phase 6: FixSealedClassMigration                                                  # INFO
+Run finished with 2 files modified and 0 files deleted                            # INFO
+Phase 7: 1 non-classpath-aware recipes                                            # INFO
+Grouped recipes: [OR_CleanupDeprecations]                                         # DEBUG
+Run finished with 4 files modified and 0 files deleted                            # INFO
+Phase 8: 1 non-classpath-aware recipes                                            # INFO
+Grouped recipes: [UpdateGradleWrapper]                                            # DEBUG
+Run finished with 1 files modified and 0 files deleted                            # INFO
+```
+
 ## Implementation Plan
 
 ### Splitting Algorithm (in `OpenrewriteRecipeExecutor`)
 
 1. Check if top-level recipe is `AllwriteRecipe`
-2. Get `getRecipeList()` — check if any sub-recipe is `ClasspathAwareRecipe`
+2. Get `getRecipeList()` — check if any sub-recipe is `ClasspathAwareRecipe` or needs expansion (recursive check)
 3. If none → single pass (existing behavior)
 4. If any → walk list in order:
-    - Accumulate consecutive non-`ClasspathAwareRecipe` into a group
-    - When a `ClasspathAwareRecipe` is hit → flush accumulated group as a phase, emit ClasspathAwareRecipe as its own phase
+    - If sub-recipe is `ClasspathAwareRecipe` → flush accumulated group as a phase, emit it as its own phase
+    - If sub-recipe is `AllwriteRecipe` that needs expansion (contains `ClasspathAwareRecipe` at any depth):
+      → flush accumulated group as a phase
+      → log "Expanding nested recipe X (N sub-phases)" at DEBUG
+      → recursively `splitIntoPhases(subRecipe)` and append each resulting phase
+    - Otherwise → accumulate into current group
     - At end → flush remaining accumulated group
 5. For each phase:
     - Filter `inputFiles` by `Path::exists`
@@ -129,13 +185,21 @@ When no `ClasspathAwareRecipe` sub-recipes exist — no splitting, existing beha
     - `applyChanges(recipeRun)`
     - `postProcess(phaseRecipe)`
 
+#### Helper: `needsExpansion()`
+
+```kotlin
+private fun Recipe.needsExpansion(): Boolean =
+    this is AllwriteRecipe && recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }
+```
+
 ### Files to Modify
 
-| File                                                              | Change                                         |
-|-------------------------------------------------------------------|------------------------------------------------|
-| `allwrite-runtime/.../OpenrewriteRecipeExecutor.kt`               | Add phase-splitting logic in `execute()`       |
-| `allwrite-runtime/.../OpenrewriteRecipeExecutor.kt` (or new file) | Add internal `PhaseRecipe` class               |
-| `allwrite-runtime/src/test/kotlin/...`                            | Add executor-level test for isolation behavior |
+| File                                                              | Change                                                |
+|-------------------------------------------------------------------|-------------------------------------------------------|
+| `allwrite-runtime/.../OpenrewriteRecipeExecutor.kt`               | Add phase-splitting logic in `execute()`              |
+| `allwrite-runtime/.../OpenrewriteRecipeExecutor.kt` (or new file) | Add internal `PhaseRecipe` class                      |
+| `allwrite-runtime/src/test/kotlin/...`                            | Add executor-level test for isolation behavior        |
+|                                                                   | Including: nested `AllwriteRecipe` expansion scenario |
 
 ### Files NOT Modified
 
