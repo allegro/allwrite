@@ -8,6 +8,7 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.openrewrite.ExecutionContext
+import org.openrewrite.Recipe
 import org.openrewrite.TreeVisitor
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.PostprocessingResult.Failure
@@ -162,7 +163,7 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             postProcessingRecipe2.executionCount shouldBe 1
         }
 
-        test("should recursively expand nested AllwriteRecipe containing ClasspathAwareRecipe") {
+        test("should recursively expand nested composite recipe containing ClasspathAwareRecipe") {
             // given
             val executionOrder = mutableListOf<String>()
             val nestedOr = OrderRecordingRecipe("nestedOr", executionOrder)
@@ -182,7 +183,7 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             }
         }
 
-        test("should recursively expand deeply nested AllwriteRecipe") {
+        test("should recursively expand deeply nested composite recipe") {
             // given
             val executionOrder = mutableListOf<String>()
             val deepClasspath = OrderRecordingClasspathAwareRecipe("deepClasspath", executionOrder)
@@ -202,7 +203,7 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             executionOrder.distinct() shouldContainExactly listOf("topOr", "middleOr", "deepClasspath", "deepOr")
         }
 
-        test("should not expand nested AllwriteRecipe without ClasspathAwareRecipe") {
+        test("should not expand nested composite recipe without ClasspathAwareRecipe") {
             // given
             val executionOrder = mutableListOf<String>()
             val nestedOr1 = OrderRecordingRecipe("nestedOr1", executionOrder)
@@ -217,6 +218,38 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
 
             // then
             executionOrder.distinct() shouldContainExactlyInAnyOrder listOf("nestedOr1", "nestedOr2", "topLevel")
+        }
+
+        test("should split plain composite recipe containing ClasspathAwareRecipe") {
+            // given
+            val executionOrder = mutableListOf<String>()
+            val or1 = OrderRecordingRecipe("or1", executionOrder)
+            val classpathRecipe = OrderRecordingClasspathAwareRecipe("classpathRecipe", executionOrder)
+            val or2 = OrderRecordingRecipe("or2", executionOrder)
+            val plainComposite = PlainCompositeRecipe(or1, classpathRecipe, or2)
+
+            // when
+            recipeExecutor.execute(plainComposite, inputFiles(), true)
+
+            // then
+            executionOrder.distinct() shouldContainExactly listOf("or1", "classpathRecipe", "or2")
+        }
+
+        test("should expand nested ClasspathAwareRecipe inside plain composite") {
+            // given
+            val executionOrder = mutableListOf<String>()
+            val nestedOr = OrderRecordingRecipe("nestedOr", executionOrder)
+            val nestedClasspath = OrderRecordingClasspathAwareRecipe("nestedClasspath", executionOrder)
+            val nestedComposite = FakeCompositeRecipe(nestedOr, nestedClasspath)
+
+            val topLevelRecipe = OrderRecordingRecipe("topLevel", executionOrder)
+            val plainComposite = PlainCompositeRecipe(nestedComposite, topLevelRecipe)
+
+            // when
+            recipeExecutor.execute(plainComposite, inputFiles(), true)
+
+            // then
+            executionOrder.distinct() shouldContainExactly listOf("nestedOr", "nestedClasspath", "topLevel")
         }
 
         // TODO make writing modified files an outgoing port (implemented by OperatingSystemModule) that can be mocked and write tests for that
@@ -243,4 +276,17 @@ private class OrderRecordingClasspathAwareRecipe(
     ClasspathAwareRecipe {
 
     override fun requireOnClasspath(): List<String> = emptyList()
+}
+
+private class PlainCompositeRecipe(
+    private val children: List<Recipe>,
+) : Recipe() {
+
+    constructor(vararg children: Recipe) : this(children.toList())
+
+    override fun getDisplayName(): String = "PlainCompositeRecipe"
+
+    override fun getDescription(): String = "Simulates a DeclarativeRecipe loaded from YAML"
+
+    override fun getRecipeList(): List<Recipe> = children
 }

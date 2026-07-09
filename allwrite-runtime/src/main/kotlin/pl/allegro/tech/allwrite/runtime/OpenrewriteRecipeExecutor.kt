@@ -8,7 +8,6 @@ import org.openrewrite.Recipe
 import org.openrewrite.RecipeRun
 import org.openrewrite.SourceFile
 import org.openrewrite.internal.InMemoryLargeSourceSet
-import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.PostprocessingRecipe
 import pl.allegro.tech.allwrite.PostprocessingResult
@@ -56,8 +55,6 @@ internal class OpenrewriteRecipeExecutor(
     }
 
     private fun splitIntoPhases(recipe: Recipe): List<List<Recipe>> {
-        if (recipe !is AllwriteRecipe) return listOf(listOf(recipe))
-
         val subRecipes = recipe.recipeList
         if (subRecipes.none { it is ClasspathAwareRecipe || it.needsExpansion() }) return listOf(listOf(recipe))
 
@@ -96,7 +93,7 @@ internal class OpenrewriteRecipeExecutor(
         return phases
     }
 
-    private fun Recipe.needsExpansion(): Boolean = this is AllwriteRecipe && recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }
+    private fun Recipe.needsExpansion(): Boolean = recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }
 
     private fun toPhaseRecipe(phaseRecipes: List<Recipe>): Recipe = phaseRecipes.singleOrNull() ?: PhaseRecipe(phaseRecipes)
 
