@@ -11,6 +11,8 @@ import pl.allegro.tech.allwrite.kapt.GenerateCompletions
 
 @GenerateCompletions
 public fun main(args: Array<String>) {
+    System.setProperty("kotlin-logging.logStartupMessage", "false")
+
     startKoin {
         modules(CliModule().module)
         loadDynamicModules()

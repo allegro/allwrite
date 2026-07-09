@@ -18,8 +18,10 @@ class RecipeSourceSpec : BaseRuntimeSpec() {
         val recipeSource: RecipeSource by inject()
 
         test("should find all allegro recipes with public visibility") {
+            // when
             val recipes = recipeSource.findAll()
 
+            // then
             val recipeIds = recipes.map { it.name }
             recipeIds shouldContainAll listOf(
                 "pl.allegro.tech.allwrite.recipes.KotlinPublicRecipe",
@@ -35,11 +37,14 @@ class RecipeSourceSpec : BaseRuntimeSpec() {
         }
 
         test("should resolve OpenRewrite recipes included in external declarative recipe") {
+            // given
             val externalJar = createExternalRecipeJar()
             val recipeSource = OpenrewriteRecipeSource(FakeExternalRecipeProvider(listOf(externalJar)))
 
+            // when
             val recipe = recipeSource.get(EXTERNAL_COMPOSITE_RECIPE)
 
+            // then
             recipe.recipeList.map { it.name } shouldContain "org.openrewrite.text.Find"
         }
     }
