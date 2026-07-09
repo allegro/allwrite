@@ -39,50 +39,47 @@ internal class OpenrewriteRecipeExecutor(
         }
 
         logger.info { "Detected ClasspathAware recipes, splitting into ${phases.size} isolated phases" }
-        phases.forEachIndexed { idx, p ->
+        phases.forEachIndexed { idx, phase ->
             val phaseNumber = idx + 1
-            when (p.size) {
-                1 if p.single() is ClasspathAwareRecipe -> {
-                    logger.info { "Phase $phaseNumber: ${p.single().javaClass.simpleName} (classpath-aware recipe)" }
+            when (phase) {
+                is Phase.Isolated -> {
+                    logger.info { "Phase $phaseNumber: ${phase.recipe.javaClass.simpleName} (classpath-aware recipe)" }
                 }
-                1 -> {
-                    logger.info { "Phase $phaseNumber: ${p.single().javaClass.simpleName}" }
+                is Phase.Grouped if phase.recipes.size == 1 -> {
+                    logger.info { "Phase $phaseNumber: ${phase.recipes.single().javaClass.simpleName} (non-classpath-aware recipe)" }
                 }
-                else -> {
-                    logger.info { "Phase $phaseNumber: ${p.size} non-classpath-aware recipes" }
-                    logger.debug { "Grouped recipes: ${p.map { it.javaClass.simpleName }}" }
+                is Phase.Grouped -> {
+                    logger.info { "Phase $phaseNumber: ${phase.recipes.size} non-classpath-aware recipes" }
+                    logger.debug { "Grouped recipes: ${phase.recipes.map { it.javaClass.simpleName }}" }
                 }
             }
 
-            val phaseRecipe = toPhaseRecipe(p)
             val existingInputFiles = inputFiles.filter { it.exists() }
-            executePhase(phaseRecipe, existingInputFiles, context)
+            executePhase(phase.toRecipe(), existingInputFiles, context)
         }
     }
 
-    private fun splitIntoPhases(recipe: Recipe): List<List<Recipe>> {
+    private fun splitIntoPhases(recipe: Recipe): List<Phase> {
         val subRecipes = recipe.recipeList
-        if (subRecipes.none { it is ClasspathAwareRecipe || it.needsExpansion() }) return listOf(listOf(recipe))
+        if (subRecipes.none { it.requiresPhasing() }) return listOf(Phase.Grouped(listOf(recipe)))
 
-        val phases = mutableListOf<List<Recipe>>()
+        val phases = mutableListOf<Phase>()
         var currentGroup = mutableListOf<Recipe>()
         for (subRecipe in subRecipes) {
             when {
                 subRecipe is ClasspathAwareRecipe -> {
                     if (currentGroup.isNotEmpty()) {
-                        phases.add(currentGroup)
+                        phases.add(Phase.Grouped(currentGroup))
                         currentGroup = mutableListOf()
                     }
-
-                    phases.add(listOf(subRecipe))
+                    phases.add(Phase.Isolated(subRecipe))
                 }
 
-                subRecipe.needsExpansion() -> {
+                subRecipe.requiresPhasing() -> {
                     if (currentGroup.isNotEmpty()) {
-                        phases.add(currentGroup)
+                        phases.add(Phase.Grouped(currentGroup))
                         currentGroup = mutableListOf()
                     }
-
                     val nestedPhases = splitIntoPhases(subRecipe)
                     logger.info { "Expanding nested recipe ${subRecipe.javaClass.simpleName} (${nestedPhases.size} sub-phases)" }
                     phases.addAll(nestedPhases)
@@ -93,15 +90,19 @@ internal class OpenrewriteRecipeExecutor(
         }
 
         if (currentGroup.isNotEmpty()) {
-            phases.add(currentGroup)
+            phases.add(Phase.Grouped(currentGroup))
         }
 
         return phases
     }
 
-    private fun Recipe.needsExpansion(): Boolean = recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }
+    private fun Recipe.requiresPhasing(): Boolean = this is ClasspathAwareRecipe || recipeList.any { it.requiresPhasing() }
 
-    private fun toPhaseRecipe(phaseRecipes: List<Recipe>): Recipe = phaseRecipes.singleOrNull() ?: PhaseRecipe(phaseRecipes)
+    private fun Phase.toRecipe(): Recipe =
+        when (this) {
+            is Phase.Isolated -> recipe
+            is Phase.Grouped -> recipes.singleOrNull() ?: PhaseRecipe(recipes)
+        }
 
     private fun executePhase(recipe: Recipe, inputFiles: List<Path>, context: ExecutionContext) {
         val sourceFiles = parseInputFiles(recipe, inputFiles, context)
@@ -165,6 +166,15 @@ internal class OpenrewriteRecipeExecutor(
     companion object {
         private val logger = KotlinLogging.logger { }
     }
+}
+
+internal sealed class Phase {
+    class Isolated(
+        val recipe: Recipe,
+    ) : Phase()
+    class Grouped(
+        val recipes: List<Recipe>,
+    ) : Phase()
 }
 
 internal class PhaseRecipe(
