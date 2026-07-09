@@ -82,7 +82,7 @@ allwrite/
 │   └── src/e2e/kotlin/              End-to-end tests
 │
 ├── allwrite-runtime/
-│   ├── src/main/kotlin/              Outgoing ports, recipe executor, source file parser
+│   ├── src/main/kotlin/              Outgoing ports, runtime bindings, recipe executor, execution planning, source file applier, source file parser
 │   ├── src/test/kotlin/              Unit tests (Kotest FunSpec)
 │   └── src/testFixtures/kotlin/      Shared test fakes/fixtures
 │
