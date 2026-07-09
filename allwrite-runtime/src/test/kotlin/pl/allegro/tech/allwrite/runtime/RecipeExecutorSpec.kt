@@ -174,14 +174,16 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             val executionOrder = mutableListOf<String>()
             val nestedOr1 = OrderRecordingRecipe("nestedOr1", executionOrder)
             val nestedOr2 = OrderRecordingRecipe("nestedOr2", executionOrder)
-            val nestedComposite = FakeCompositeRecipe(nestedOr1, nestedOr2)
+            val nestedComposite = VisitorTrackingCompositeRecipe(nestedOr1, nestedOr2)
 
             val topLevelRecipe = OrderRecordingRecipe("topLevel", executionOrder)
-            val outerComposite = FakeCompositeRecipe(nestedComposite, topLevelRecipe)
+            val classpathRecipe = OrderRecordingClasspathAwareRecipe("classpathRecipe", executionOrder)
+            val outerComposite = FakeCompositeRecipe(topLevelRecipe, nestedComposite, classpathRecipe)
 
             recipeExecutor.execute(outerComposite, inputFiles(), true)
 
-            executionOrder.distinct() shouldContainExactlyInAnyOrder listOf("nestedOr1", "nestedOr2", "topLevel")
+            executionOrder.distinct() shouldContainExactly listOf("topLevel", "nestedOr1", "nestedOr2", "classpathRecipe")
+            nestedComposite.visitorInvoked shouldBe true
         }
 
         test("should split plain composite recipe containing ClasspathAwareRecipe") {
@@ -245,6 +247,25 @@ private class PlainCompositeRecipe(
     override fun getDisplayName(): String = "PlainCompositeRecipe"
 
     override fun getDescription(): String = "Simulates a DeclarativeRecipe loaded from YAML"
+
+    override fun getRecipeList(): List<Recipe> = children
+}
+
+private class VisitorTrackingCompositeRecipe(
+    vararg children: Recipe,
+) : Recipe() {
+
+    private val children: List<Recipe> = children.toList()
+    var visitorInvoked: Boolean = false
+
+    override fun getDisplayName(): String = "VisitorTrackingCompositeRecipe"
+
+    override fun getDescription(): String = "Composite that tracks whether its own getVisitor() was invoked"
+
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
+        visitorInvoked = true
+        return super.getVisitor()
+    }
 
     override fun getRecipeList(): List<Recipe> = children
 }
