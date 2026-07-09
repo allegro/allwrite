@@ -56,15 +56,23 @@ The CLI command layer iterates and calls `execute()` per group.
 
 ### Should this apply to all recipes or only AllwriteRecipe?
 
-**Only `AllwriteRecipe`.** The `ClasspathAwareRecipe` is an allwrite concept, so we should not split plain OpenRewrite composite recipes.
+**Any recipe whose `recipeList` contains `ClasspathAwareRecipe` (directly or nested).**
+
+Initially we considered restricting to `AllwriteRecipe` only, but this breaks for **declarative YAML recipes**. OpenRewrite loads YAML recipes as
+`DeclarativeRecipe` (extends `Recipe`, not `AllwriteRecipe`), so a type check on `AllwriteRecipe` would skip them entirely — even when their `recipeList`
+includes children like `SpringBoot4_0` that contain `ClasspathAwareRecipe` sub-recipes.
+
+Since `ClasspathAwareRecipe` is an allwrite-specific concept, any recipe (whether Kotlin class or declarative YAML) that transitively contains one needs
+isolation. The executor should inspect `recipeList` of **any** `Recipe` — `getRecipeList()` is a standard, side-effect-free OpenRewrite API safe to call on
+`DeclarativeRecipe`.
 
 ### Should we split recursively (nested composites)?
 
-**Yes, unbounded recursion.** When a sub-recipe is an `AllwriteRecipe` whose `recipeList` contains any `ClasspathAwareRecipe`, recursively expand its phases
+**Yes, unbounded recursion.** When a sub-recipe is a `Recipe` whose `recipeList` contains any `ClasspathAwareRecipe`, recursively expand its phases
 into the parent's phase list.
 
-**Rationale:** Clients may compose our recipes (e.g., `SpringBoot4_0`) inside their own external `AllwriteRecipe`. Without recursive splitting, the nested
-`ClasspathAwareRecipe` sub-recipes would never get isolated, and classpath conflicts would re-emerge.
+**Rationale:** Clients may compose our recipes (e.g., `SpringBoot4_0`) inside their own declarative YAML recipe or external `AllwriteRecipe`. Without
+recursive splitting, the nested `ClasspathAwareRecipe` sub-recipes would never get isolated, and classpath conflicts would re-emerge.
 
 **Example:**
 
@@ -79,8 +87,8 @@ Result phases:
   Phase 4: {SomeOtherRecipe}         (remaining top-level group)
 ```
 
-**Detection:** A recipe "needs expansion" when `recipe is AllwriteRecipe && recipe.recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }`
-(recursive check for deeply nested cases).
+**Detection:** A recipe "needs expansion" when `recipe.recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }` (recursive check for deeply
+nested cases). This applies to any `Recipe`, not just `AllwriteRecipe`.
 
 ### Input files — re-scan per pass or scan once?
 
@@ -166,18 +174,17 @@ Run finished with 1 files modified and 0 files deleted                          
 
 ### Splitting Algorithm (in `OpenrewriteRecipeExecutor`)
 
-1. Check if top-level recipe is `AllwriteRecipe`
-2. Get `getRecipeList()` — check if any sub-recipe is `ClasspathAwareRecipe` or needs expansion (recursive check)
-3. If none → single pass (existing behavior)
-4. If any → walk list in order:
+1. Get `getRecipeList()` — check if any sub-recipe is `ClasspathAwareRecipe` or needs expansion (recursive check)
+2. If none → single pass (existing behavior)
+3. If any → walk list in order:
     - If sub-recipe is `ClasspathAwareRecipe` → flush accumulated group as a phase, emit it as its own phase
-    - If sub-recipe is `AllwriteRecipe` that needs expansion (contains `ClasspathAwareRecipe` at any depth):
+    - If sub-recipe needs expansion (contains `ClasspathAwareRecipe` at any depth):
       → flush accumulated group as a phase
       → log "Expanding nested recipe X (N sub-phases)" at INFO
       → recursively `splitIntoPhases(subRecipe)` and append each resulting phase
     - Otherwise → accumulate into current group
     - At end → flush remaining accumulated group
-5. For each phase:
+4. For each phase:
     - Filter `inputFiles` by `Path::exists`
     - Create phase recipe (single recipe or internal `PhaseRecipe` wrapper for groups)
     - `parseSourceFiles(phaseRecipe, inputFiles, context)`
@@ -189,7 +196,7 @@ Run finished with 1 files modified and 0 files deleted                          
 
 ```kotlin
 private fun Recipe.needsExpansion(): Boolean =
-    this is AllwriteRecipe && recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }
+    recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }
 ```
 
 ### Files to Modify
