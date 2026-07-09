@@ -13,10 +13,13 @@ class SystemEnvContextProviderSpec : BaseCliSpec() {
 
     init {
         test("should extract from env and convert additional telemetry keys") {
+            // given
             declareFake<SystemEnvironment>(FakeBlankSystemEnvironment())
 
+            // when
             val context = systemContextProvider.extractFromSystemEnvs()
 
+            // then
             context shouldBe mapOf(
                 "firstVar" to "firstExampleValue",
                 "secondVar" to "secondExampleValue",

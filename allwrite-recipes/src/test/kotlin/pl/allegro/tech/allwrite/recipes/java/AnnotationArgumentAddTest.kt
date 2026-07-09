@@ -14,6 +14,7 @@ class AnnotationArgumentAddTest : ParsingTest() {
         val j = parseJava("@SuppressWarnings class A {}")
         val annotation = j.classes[0].leadingAnnotations[0] as J.Annotation
 
+        // then
         val result = annotation.addArgument("x", JavaStringLiteral("a"), Cursor(null, j))
         result.print() shouldBeEqual "@SuppressWarnings(x = \"a\")"
     }
@@ -23,6 +24,7 @@ class AnnotationArgumentAddTest : ParsingTest() {
         val j = parseJava("@SuppressWarnings(x = \"1\") class A {}")
         val annotation = j.classes[0].leadingAnnotations[0] as J.Annotation
 
+        // then
         val result = annotation.addArgument("x", JavaStringLiteral("2"), Cursor(null, j))
         result.print() shouldBeEqual "@SuppressWarnings(x = \"2\")"
     }
@@ -39,6 +41,7 @@ class AnnotationArgumentAddTest : ParsingTest() {
             )
         val annotation = j.classes[0].leadingAnnotations[0] as J.Annotation
 
+        // then
         val result = annotation.addArgument("x", JavaStringLiteral("b"), Cursor(null, j))
         result.print() shouldBeEqual "@SuppressWarnings(value = \"a\", x = \"b\")"
     }
@@ -56,6 +59,7 @@ class AnnotationArgumentAddTest : ParsingTest() {
         val annotation = kt.classes[0].leadingAnnotations[0] as J.Annotation
         val cursor = Cursor(null, kt)
 
+        // then
         val result = annotation.addArgument("x", JavaStringLiteral("b"), cursor)
         result.print(cursor) shouldBeEqual "@SuppressWarnings(value = [\"a\"], x = \"b\")"
     }

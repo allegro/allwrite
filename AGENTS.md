@@ -1,6 +1,8 @@
 # Custom Rules
 
 - Never write any comments in code
+- Exception: tests must use `// given`, `// when`, `// then`, `// expect`, and `// and` structural comments to separate test phases (does NOT apply to recipe
+  tests using `before`/`beforeAndAfter`/`after` RewriteTest patterns)
 - Update AGENTS.md every time project structure is changed
 
 ---

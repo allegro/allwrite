@@ -12,20 +12,26 @@ class CollectionUtilsTest {
     inner class MapFirst {
         @Test
         fun `should apply the mapper to the first element and return a new list`() {
+            // given
             val list = listOf(1, 2, 3)
 
+            // when
             val result = list.mapFirst { it * 2 }
 
+            // then
             assertEquals(listOf(2, 2, 3), result)
             assertEquals(listOf(1, 2, 3), list)
         }
 
         @Test
         fun `should be noop if the list is empty`() {
+            // given
             val list = emptyList<Int>()
 
+            // when
             val result = list.mapFirst { it * 2 }
 
+            // then
             assertSame(list, result)
         }
     }

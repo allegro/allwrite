@@ -31,8 +31,10 @@ class QualifyVariableTest {
         )
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test").visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,9 +58,11 @@ class QualifyVariableTest {
         )
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             import org.springframework.beans.factory.annotation.Qualifier;
@@ -81,9 +85,11 @@ class QualifyVariableTest {
         )
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             import org.springframework.beans.factory.annotation.Qualifier;
@@ -106,9 +112,11 @@ class QualifyVariableTest {
         )
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             import org.springframework.beans.factory.annotation.Qualifier;
@@ -130,9 +138,11 @@ class QualifyVariableTest {
         )
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             public class A {
@@ -154,9 +164,11 @@ class QualifyVariableTest {
         )
         val variable = j.classes[0].body.statements[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             public class A {
@@ -177,9 +189,11 @@ class QualifyVariableTest {
         )
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             public class A {
@@ -198,9 +212,11 @@ class QualifyVariableTest {
         )
         val variable = (k.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(k, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             class A(@Qualifier("test") a: Int) { companion object {} }
@@ -219,9 +235,11 @@ class QualifyVariableTest {
         )
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).parameters[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
             public class A {
@@ -243,9 +261,11 @@ class QualifyVariableTest {
         val j = parse(source)
         val variable = (j.classes[0].body.statements[0] as J.MethodDeclaration).body!!.statements[0] as J.VariableDeclarations
 
+        // when
         val result = QualifyVariable(Variable(variable.variables[0], variable), "test")
             .visit(j, InMemoryExecutionContext())!!
 
+        // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(source)
     }
 

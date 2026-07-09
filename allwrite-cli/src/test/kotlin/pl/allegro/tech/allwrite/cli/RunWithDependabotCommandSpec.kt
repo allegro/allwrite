@@ -28,8 +28,10 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
 
     init {
         test("should fail when no arguments provided") {
+            // when
             val result = runWithDependabotCommand.test()
 
+            // then
             result.statusCode shouldBe 1
             result.output.trim() shouldBeEqual """
             Usage: run-dependabot [<options>]
@@ -39,6 +41,7 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
         }
 
         test("should fail when incorrect dependabot payload provided") {
+            // expect
             shouldThrow<Exception> {
                 runWithDependabotCommand.test(
                     envvars = mapOf("GH_BOT_EXTRA_PARAMS" to "test"),
@@ -47,6 +50,7 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
         }
 
         test("should finish successfully when dependabot metadata is not mapped to any recipe") {
+            // when
             val result = runWithDependabotCommand.test(
                 envvars = mapOf(
                     RunWithDependabotCommand.ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME to """
@@ -63,12 +67,14 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
                 ),
             )
 
+            // then
             result.statusCode shouldBe 0
             result.output.trim() shouldBeEqual "No matching recipes found."
             fakeRecipeExecutor.executedRecipes.shouldBeEmpty()
         }
 
         test("should match recipe when dependabot artifact tag is present") {
+            // when
             val result = runWithDependabotCommand.test(
                 envvars = mapOf(
                     RunWithDependabotCommand.ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME to """
@@ -85,6 +91,7 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
                 ),
             )
 
+            // then
             result.statusCode shouldBe 0
             fakeRecipeExecutor.executedRecipes.map { it.name } shouldContainExactlyInAnyOrder listOf(
                 FakeRecipeSource.DEPENDABOT_SPRING_BOOT_3_TEST_RECIPE.name,
@@ -92,6 +99,7 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
         }
 
         test("should not match recipe when dependabot artifact tag does not match") {
+            // when
             val result = runWithDependabotCommand.test(
                 envvars = mapOf(
                     RunWithDependabotCommand.ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME to """
@@ -108,12 +116,14 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
                 ),
             )
 
+            // then
             result.statusCode shouldBe 0
             result.output.trim() shouldBeEqual "No matching recipes found."
             fakeRecipeExecutor.executedRecipes.shouldBeEmpty()
         }
 
         test("should match multiple recipes for different artifacts in same payload") {
+            // when
             val result = runWithDependabotCommand.test(
                 envvars = mapOf(
                     RunWithDependabotCommand.ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME to """
@@ -135,6 +145,7 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
                 ),
             )
 
+            // then
             result.statusCode shouldBe 0
             fakeRecipeExecutor.executedRecipes.map { it.name } shouldContainExactlyInAnyOrder listOf(
                 FakeRecipeSource.DEPENDABOT_SPRING_BOOT_3_TEST_RECIPE.name,

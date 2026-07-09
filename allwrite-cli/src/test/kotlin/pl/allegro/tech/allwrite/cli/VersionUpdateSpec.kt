@@ -12,11 +12,13 @@ import pl.allegro.tech.allwrite.cli.application.Version as VersionDto
 class VersionUpdateSpec : FunSpec() {
     init {
         test("should resolve coordinates when matching dependabot-artifact tag exists") {
+            // given
             val update = VersionUpdate("org.example:lib", VersionDto("2.7.0"), VersionDto("3.0.0"))
             val recipes = listOf(
                 RecipeDescriptor(setOf("group:my-group", "action:upgrade", "dependabot-artifact:org.example:lib")),
             )
 
+            // expect
             update.toRecipeCoordinates(recipes) shouldBe RecipeCoordinates(
                 group = "my-group",
                 action = "upgrade",
@@ -26,54 +28,66 @@ class VersionUpdateSpec : FunSpec() {
         }
 
         test("should derive action from matched descriptor tags") {
+            // given
             val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
             val recipes = listOf(
                 RecipeDescriptor(setOf("group:my-group", "action:migrate", "dependabot-artifact:org.example:lib")),
             )
 
+            // expect
             update.toRecipeCoordinates(recipes)?.action shouldBe "migrate"
         }
 
         test("should return null when no recipe has matching dependabot-artifact tag") {
+            // given
             val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
             val recipes = listOf(
                 RecipeDescriptor(setOf("group:other", "action:upgrade", "dependabot-artifact:org.example:other-lib")),
             )
 
+            // expect
             update.toRecipeCoordinates(recipes) shouldBe null
         }
 
         test("should return null when recipe list is empty") {
+            // given
             val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
 
+            // expect
             update.toRecipeCoordinates(emptyList()) shouldBe null
         }
 
         test("should return null when matched recipe has no group tag") {
+            // given
             val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
             val recipes = listOf(
                 RecipeDescriptor(setOf("action:upgrade", "dependabot-artifact:org.example:lib")),
             )
 
+            // expect
             update.toRecipeCoordinates(recipes) shouldBe null
         }
 
         test("should return null when matched recipe has no action tag") {
+            // given
             val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
             val recipes = listOf(
                 RecipeDescriptor(setOf("group:my-group", "dependabot-artifact:org.example:lib")),
             )
 
+            // expect
             update.toRecipeCoordinates(recipes) shouldBe null
         }
 
         test("should match first recipe when multiple recipes have matching tag") {
+            // given
             val update = VersionUpdate("org.example:lib", VersionDto("1.0.0"), VersionDto("2.0.0"))
             val recipes = listOf(
                 RecipeDescriptor(setOf("group:first-group", "action:upgrade", "dependabot-artifact:org.example:lib")),
                 RecipeDescriptor(setOf("group:second-group", "action:upgrade", "dependabot-artifact:org.example:lib")),
             )
 
+            // expect
             update.toRecipeCoordinates(recipes)?.group shouldBe "first-group"
         }
     }

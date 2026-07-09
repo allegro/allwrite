@@ -24,10 +24,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
+            // when
             val argument = j.getArgument("value")!!
             val replacement = stringArray(listOf("a", "b", "c"))
             val newAnnotation = argument.replaceWith(replacement)
 
+            // then
             newAnnotation.print() shouldBeEqual "@SuppressWarnings({\"a\", \"b\", \"c\"})"
         }
 
@@ -41,10 +43,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
+            // when
             val argument = j.getArgument("value")!!
             val replacement = stringArray(listOf("a", "b", "c")).withPrefix(Space.SINGLE_SPACE)
             val newAnnotation = argument.replaceWith(assignment("named", replacement))
 
+            // then
             newAnnotation.print() shouldBeEqual "@SuppressWarnings(named = {\"a\", \"b\", \"c\"})"
         }
 
@@ -58,10 +62,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
+            // when
             val argument = j.getArgument("value")!!
             val replacement = stringArray(listOf("a", "b", "c"))
             val newAnnotation = argument.replaceWith(replacement)
 
+            // then
             newAnnotation.print() shouldBeEqual "@SuppressWarnings({\"a\", \"b\", \"c\"})"
         }
 
@@ -75,10 +81,12 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
+            // when
             val argument = j.getArgument("value")!!
             val replacement = stringArray(listOf("a", "b", "c")).withPrefix(Space.SINGLE_SPACE)
             val newAnnotation = argument.replaceWith(assignment("named", replacement))
 
+            // then
             newAnnotation.print() shouldBeEqual "@SuppressWarnings(named = {\"a\", \"b\", \"c\"})"
         }
 
@@ -92,9 +100,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
+            // when
             val argument = j.getArgument("value")!!
             val newAnnotation = argument.replaceWith(null)
 
+            // then
             newAnnotation.print() shouldBeEqual "@SuppressWarnings"
         }
 
@@ -108,9 +118,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
+            // when
             val argument = j.getArgument("value")!!
             val newAnnotation = argument.replaceWith(null)
 
+            // then
             newAnnotation.print() shouldBeEqual "@SuppressWarnings"
         }
 
@@ -123,9 +135,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
+            // when
             val argument = j.getArgument("value")!!
             val newAnnotation = argument.replaceWith(null)
 
+            // then
             newAnnotation.print() shouldBeEqual "@SuppressWarnings(other = \"b\")"
         }
     }
@@ -147,9 +161,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(listOf(JavaStringLiteral("b")))
 
+                // then
                 newAnnotation.print() shouldBeEqual """
                 @SuppressWarnings(value = // comment
                            {"b"},     // some weird formatting and comment
@@ -167,9 +183,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(listOf(JavaStringLiteral("1"), JavaStringLiteral("2")))
 
+                // then
                 newAnnotation.print() shouldBeEqual "@SuppressWarnings(value = {\"1\",\"2\"}, other = \"b\")"
             }
 
@@ -182,9 +200,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceWith(JavaStringLiteral("a"))
 
+                // then
                 newAnnotation.print() shouldBeEqual "@SuppressWarnings(value = \"a\", other = \"b\")"
             }
 
@@ -197,9 +217,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(null)
 
+                // then
                 newAnnotation.print() shouldBeEqual "@SuppressWarnings"
             }
 
@@ -212,9 +234,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(null)
 
+                // then
                 newAnnotation.print() shouldBeEqual "@SuppressWarnings(other = \"b\")"
             }
 
@@ -227,9 +251,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(emptyList())
 
+                // then
                 newAnnotation.print() shouldBeEqual "@SuppressWarnings"
             }
 
@@ -242,9 +268,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = j.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(emptyList())
 
+                // then
                 newAnnotation.print() shouldBeEqual "@SuppressWarnings(other = \"b\")"
             }
         }
@@ -263,9 +291,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(listOf(JavaStringLiteral("1"), JavaStringLiteral("2")))
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual """
                 @SuppressWarnings(value = // comment
                            ["1","2"],     // some weird formatting and comment
@@ -283,9 +313,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(listOf(JavaStringLiteral("1"), JavaStringLiteral("2")))
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings(value = [\"1\",\"2\"], other = \"b\")"
             }
 
@@ -298,9 +330,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(listOf(JavaStringLiteral("a")))
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings(value = [\"a\"], other = \"b\")"
             }
 
@@ -313,9 +347,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(null)
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings"
             }
 
@@ -328,9 +364,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(null)
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings(other = \"b\")"
             }
 
@@ -343,9 +381,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(emptyList())
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings"
             }
 
@@ -358,9 +398,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(emptyList())
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings(other = \"b\")"
             }
 
@@ -373,9 +415,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(listOf(JavaStringLiteral("c")))
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings(\"c\")"
             }
 
@@ -388,9 +432,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(listOf(JavaStringLiteral("c"), JavaStringLiteral("d")))
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings(\"c\",\"d\")"
             }
 
@@ -403,9 +449,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceWith(assignment("new", JavaStringLiteral("a")))
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings(new =\"a\")"
             }
 
@@ -418,9 +466,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceWith(KotlinStringListLiteral(values = listOf("1", "2")).withPrefix(Space.SINGLE_SPACE))
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings(value = [\"1\", \"2\"])"
             }
 
@@ -433,9 +483,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(null)
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings"
             }
 
@@ -448,9 +500,11 @@ class AnnotationArgumentReplaceTest : ParsingTest() {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
+                // when
                 val argument = kt.getArgument("value") as MultiValueAnnotationArgument
                 val newAnnotation = argument.replaceElements(emptyList())
 
+                // then
                 newAnnotation.print(KotlinPrinter()) shouldBeEqual "@SuppressWarnings"
             }
         }

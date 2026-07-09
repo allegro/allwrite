@@ -38,32 +38,42 @@ class GithubModuleSpec : BaseCliSpec() {
         }
 
         test("should create NoPullRequestContext when REWRITE_REPOSITORY is null") {
+            // given
             declareFake<SystemEnvironment>(GithubPullRequestContextEnvironment(repository = null))
 
+            // expect
             pullRequestContext.shouldBeInstanceOf<NoPullRequestContext>()
         }
 
         test("should create NoPullRequestContext when REWRITE_PR_NUMBER is null") {
+            // given
             declareFake<SystemEnvironment>(GithubPullRequestContextEnvironment(pullRequestNumber = null))
 
+            // expect
             pullRequestContext.shouldBeInstanceOf<NoPullRequestContext>()
         }
 
         test("should create NoPullRequestContext when REWRITE_REPOSITORY is invalid") {
+            // given
             declareFake<SystemEnvironment>(GithubPullRequestContextEnvironment(repository = "org expected"))
 
+            // expect
             pullRequestContext.shouldBeInstanceOf<NoPullRequestContext>()
         }
 
         test("should create NoPullRequestContext when REWRITE_PR_NUMBER is invalid") {
+            // given
             declareFake<SystemEnvironment>(GithubPullRequestContextEnvironment(pullRequestNumber = "not a number"))
 
+            // expect
             pullRequestContext.shouldBeInstanceOf<NoPullRequestContext>()
         }
 
         test("should create GithubPullRequestContext to get description") {
+            // given
             declareFake<SystemEnvironment>(GithubPullRequestContextEnvironment())
 
+            // expect
             pullRequestContext.shouldBeInstanceOf<GithubPullRequestContext>()
         }
     }

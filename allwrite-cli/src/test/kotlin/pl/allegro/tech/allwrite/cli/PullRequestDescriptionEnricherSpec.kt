@@ -23,14 +23,18 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
 
     init {
         test("should be noop when no recipes executed") {
+            // when
             pullRequestDescriptionEnricher.addRewriteDisclaimerToPullRequest(emptyList())
 
+            // then
             fakePullRequestContext.getDescription() shouldBe FakePullRequestContext.Companion.ORIGINAL_DESCRIPTION
         }
 
         test("should prepend description with recipe info") {
+            // when
             pullRequestDescriptionEnricher.addRewriteDisclaimerToPullRequest(listOf(FakeRecipe()))
 
+            // then
             fakePullRequestContext.getDescription() shouldBe """
                 ## 🤖 Allwrite bot has taken over this PR! 🤖
 
@@ -49,8 +53,10 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
         }
 
         test("should deduplicate recipes") {
+            // when
             pullRequestDescriptionEnricher.addRewriteDisclaimerToPullRequest(listOf(FakeRecipe(), FakeRecipe()))
 
+            // then
             fakePullRequestContext.getDescription() shouldBe """
                 ## 🤖 Allwrite bot has taken over this PR! 🤖
 
@@ -69,6 +75,7 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
         }
 
         test("should append recipe info to the disclaimer in the description when it is already present") {
+            // given
             fakePullRequestContext.updateDescription(
                 """
                 ## 🤖 Allwrite bot has taken over this PR! 🤖
@@ -87,6 +94,7 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
                 """.trimIndent(),
             )
 
+            // when
             pullRequestDescriptionEnricher.addRewriteDisclaimerToPullRequest(
                 listOf(
                     FakeRecipe(),
@@ -94,6 +102,7 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
                 ),
             )
 
+            // then
             fakePullRequestContext.getDescription() shouldBe """
                 ## 🤖 Allwrite bot has taken over this PR! 🤖
 

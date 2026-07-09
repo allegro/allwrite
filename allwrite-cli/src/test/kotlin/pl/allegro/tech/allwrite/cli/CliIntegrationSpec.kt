@@ -31,11 +31,14 @@ class CliIntegrationSpec : BaseCliSpec() {
 
     init {
         test("should post a comment with summary from failing post-processing recipe") {
+            // given
             val summaryCommentFile = createSummaryCommentFile()
             fakeSystemEnvironment["GH_BOT_SUMMARY_COMMENT_FILE"] = summaryCommentFile.pathString
 
+            // when
             appEntrypoint.execute("run", "--recipe", FailingPostProcessingRecipe.name)
 
+            // then
             summaryCommentFile.readText() shouldBe """
                 Failed to automatically apply some parts of the migration:
                 * Something went wrong

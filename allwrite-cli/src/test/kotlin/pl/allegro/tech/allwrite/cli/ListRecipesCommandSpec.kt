@@ -19,8 +19,10 @@ class ListRecipesCommandSpec : BaseCliSpec() {
 
     init {
         test("should list recipes") {
+            // when
             val result = listRecipesCommand.test()
 
+            // then
             result.statusCode shouldBe 0
             result.output shouldBe """
                 external-jackson/upgrade 2 3
@@ -34,8 +36,10 @@ class ListRecipesCommandSpec : BaseCliSpec() {
         }
 
         test("should list all recipes including internal when --all flag is used") {
+            // when
             val result = listRecipesCommand.test("--all")
 
+            // then
             result.statusCode shouldBe 0
             result.output shouldBe """
                 external-jackson/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.dependabot-jackson
@@ -54,8 +58,10 @@ class ListRecipesCommandSpec : BaseCliSpec() {
         }
 
         test("should list all recipes including internal when -a flag is used") {
+            // when
             val result = listRecipesCommand.test("-a")
 
+            // then
             result.statusCode shouldBe 0
             result.output shouldBe """
                 external-jackson/upgrade 2 3 -> pl.allegro.tech.allwrite.recipes.dependabot-jackson

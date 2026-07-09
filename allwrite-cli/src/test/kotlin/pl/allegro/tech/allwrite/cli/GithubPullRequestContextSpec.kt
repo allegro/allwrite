@@ -17,6 +17,7 @@ class GithubPullRequestContextSpec : FunSpec() {
         val client = mockk<PullRequestClient>()
 
         test("should use github client to get description") {
+            // given
             val prNumber = 123L
             val prDescription = "test description"
             val context = GithubPullRequestContext(client, prNumber)
@@ -25,14 +26,17 @@ class GithubPullRequestContextSpec : FunSpec() {
             }
             every { client.get(prNumber) } returns CompletableFuture.completedFuture(pr)
 
+            // when
             context.getDescription()
 
+            // then
             verify {
                 client.get(123L)
             }
         }
 
         test("should use github client to update description") {
+            // given
             val prNumber = 123L
             val prDescription = "test description"
             val newDescription = "new description"
@@ -40,8 +44,10 @@ class GithubPullRequestContextSpec : FunSpec() {
             val pr = mockk<PullRequest>()
             every { client.update(prNumber, any()) } returns CompletableFuture.completedFuture(pr)
 
+            // when
             context.updateDescription(newDescription)
 
+            // then
             verify {
                 client.update(
                     123L,

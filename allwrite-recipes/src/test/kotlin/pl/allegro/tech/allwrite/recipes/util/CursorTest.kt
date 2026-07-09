@@ -27,8 +27,10 @@ class CursorTest {
             }
         }
 
+        // when
         visitor.visit(j, InMemoryExecutionContext())
 
+        // then
         assertEquals(true, result)
     }
 
@@ -43,8 +45,10 @@ class CursorTest {
             }
         }
 
+        // when
         visitor.visit(j, InMemoryExecutionContext())
 
+        // then
         assertEquals(false, result)
     }
 

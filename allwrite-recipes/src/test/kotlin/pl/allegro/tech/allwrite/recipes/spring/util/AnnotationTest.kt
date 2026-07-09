@@ -27,6 +27,7 @@ class AnnotationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
+        // then
         assertThat(jclass.leadingAnnotations.findNamedAnnotation()).isSameAs(jclass.leadingAnnotations[0])
         assertThat(jclass.leadingAnnotations.findAutowiredAnnotation()).isSameAs(jclass.leadingAnnotations[2])
         assertThat(jclass.leadingAnnotations.findQualifierAnnotation()).isSameAs(jclass.leadingAnnotations[3])
@@ -55,6 +56,7 @@ class AnnotationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
+        // then
         assertThat(kclass.leadingAnnotations.findNamedAnnotation()).isSameAs(kclass.leadingAnnotations[0])
         assertThat(kclass.leadingAnnotations.findAutowiredAnnotation()).isSameAs(kclass.leadingAnnotations[2])
         assertThat(kclass.leadingAnnotations.findQualifierAnnotation()).isSameAs(kclass.leadingAnnotations[3])
@@ -76,8 +78,10 @@ class AnnotationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
+        // then
         assertThat(kclass.leadingAnnotations.findVariableQualifiedName()).isEqualTo("r")
 
+        // when
         kclass = parseKotlin(
             """
             import org.springframework.beans.factory.annotation.Qualifier
@@ -89,8 +93,10 @@ class AnnotationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
+        // then
         assertThat(kclass.leadingAnnotations.findVariableQualifiedName()).isEqualTo("q")
 
+        // when
         kclass = parseKotlin(
             """
             import jakarta.inject.Named
@@ -100,10 +106,13 @@ class AnnotationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
+        // then
         assertThat(kclass.leadingAnnotations.findVariableQualifiedName()).isEqualTo("n")
 
+        // when
         kclass = parseKotlin("class A").classes[0]
 
+        // then
         assertThat(kclass.leadingAnnotations.findVariableQualifiedName()).isNull()
     }
 }

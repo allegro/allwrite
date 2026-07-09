@@ -33,75 +33,97 @@ class ExternalRecipeCommandsSpec : BaseCliSpec() {
 
     init {
         test("add should fetch jar and register external recipe") {
+            // when
             val result = addCommand.test("my-recipes https://repo.com/recipes-1.0.jar")
 
+            // then
             result.statusCode shouldBe 0
             fakeJarFetcher.fetchedJars shouldHaveSize 1
             fakeJarFetcher.fetchedJars[0].url shouldBe "https://repo.com/recipes-1.0.jar"
         }
 
         test("add should fail when name already exists") {
+            // given
             addCommand.test("my-recipes https://repo.com/recipes-1.0.jar")
 
+            // when
             val result = addCommand.test("my-recipes https://repo.com/recipes-2.0.jar")
 
+            // then
             result.statusCode shouldBe 1
             result.output shouldContain "already exists"
         }
 
         test("update should re-fetch jar with new url") {
+            // given
             addCommand.test("my-recipes https://repo.com/recipes-1.0.jar")
 
+            // when
             val result = updateCommand.test("my-recipes https://repo.com/recipes-2.0.jar")
 
+            // then
             result.statusCode shouldBe 0
             fakeJarFetcher.fetchedJars shouldHaveSize 2
             fakeJarFetcher.fetchedJars[1].url shouldBe "https://repo.com/recipes-2.0.jar"
         }
 
         test("update should fail when name does not exist") {
+            // when
             val result = updateCommand.test("nonexistent https://repo.com/recipes.jar")
 
+            // then
             result.statusCode shouldBe 1
             result.output shouldContain "not found"
         }
 
         test("rm should remove external recipe and delete jar") {
+            // given
             addCommand.test("my-recipes https://repo.com/recipes-1.0.jar")
 
+            // when
             val result = removeCommand.test("my-recipes")
 
+            // then
             result.statusCode shouldBe 0
             externalRecipeProvider.get() shouldHaveSize 0
         }
 
         test("rm should fail when name does not exist") {
+            // when
             val result = removeCommand.test("nonexistent")
 
+            // then
             result.statusCode shouldBe 1
             result.output shouldContain "not found"
         }
 
         test("update without url should re-fetch jar from stored url") {
+            // given
             addCommand.test("my-recipes https://repo.com/recipes-1.0.jar")
 
+            // when
             val result = updateCommand.test("my-recipes")
 
+            // then
             result.statusCode shouldBe 0
             fakeJarFetcher.fetchedJars shouldHaveSize 2
             fakeJarFetcher.fetchedJars[1].url shouldBe "https://repo.com/recipes-1.0.jar"
         }
 
         test("update without url should fail when name does not exist") {
+            // when
             val result = updateCommand.test("nonexistent")
 
+            // then
             result.statusCode shouldBe 1
             result.output shouldContain "not found"
         }
 
         test("add should make jar discoverable to runtime module") {
+            // when
             addCommand.test("my-recipes https://repo.com/recipes-1.0.jar")
 
+            // then
             val jarPaths = externalRecipeProvider.get()
 
             jarPaths shouldHaveSize 1
@@ -109,11 +131,14 @@ class ExternalRecipeCommandsSpec : BaseCliSpec() {
         }
 
         test("ls should list all external recipes with urls") {
+            // given
             addCommand.test("my-recipes https://repo.com/recipes-1.0.jar")
             addCommand.test("other-recipes https://repo.com/other-2.0.jar")
 
+            // when
             val result = listCommand.test("")
 
+            // then
             result.statusCode shouldBe 0
             result.output shouldContain "my-recipes"
             result.output shouldContain "https://repo.com/recipes-1.0.jar"
@@ -122,8 +147,10 @@ class ExternalRecipeCommandsSpec : BaseCliSpec() {
         }
 
         test("ls should show message when no external recipes configured") {
+            // when
             val result = listCommand.test("")
 
+            // then
             result.statusCode shouldBe 0
             result.output shouldContain "No external recipes configured."
         }

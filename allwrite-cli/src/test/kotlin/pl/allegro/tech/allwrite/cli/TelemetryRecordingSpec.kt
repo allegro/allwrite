@@ -34,8 +34,10 @@ class TelemetryRecordingSpec : BaseCliSpec() {
 
     init {
         test("should record telemetry for successful command") {
+            // when
             listRecipesCommand.test()
 
+            // then
             val telemetry = fakeTelemetryPublisher.recordedTelemetries.firstOrNull()
             telemetry.shouldNotBeNull()
             telemetry.command shouldBe "ls"
@@ -56,8 +58,10 @@ class TelemetryRecordingSpec : BaseCliSpec() {
         }
 
         test("should record telemetry for successful command with recipes in parameters") {
+            // when
             runCommand.test("--recipe pl.allegro.tech.allwrite.recipes.spring-boot-3")
 
+            // then
             val telemetry = fakeTelemetryPublisher.recordedTelemetries.firstOrNull()
             telemetry.shouldNotBeNull()
             telemetry.command shouldBe "run"
@@ -79,8 +83,10 @@ class TelemetryRecordingSpec : BaseCliSpec() {
         }
 
         test("should record telemetry for successful command with recipes in arguments") {
+            // when
             runCommand.test("spring-boot/upgrade", "2", "3")
 
+            // then
             val telemetry = fakeTelemetryPublisher.recordedTelemetries.firstOrNull()
             telemetry.shouldNotBeNull()
             telemetry.command shouldBe "run"
@@ -102,8 +108,10 @@ class TelemetryRecordingSpec : BaseCliSpec() {
         }
 
         test("should record telemetry for successful command with recipes in file") {
+            // when
             runCommand.test("--file src/test/resources/recipes.json")
 
+            // then
             val telemetry = fakeTelemetryPublisher.recordedTelemetries.firstOrNull()
             telemetry.shouldNotBeNull()
             telemetry.command shouldBe "run"
@@ -125,8 +133,10 @@ class TelemetryRecordingSpec : BaseCliSpec() {
         }
 
         test("should not record telemetry for failed command execution") {
+            // when
             runCommand.test("--incorrect parameter")
 
+            // then
             val telemetry = fakeTelemetryPublisher.recordedTelemetries.firstOrNull()
             telemetry shouldBe null
         }
