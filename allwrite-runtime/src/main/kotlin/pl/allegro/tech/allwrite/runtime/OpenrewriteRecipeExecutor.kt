@@ -59,26 +59,44 @@ internal class OpenrewriteRecipeExecutor(
         if (recipe !is AllwriteRecipe) return listOf(listOf(recipe))
 
         val subRecipes = recipe.recipeList
-        if (subRecipes.none { it is ClasspathAwareRecipe }) return listOf(listOf(recipe))
+        if (subRecipes.none { it is ClasspathAwareRecipe || it.needsExpansion() }) return listOf(listOf(recipe))
 
         val phases = mutableListOf<List<Recipe>>()
         var currentGroup = mutableListOf<Recipe>()
         for (subRecipe in subRecipes) {
-            if (subRecipe is ClasspathAwareRecipe) {
-                if (currentGroup.isNotEmpty()) {
-                    phases.add(currentGroup)
-                    currentGroup = mutableListOf()
+            when {
+                subRecipe is ClasspathAwareRecipe -> {
+                    if (currentGroup.isNotEmpty()) {
+                        phases.add(currentGroup)
+                        currentGroup = mutableListOf()
+                    }
+
+                    phases.add(listOf(subRecipe))
                 }
-                phases.add(listOf(subRecipe))
-            } else {
-                currentGroup.add(subRecipe)
+
+                subRecipe.needsExpansion() -> {
+                    if (currentGroup.isNotEmpty()) {
+                        phases.add(currentGroup)
+                        currentGroup = mutableListOf()
+                    }
+
+                    val nestedPhases = splitIntoPhases(subRecipe)
+                    logger.info { "Expanding nested recipe ${subRecipe.javaClass.simpleName} (${nestedPhases.size} sub-phases)" }
+                    phases.addAll(nestedPhases)
+                }
+
+                else -> currentGroup.add(subRecipe)
             }
         }
+
         if (currentGroup.isNotEmpty()) {
             phases.add(currentGroup)
         }
+
         return phases
     }
+
+    private fun Recipe.needsExpansion(): Boolean = this is AllwriteRecipe && recipeList.any { it is ClasspathAwareRecipe || it.needsExpansion() }
 
     private fun toPhaseRecipe(phaseRecipes: List<Recipe>): Recipe = phaseRecipes.singleOrNull() ?: PhaseRecipe(phaseRecipes)
 

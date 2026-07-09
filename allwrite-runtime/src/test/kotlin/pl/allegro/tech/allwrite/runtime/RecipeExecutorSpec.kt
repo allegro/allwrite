@@ -162,6 +162,63 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             postProcessingRecipe2.executionCount shouldBe 1
         }
 
+        test("should recursively expand nested AllwriteRecipe containing ClasspathAwareRecipe") {
+            // given
+            val executionOrder = mutableListOf<String>()
+            val nestedOr = OrderRecordingRecipe("nestedOr", executionOrder)
+            val nestedClasspath = OrderRecordingClasspathAwareRecipe("nestedClasspath", executionOrder)
+            val nestedComposite = FakeCompositeRecipe(nestedOr, nestedClasspath)
+
+            val topLevelRecipe = OrderRecordingRecipe("topLevel", executionOrder)
+            val outerComposite = FakeCompositeRecipe(nestedComposite, topLevelRecipe)
+
+            // when
+            recipeExecutor.execute(outerComposite, inputFiles(), true)
+
+            // then
+            executionOrder.distinct() shouldContainExactly listOf("nestedOr", "nestedClasspath", "topLevel")
+            listOf(nestedOr, nestedClasspath, topLevelRecipe).forEach {
+                it.visitedSourceFiles.map { file -> file.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
+            }
+        }
+
+        test("should recursively expand deeply nested AllwriteRecipe") {
+            // given
+            val executionOrder = mutableListOf<String>()
+            val deepClasspath = OrderRecordingClasspathAwareRecipe("deepClasspath", executionOrder)
+            val deepOr = OrderRecordingRecipe("deepOr", executionOrder)
+            val innerComposite = FakeCompositeRecipe(deepClasspath, deepOr)
+
+            val middleOr = OrderRecordingRecipe("middleOr", executionOrder)
+            val middleComposite = FakeCompositeRecipe(middleOr, innerComposite)
+
+            val topOr = OrderRecordingRecipe("topOr", executionOrder)
+            val outerComposite = FakeCompositeRecipe(topOr, middleComposite)
+
+            // when
+            recipeExecutor.execute(outerComposite, inputFiles(), true)
+
+            // then
+            executionOrder.distinct() shouldContainExactly listOf("topOr", "middleOr", "deepClasspath", "deepOr")
+        }
+
+        test("should not expand nested AllwriteRecipe without ClasspathAwareRecipe") {
+            // given
+            val executionOrder = mutableListOf<String>()
+            val nestedOr1 = OrderRecordingRecipe("nestedOr1", executionOrder)
+            val nestedOr2 = OrderRecordingRecipe("nestedOr2", executionOrder)
+            val nestedComposite = FakeCompositeRecipe(nestedOr1, nestedOr2)
+
+            val topLevelRecipe = OrderRecordingRecipe("topLevel", executionOrder)
+            val outerComposite = FakeCompositeRecipe(nestedComposite, topLevelRecipe)
+
+            // when
+            recipeExecutor.execute(outerComposite, inputFiles(), true)
+
+            // then
+            executionOrder.distinct() shouldContainExactlyInAnyOrder listOf("nestedOr1", "nestedOr2", "topLevel")
+        }
+
         // TODO make writing modified files an outgoing port (implemented by OperatingSystemModule) that can be mocked and write tests for that
     }
 

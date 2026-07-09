@@ -132,12 +132,12 @@ When no `ClasspathAwareRecipe` sub-recipes exist — no splitting, existing beha
 
 ### Nested recipe expansion logging
 
-When recursive expansion is triggered, log "Expanding nested recipe" at DEBUG level **at the point of encounter** (not all upfront):
+When recursive expansion is triggered, log "Expanding nested recipe" at INFO level **at the point of encounter** (not all upfront):
 
 ```
 Running recipe ClientMigration                                                    # INFO
 Detected ClasspathAware recipes, splitting into 8 isolated phases                 # INFO
-Expanding nested recipe SpringBoot4_0 (3 sub-phases)                              # DEBUG
+Expanding nested recipe SpringBoot4_0 (3 sub-phases)                              # INFO
 Phase 1: 2 non-classpath-aware recipes                                            # INFO
 Grouped recipes: [OR_UpgradeSpringBoot_4_0, OR_UpgradeSpringFramework_7_0]        # DEBUG
 Run finished with 12 files modified and 0 files deleted                           # INFO
@@ -148,7 +148,7 @@ Run finished with 2 files modified and 0 files deleted                          
 Phase 4: 1 non-classpath-aware recipes                                            # INFO
 Grouped recipes: [RemoveDeprecatedEndpoints]                                      # DEBUG
 Run finished with 1 files modified and 1 files deleted                            # INFO
-Expanding nested recipe KotlinUpgrade (3 sub-phases)                              # DEBUG
+Expanding nested recipe KotlinUpgrade (3 sub-phases)                              # INFO
 Phase 5: 1 non-classpath-aware recipes                                            # INFO
 Grouped recipes: [OR_UpgradeKotlin_2_2]                                           # DEBUG
 Run finished with 8 files modified and 0 files deleted                            # INFO
@@ -173,7 +173,7 @@ Run finished with 1 files modified and 0 files deleted                          
     - If sub-recipe is `ClasspathAwareRecipe` → flush accumulated group as a phase, emit it as its own phase
     - If sub-recipe is `AllwriteRecipe` that needs expansion (contains `ClasspathAwareRecipe` at any depth):
       → flush accumulated group as a phase
-      → log "Expanding nested recipe X (N sub-phases)" at DEBUG
+      → log "Expanding nested recipe X (N sub-phases)" at INFO
       → recursively `splitIntoPhases(subRecipe)` and append each resulting phase
     - Otherwise → accumulate into current group
     - At end → flush remaining accumulated group
