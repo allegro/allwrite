@@ -7,9 +7,13 @@ import io.kotest.data.forAll
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import org.openrewrite.ExecutionContext
+import org.openrewrite.TreeVisitor
+import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.PostprocessingResult.Failure
 import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
+import pl.allegro.tech.allwrite.runtime.fake.FakeClasspathAwareRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeCompositeRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakePostProcessingRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipe
@@ -107,8 +111,79 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             )
         }
 
+        test("should not split into phases when no ClasspathAwareRecipe is present") {
+            // given
+            val executionOrder = mutableListOf<String>()
+            val recipe1 = OrderRecordingRecipe("recipe1", executionOrder)
+            val recipe2 = OrderRecordingRecipe("recipe2", executionOrder)
+            val composite = FakeCompositeRecipe(recipe1, recipe2)
+
+            // when
+            recipeExecutor.execute(composite, inputFiles(), true)
+
+            // then
+            executionOrder.distinct() shouldContainExactly listOf("recipe1", "recipe2")
+            recipe1.visitedSourceFiles.map { it.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
+            recipe2.visitedSourceFiles.map { it.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
+        }
+
+        test("should split into isolated phases at ClasspathAwareRecipe boundaries, preserving order") {
+            // given
+            val executionOrder = mutableListOf<String>()
+            val or1 = OrderRecordingRecipe("or1", executionOrder)
+            val or2 = OrderRecordingRecipe("or2", executionOrder)
+            val classpathRecipe1 = OrderRecordingClasspathAwareRecipe("classpathRecipe1", executionOrder)
+            val or3 = OrderRecordingRecipe("or3", executionOrder)
+            val classpathRecipe2 = OrderRecordingClasspathAwareRecipe("classpathRecipe2", executionOrder)
+            val composite = FakeCompositeRecipe(or1, or2, classpathRecipe1, or3, classpathRecipe2)
+
+            // when
+            recipeExecutor.execute(composite, inputFiles(), true)
+
+            // then
+            executionOrder.distinct() shouldContainExactly listOf("or1", "or2", "classpathRecipe1", "or3", "classpathRecipe2")
+            listOf(or1, or2, classpathRecipe1, or3, classpathRecipe2).forEach {
+                it.visitedSourceFiles.map { file -> file.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
+            }
+        }
+
+        test("should run post-processing recipes from every isolated phase") {
+            // given
+            val postProcessingRecipe1 = FakePostProcessingRecipe(id = "postProcessingRecipe1")
+            val classpathAwareRecipe = FakeClasspathAwareRecipe()
+            val postProcessingRecipe2 = FakePostProcessingRecipe(id = "postProcessingRecipe2")
+            val composite = FakeCompositeRecipe(postProcessingRecipe1, classpathAwareRecipe, postProcessingRecipe2)
+
+            // when
+            recipeExecutor.execute(composite, inputFiles(), true)
+
+            // then
+            postProcessingRecipe1.executionCount shouldBe 1
+            postProcessingRecipe2.executionCount shouldBe 1
+        }
+
         // TODO make writing modified files an outgoing port (implemented by OperatingSystemModule) that can be mocked and write tests for that
     }
 
     private fun inputFiles(): List<Path> = Paths.get("src/testFixtures/inputFilesForTests").walk().toList()
+}
+
+private open class OrderRecordingRecipe(
+    private val id: String,
+    private val executionOrder: MutableList<String>,
+) : FakeRecipe(id = id) {
+
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
+        executionOrder.add(id)
+        return super.getVisitor()
+    }
+}
+
+private class OrderRecordingClasspathAwareRecipe(
+    id: String,
+    executionOrder: MutableList<String>,
+) : OrderRecordingRecipe(id, executionOrder),
+    ClasspathAwareRecipe {
+
+    override fun requireOnClasspath(): List<String> = emptyList()
 }
