@@ -41,11 +41,17 @@ internal class OpenrewriteRecipeExecutor(
         logger.info { "Detected ClasspathAware recipes, splitting into ${phases.size} isolated phases" }
         phases.forEachIndexed { idx, p ->
             val phaseNumber = idx + 1
-            if (p.size == 1) {
-                logger.info { "Phase $phaseNumber: ${p.single().javaClass.simpleName} (classpath-aware recipe)" }
-            } else {
-                logger.info { "Phase $phaseNumber: ${p.size} non-classpath-aware recipes" }
-                logger.debug { "Grouped recipes: ${p.map { it.javaClass.simpleName }}" }
+            when (p.size) {
+                1 if p.single() is ClasspathAwareRecipe -> {
+                    logger.info { "Phase $phaseNumber: ${p.single().javaClass.simpleName} (classpath-aware recipe)" }
+                }
+                1 -> {
+                    logger.info { "Phase $phaseNumber: ${p.single().javaClass.simpleName}" }
+                }
+                else -> {
+                    logger.info { "Phase $phaseNumber: ${p.size} non-classpath-aware recipes" }
+                    logger.debug { "Grouped recipes: ${p.map { it.javaClass.simpleName }}" }
+                }
             }
 
             val phaseRecipe = toPhaseRecipe(p)
@@ -161,9 +167,6 @@ internal class OpenrewriteRecipeExecutor(
     }
 }
 
-/**
- * Wraps a group of recipes belonging to the same isolated phase so that they can be run together via [Recipe.run].
- */
 internal class PhaseRecipe(
     private val recipes: List<Recipe>,
 ) : Recipe() {

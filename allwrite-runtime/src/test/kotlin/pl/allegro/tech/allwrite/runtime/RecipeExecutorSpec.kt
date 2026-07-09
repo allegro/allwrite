@@ -34,78 +34,60 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
     init {
         test("should execute recipe") {
             forAll(Row1(true), Row1(false)) { failOnError ->
-                // given
                 val recipe = FakeRecipe()
 
-                // when
                 recipeExecutor.execute(recipe, inputFiles(), failOnError)
 
-                // then
                 recipe.visitedSourceFiles.map { it.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
             }
         }
 
         test("should rethrow exception thrown by executed recipe when configured to do so") {
-            // given
             val recipe = FakeThrowingRecipe()
 
-            // expect
             shouldThrowAny {
                 recipeExecutor.execute(recipe, inputFiles(), true)
             }
         }
 
         test("should swallow exception thrown by executed recipe when configured to do so") {
-            // given
             val recipe = FakeThrowingRecipe()
 
-            // expect
             shouldNotThrow<Throwable> {
                 recipeExecutor.execute(recipe, inputFiles(), false)
             }
         }
 
         test("should execute post-processing recipe") {
-            // given
             val recipe = FakePostProcessingRecipe()
 
-            // when
             recipeExecutor.execute(recipe, inputFiles(), true)
 
-            // then
             recipe.executionCount shouldBe 1
         }
 
         test("should output PR comment when failed to execute post-processing recipe") {
-            // given
             val recipe = FakePostProcessingRecipe(mockedResult = Failure("Unable to execute recipe"))
 
-            // when
             recipeExecutor.execute(recipe, inputFiles(), true)
 
-            // then
             recipe.executionCount shouldBe 1
 
-            // and
             fakeProblemReporter.reportedProblems shouldContainExactly listOf(
                 Problem("Unable to execute recipe"),
             )
         }
 
         test("should output PR comment from multiple post-processing recipes") {
-            // given
             val recipe1 = FakePostProcessingRecipe(mockedResult = Failure("Unable to execute recipe1"))
             val recipe2 = FakePostProcessingRecipe(mockedResult = Failure("Unable to execute recipe2"))
             val parentRecipe = FakeCompositeRecipe(recipe1, recipe2)
 
-            // when
             recipeExecutor.execute(parentRecipe, inputFiles(), true)
 
-            // then
             recipe1.executionCount shouldBe 1
             recipe2.executionCount shouldBe 1
 
-            // and
             fakeProblemReporter.reportedProblems shouldContainExactly listOf(
                 Problem("Unable to execute recipe1"),
                 Problem("Unable to execute recipe2"),
@@ -113,23 +95,19 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
         }
 
         test("should not split into phases when no ClasspathAwareRecipe is present") {
-            // given
             val executionOrder = mutableListOf<String>()
             val recipe1 = OrderRecordingRecipe("recipe1", executionOrder)
             val recipe2 = OrderRecordingRecipe("recipe2", executionOrder)
             val composite = FakeCompositeRecipe(recipe1, recipe2)
 
-            // when
             recipeExecutor.execute(composite, inputFiles(), true)
 
-            // then
             executionOrder.distinct() shouldContainExactly listOf("recipe1", "recipe2")
             recipe1.visitedSourceFiles.map { it.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
             recipe2.visitedSourceFiles.map { it.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
         }
 
         test("should split into isolated phases at ClasspathAwareRecipe boundaries, preserving order") {
-            // given
             val executionOrder = mutableListOf<String>()
             val or1 = OrderRecordingRecipe("or1", executionOrder)
             val or2 = OrderRecordingRecipe("or2", executionOrder)
@@ -138,10 +116,8 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             val classpathRecipe2 = OrderRecordingClasspathAwareRecipe("classpathRecipe2", executionOrder)
             val composite = FakeCompositeRecipe(or1, or2, classpathRecipe1, or3, classpathRecipe2)
 
-            // when
             recipeExecutor.execute(composite, inputFiles(), true)
 
-            // then
             executionOrder.distinct() shouldContainExactly listOf("or1", "or2", "classpathRecipe1", "or3", "classpathRecipe2")
             listOf(or1, or2, classpathRecipe1, or3, classpathRecipe2).forEach {
                 it.visitedSourceFiles.map { file -> file.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
@@ -149,22 +125,18 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
         }
 
         test("should run post-processing recipes from every isolated phase") {
-            // given
             val postProcessingRecipe1 = FakePostProcessingRecipe(id = "postProcessingRecipe1")
             val classpathAwareRecipe = FakeClasspathAwareRecipe()
             val postProcessingRecipe2 = FakePostProcessingRecipe(id = "postProcessingRecipe2")
             val composite = FakeCompositeRecipe(postProcessingRecipe1, classpathAwareRecipe, postProcessingRecipe2)
 
-            // when
             recipeExecutor.execute(composite, inputFiles(), true)
 
-            // then
             postProcessingRecipe1.executionCount shouldBe 1
             postProcessingRecipe2.executionCount shouldBe 1
         }
 
         test("should recursively expand nested composite recipe containing ClasspathAwareRecipe") {
-            // given
             val executionOrder = mutableListOf<String>()
             val nestedOr = OrderRecordingRecipe("nestedOr", executionOrder)
             val nestedClasspath = OrderRecordingClasspathAwareRecipe("nestedClasspath", executionOrder)
@@ -173,10 +145,8 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             val topLevelRecipe = OrderRecordingRecipe("topLevel", executionOrder)
             val outerComposite = FakeCompositeRecipe(nestedComposite, topLevelRecipe)
 
-            // when
             recipeExecutor.execute(outerComposite, inputFiles(), true)
 
-            // then
             executionOrder.distinct() shouldContainExactly listOf("nestedOr", "nestedClasspath", "topLevel")
             listOf(nestedOr, nestedClasspath, topLevelRecipe).forEach {
                 it.visitedSourceFiles.map { file -> file.sourcePath } shouldContainExactlyInAnyOrder inputFiles()
@@ -184,7 +154,6 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
         }
 
         test("should recursively expand deeply nested composite recipe") {
-            // given
             val executionOrder = mutableListOf<String>()
             val deepClasspath = OrderRecordingClasspathAwareRecipe("deepClasspath", executionOrder)
             val deepOr = OrderRecordingRecipe("deepOr", executionOrder)
@@ -196,15 +165,12 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             val topOr = OrderRecordingRecipe("topOr", executionOrder)
             val outerComposite = FakeCompositeRecipe(topOr, middleComposite)
 
-            // when
             recipeExecutor.execute(outerComposite, inputFiles(), true)
 
-            // then
             executionOrder.distinct() shouldContainExactly listOf("topOr", "middleOr", "deepClasspath", "deepOr")
         }
 
         test("should not expand nested composite recipe without ClasspathAwareRecipe") {
-            // given
             val executionOrder = mutableListOf<String>()
             val nestedOr1 = OrderRecordingRecipe("nestedOr1", executionOrder)
             val nestedOr2 = OrderRecordingRecipe("nestedOr2", executionOrder)
@@ -213,30 +179,24 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             val topLevelRecipe = OrderRecordingRecipe("topLevel", executionOrder)
             val outerComposite = FakeCompositeRecipe(nestedComposite, topLevelRecipe)
 
-            // when
             recipeExecutor.execute(outerComposite, inputFiles(), true)
 
-            // then
             executionOrder.distinct() shouldContainExactlyInAnyOrder listOf("nestedOr1", "nestedOr2", "topLevel")
         }
 
         test("should split plain composite recipe containing ClasspathAwareRecipe") {
-            // given
             val executionOrder = mutableListOf<String>()
             val or1 = OrderRecordingRecipe("or1", executionOrder)
             val classpathRecipe = OrderRecordingClasspathAwareRecipe("classpathRecipe", executionOrder)
             val or2 = OrderRecordingRecipe("or2", executionOrder)
             val plainComposite = PlainCompositeRecipe(or1, classpathRecipe, or2)
 
-            // when
             recipeExecutor.execute(plainComposite, inputFiles(), true)
 
-            // then
             executionOrder.distinct() shouldContainExactly listOf("or1", "classpathRecipe", "or2")
         }
 
         test("should expand nested ClasspathAwareRecipe inside plain composite") {
-            // given
             val executionOrder = mutableListOf<String>()
             val nestedOr = OrderRecordingRecipe("nestedOr", executionOrder)
             val nestedClasspath = OrderRecordingClasspathAwareRecipe("nestedClasspath", executionOrder)
@@ -245,10 +205,8 @@ class RecipeExecutorSpec : BaseRuntimeSpec() {
             val topLevelRecipe = OrderRecordingRecipe("topLevel", executionOrder)
             val plainComposite = PlainCompositeRecipe(nestedComposite, topLevelRecipe)
 
-            // when
             recipeExecutor.execute(plainComposite, inputFiles(), true)
 
-            // then
             executionOrder.distinct() shouldContainExactly listOf("nestedOr", "nestedClasspath", "topLevel")
         }
 
