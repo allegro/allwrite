@@ -31,7 +31,6 @@ class VariableDeclarationsTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.VariableDeclarations
 
-        // then
         assertTrue(j.hasNamedAnnotation())
         assertTrue(j.hasQualifierAnnotation())
         assertTrue(j.hasResourceAnnotation())
@@ -42,7 +41,6 @@ class VariableDeclarationsTest : ParsingTest() {
         assertTrue(j.isAutowired())
         assertTrue(j.hasQualifyingAnnotation())
 
-        // when
         j = parse(
             """
             import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +52,6 @@ class VariableDeclarationsTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.VariableDeclarations
 
-        // then
         assertTrue(j.hasInjectAnnotation())
         assertTrue(j.hasAutowiredAnnotation())
 
@@ -65,7 +62,6 @@ class VariableDeclarationsTest : ParsingTest() {
         assertTrue(j.isAutowired())
         assertFalse(j.hasQualifyingAnnotation())
 
-        // when
         j = parse(
             """
             
@@ -75,7 +71,6 @@ class VariableDeclarationsTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.VariableDeclarations
 
-        // then
         assertFalse(j.hasInjectAnnotation())
         assertFalse(j.hasAutowiredAnnotation())
         assertFalse(j.hasNamedAnnotation())
@@ -99,10 +94,8 @@ class VariableDeclarationsTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.VariableDeclarations
 
-        // then
         assertThat(j.qualifiedName()).isEqualTo("r")
 
-        // when
         j = parse(
             """
             import org.springframework.beans.factory.annotation.Qualifier;
@@ -114,10 +107,8 @@ class VariableDeclarationsTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.VariableDeclarations
 
-        // then
         assertThat(j.qualifiedName()).isEqualTo("q")
 
-        // when
         j = parse(
             """
             import jakarta.inject.Named;
@@ -128,13 +119,10 @@ class VariableDeclarationsTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.VariableDeclarations
 
-        // then
         assertThat(j.qualifiedName()).isEqualTo("n")
 
-        // when
         j = parse("class Example4 { int x; }").classes[0].body.statements[0] as J.VariableDeclarations
 
-        // then
         assertThat(j.qualifiedName()).isNull()
     }
 
@@ -152,11 +140,9 @@ class VariableDeclarationsTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.VariableDeclarations
 
-        // when
         val foundBySimpleName = j.findVariableBy("x")
         val foundByQualifiedName = j.findVariableBy("r")
 
-        // then
         assertNotNull(foundBySimpleName)
         assertEquals(j.variables[0], foundBySimpleName.variable)
 
@@ -177,10 +163,8 @@ class VariableDeclarationsTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.VariableDeclarations
 
-        // when
         val result = j.variables()
 
-        // then
         assertThat(result).allMatch { it.declaration == j }
         assertThat(result.map { it.variable }).containsAll(j.variables)
     }

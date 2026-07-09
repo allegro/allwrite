@@ -29,7 +29,6 @@ class MethodDeclarationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.MethodDeclaration
 
-        // then
         assertTrue(j.hasAutowiredAnnotation())
     }
 
@@ -46,7 +45,6 @@ class MethodDeclarationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.MethodDeclaration
 
-        // then
         assertFalse(j.hasAutowiredAnnotation())
     }
 
@@ -64,7 +62,6 @@ class MethodDeclarationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.MethodDeclaration
 
-        // then
         val found = j.findArguments("target")
         assertNotNull(found)
         assertThat(found).hasSize(1)
@@ -90,7 +87,6 @@ class MethodDeclarationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.MethodDeclaration
 
-        // then
         val found = j.findArguments("target")
         assertNotNull(found)
         assertThat(found).hasSize(3)
@@ -113,7 +109,6 @@ class MethodDeclarationTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.MethodDeclaration
 
-        // then
         val found = j.findArguments("target")
         assertNotNull(found)
         assertThat(found).hasSize(1)

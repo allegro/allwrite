@@ -40,7 +40,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = j.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<PrimitiveAnnotationArgument>()
@@ -58,7 +57,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = j.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<PrimitiveAnnotationArgument>()
@@ -76,7 +74,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = j.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
@@ -94,7 +91,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = j.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
@@ -115,7 +111,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = kt.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<PrimitiveAnnotationArgument>()
@@ -133,7 +128,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = kt.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<VarArgAnnotationArgument>()
@@ -151,7 +145,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = kt.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
@@ -169,7 +162,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = kt.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
@@ -188,7 +180,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = kt.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ReferenceAnnotationArgument>()
@@ -207,7 +198,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = kt.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<CalculatedAnnotationArgument>()
@@ -229,7 +219,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = g.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<PrimitiveAnnotationArgument>()
@@ -247,7 +236,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = g.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<PrimitiveAnnotationArgument>()
@@ -265,7 +253,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = g.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
@@ -283,7 +270,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = g.getArgument("value")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
@@ -306,7 +292,6 @@ class AnnotationArgumentGetArgumentTest {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
-            // then
             j.getArgument("since")?.unwrapString()!! shouldBeEqual "1.5"
             j.getArgument("forRemoval")?.unwrapString()!! shouldBeEqual "true"
         }
@@ -321,7 +306,6 @@ class AnnotationArgumentGetArgumentTest {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
-            // then
             assertNull(j.getArgument("type"))
         }
 
@@ -335,7 +319,6 @@ class AnnotationArgumentGetArgumentTest {
                 """.trimIndent(),
             ).classes[0].leadingAnnotations[0] as J.Annotation
 
-            // then
             assertNull(j.getArgument("since"))
         }
 
@@ -351,7 +334,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 j.getArgument("namedArg")?.unwrapString()!! shouldBeEqual "123"
             }
 
@@ -365,7 +347,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = j.getArgument("namedArg")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
@@ -386,7 +367,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = kt.getArgument("namedArg")
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
                 argument.elements.map { it as J.Literal }.map { it.value }.shouldContainExactly(listOf("123"))
@@ -402,7 +382,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = kt.getArgument("namedArg")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()
@@ -432,7 +411,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 kt.getArgument("clazz").shouldBeTypeOf<ClassAnnotationArgument>()
                 kt.getArgument("enum").shouldBeTypeOf<EnumAnnotationArgument>()
                 kt.getArgument("nested").shouldBeTypeOf<AnnotationAnnotationArgument>()
@@ -470,7 +448,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 kt.getArgument("namedArg").shouldBeTypeOf<ReferenceAnnotationArgument>()
                 kt.getArgument("clazz").shouldBeTypeOf<ReferenceAnnotationArgument>()
                 kt.getArgument("enum").shouldBeTypeOf<ReferenceAnnotationArgument>()
@@ -508,7 +485,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 kt.getArgument("namedArg").shouldBeTypeOf<ReferenceAnnotationArgument>()
                 kt.getArgument("clazz").shouldBeTypeOf<ReferenceAnnotationArgument>()
                 kt.getArgument("int").shouldBeTypeOf<ReferenceAnnotationArgument>()
@@ -532,7 +508,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 kt.getArgument("enum").shouldBeTypeOf<ReferenceAnnotationArgument>()
             }
         }
@@ -549,7 +524,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 g.getArgument("namedArg")?.unwrapString()!! shouldBeEqual "123"
             }
 
@@ -563,7 +537,6 @@ class AnnotationArgumentGetArgumentTest {
                     """.trimIndent(),
                 ).classes[0].leadingAnnotations[0] as J.Annotation
 
-                // then
                 val argument = g.getArgument("namedArg")
                 argument.shouldNotBeNull()
                 argument.shouldBeTypeOf<ListAnnotationArgument>()

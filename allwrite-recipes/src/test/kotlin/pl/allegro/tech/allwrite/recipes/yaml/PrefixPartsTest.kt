@@ -19,11 +19,9 @@ class PrefixPartsTest : YamlTest {
                 """.trimIndent(),
             )
 
-            // when
             val prop2 = (doc.documents[0].block as Yaml.Mapping).entries[1] as Yaml.Mapping.Entry
             val result = prop2.prefixParts()
 
-            // then
             assertThat(result.remainder).isEqualTo(" # this is comment for prop1")
             assertThat(result.main).isNull()
             assertThat(result.indent).isEqualTo("")
@@ -39,11 +37,9 @@ class PrefixPartsTest : YamlTest {
                 """.trimIndent(),
             )
 
-            // when
             val prop2 = (doc.documents[0].block as Yaml.Mapping).entries[1] as Yaml.Mapping.Entry
             val result = prop2.prefixParts()
 
-            // then
             assertThat(result.remainder).isEqualTo("")
             assertThat(result.main).isEqualTo("# this is comment for prop2")
             assertThat(result.indent).isEqualTo("")
@@ -59,11 +55,9 @@ class PrefixPartsTest : YamlTest {
                 """.trimIndent(),
             )
 
-            // when
             val prop2 = (doc.documents[0].block as Yaml.Mapping).entries[1] as Yaml.Mapping.Entry
             val result = prop2.prefixParts()
 
-            // then
             assertThat(result.remainder).isEqualTo(" # this is comment for prop1")
             assertThat(result.main).isEqualTo("# this is comment for prop2")
             assertThat(result.indent).isEqualTo("")
@@ -79,11 +73,9 @@ class PrefixPartsTest : YamlTest {
                 """.trimIndent(),
             )
 
-            // when
             val prop2 = (((doc.documents[0].block as Yaml.Mapping).entries[0] as Yaml.Mapping.Entry).value as Yaml.Mapping).entries[0] as Yaml.Mapping.Entry
             val result = prop2.prefixParts()
 
-            // then
             assertThat(result.remainder).isEqualTo("   # this is comment for parent")
             assertThat(result.main).isEqualTo("  # this is comment for prop")
             assertThat(result.indent).isEqualTo("  ")

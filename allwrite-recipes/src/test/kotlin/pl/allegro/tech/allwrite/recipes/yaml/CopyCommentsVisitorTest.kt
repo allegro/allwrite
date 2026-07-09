@@ -27,11 +27,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val visitor = CopyCommentsVisitor(docs)
         val docBeforeVisitor = docs.removeTopLevelEntriesPrefix()
 
-        // when
         val resultYaml = visitor.visit(docBeforeVisitor, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(yaml)
     }
 
@@ -42,11 +40,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val (original, beforeVisit) = parse(originalYaml, beforeVisitYaml)
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(originalYaml)
     }
 
@@ -65,11 +61,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val (original, beforeVisit) = parse(originalYaml, beforeVisitYaml)
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(
             """
             prop2: 2 # 2
@@ -91,11 +85,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val visitor = CopyCommentsVisitor(docs)
         val docBeforeVisitor = docs.removeTopLevelEntriesPrefix()
 
-        // when
         val resultYaml = visitor.visit(docBeforeVisitor, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(yaml)
     }
 
@@ -122,11 +114,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val (original, beforeVisit) = parse(originalYaml, beforeVisitYaml)
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(originalYaml)
     }
 
@@ -149,11 +139,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val (original, beforeVisit) = parse(originalYaml, beforeVisitYaml)
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(originalYaml)
     }
 
@@ -176,11 +164,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val (original, beforeVisit) = parse(originalYaml, beforeVisitYaml)
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(
             """
             prop2:
@@ -204,11 +190,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val visitor = CopyCommentsVisitor(docs)
         val docBeforeVisitor = docs.removeTopLevelEntriesPrefix()
 
-        // when
         val resultYaml = visitor.visit(docBeforeVisitor, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(yaml)
     }
 
@@ -230,11 +214,9 @@ class CopyCommentsVisitorTest : YamlTest {
         )
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(
             """
             prop1: 1
@@ -271,11 +253,9 @@ class CopyCommentsVisitorTest : YamlTest {
 
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(yamlWithComments)
     }
 
@@ -307,11 +287,9 @@ class CopyCommentsVisitorTest : YamlTest {
 
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(
             """
             prop1: 1
@@ -349,11 +327,9 @@ class CopyCommentsVisitorTest : YamlTest {
 
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(yamlWithComments)
     }
 
@@ -375,11 +351,9 @@ class CopyCommentsVisitorTest : YamlTest {
         val visitor = CopyCommentsVisitor(docs)
         val docBeforeVisitor = docs.removeTopLevelEntriesPrefix()
 
-        // when
         val resultYaml = visitor.visit(docBeforeVisitor, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(yaml)
     }
 
@@ -398,11 +372,9 @@ class CopyCommentsVisitorTest : YamlTest {
         )
         val visitor = CopyCommentsVisitor(original) { YamlPath(it.path.substringBeforeLast(".")) }
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(
             """
             prop1.new: 0
@@ -436,11 +408,9 @@ class CopyCommentsVisitorTest : YamlTest {
         )
         val visitor = CopyCommentsVisitor(original)
 
-        // when
         val resultYaml = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
         val result = resultYaml.toYamlString()
 
-        // then
         assertThat(result).isEqualTo(
             """
             prop1: &ANCHOR # this is anchor

@@ -41,10 +41,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getSpringComponentAnnotation()
 
-            // then
             assertNotNull(result)
             assertEquals("c", result.name)
             assertEquals(jclass.leadingAnnotations[1], result.annotation)
@@ -63,10 +61,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getSpringComponentAnnotation()
 
-            // then
             assertNotNull(result)
             assertEquals("c", result.name)
             assertEquals(jclass.leadingAnnotations[1], result.annotation)
@@ -85,10 +81,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getSpringComponentAnnotation()
 
-            // then
             assertNotNull(result)
             assertEquals("n", result.name)
             assertEquals(jclass.leadingAnnotations[0], result.annotation)
@@ -105,10 +99,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getSpringComponentAnnotation()
 
-            // then
             assertNotNull(result)
             assertEquals("a", result.name)
             assertEquals(jclass.leadingAnnotations[0], result.annotation)
@@ -125,10 +117,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getSpringComponentAnnotation()
 
-            // then
             assertNotNull(result)
             assertEquals("c", result.name)
             assertEquals(jclass.leadingAnnotations[0], result.annotation)
@@ -145,10 +135,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getSpringComponentAnnotation()
 
-            // then
             assertNotNull(result)
             assertEquals("n", result.name)
             assertEquals(jclass.leadingAnnotations[0], result.annotation)
@@ -163,10 +151,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getSpringComponentAnnotation()
 
-            // then
             assertNull(result)
         }
     }
@@ -195,10 +181,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getBeanMethodDeclarations()
 
-            // then
             assertThat(result).hasSize(2)
             assertThat(result.map { it.method }).containsExactly(
                 jclass.body.statements[0] as J.MethodDeclaration,
@@ -228,10 +212,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getBeanMethodDeclarations()
 
-            // then
             assertThat(result).hasSize(2)
             assertThat(result.map { it.method }).containsExactly(
                 jclass.body.statements[0] as J.MethodDeclaration,
@@ -263,10 +245,8 @@ class ClassDeclarationTest : ParsingTest() {
                 """.trimIndent(),
             ).classes[0]
 
-            // when
             val result = jclass.getAutowiredFields()
 
-            // then
             assertThat(result).hasSize(2)
             assertThat(result.map { it.declaration }).containsExactly(
                 jclass.body.statements[0] as J.VariableDeclarations,

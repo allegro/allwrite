@@ -23,14 +23,11 @@ class SourceFilesParserSpec : BaseRuntimeSpec() {
 
     init {
         test("should parse all files") {
-            // given
             val recipe = FakeRecipe()
             val inputFiles = Paths.get("src/testFixtures/inputFilesForTests").walk().toList()
 
-            // when
             val parsedFiles = sourceFilesParser.parseSourceFiles(recipe, inputFiles, InMemoryExecutionContext())
 
-            // then
             parsedFiles.map { it.sourcePath } shouldContainExactlyInAnyOrder listOf(
                 Paths.get("src/testFixtures/inputFilesForTests/interesting-dir/some-file.yaml"),
                 Paths.get("src/testFixtures/inputFilesForTests/interesting-dir/another-file.yaml"),
@@ -40,14 +37,11 @@ class SourceFilesParserSpec : BaseRuntimeSpec() {
         }
 
         test("should parse only files selected by recipe") {
-            // given
             val recipe = FakeParsingAwareRecipe()
             val inputFiles = Paths.get("src/testFixtures/inputFilesForTests").walk().toList()
 
-            // when
             val parsedFiles = sourceFilesParser.parseSourceFiles(recipe, inputFiles, InMemoryExecutionContext())
 
-            // then
             parsedFiles.map { it.sourcePath } shouldContainExactlyInAnyOrder listOf(
                 Paths.get("src/testFixtures/inputFilesForTests/interesting-dir/some-file.yaml"),
                 Paths.get("src/testFixtures/inputFilesForTests/interesting-dir/another-file.yaml"),
@@ -55,41 +49,32 @@ class SourceFilesParserSpec : BaseRuntimeSpec() {
         }
 
         test("should resolve classpath from a direct ClasspathAwareRecipe") {
-            // given
             val recipe = FakeClasspathAwareRecipe(classpath = listOf("spring-context-6"))
             val inputFiles = listOf(Paths.get("src/testFixtures/inputFilesForTests/java-dir/MyConfig.java"))
 
-            // when
             val parsedFiles = sourceFilesParser.parseSourceFiles(recipe, inputFiles, InMemoryExecutionContext())
 
-            // then
             assertConfigurationAnnotationTypeResolved(parsedFiles)
         }
 
         test("should resolve classpath from ClasspathAwareRecipe nested in a composite recipe") {
-            // given
             val classpathAwareSubRecipe = FakeClasspathAwareRecipe(classpath = listOf("spring-context-6"))
             val compositeRecipe = FakeCompositeRecipe(classpathAwareSubRecipe)
             val inputFiles = listOf(Paths.get("src/testFixtures/inputFilesForTests/java-dir/MyConfig.java"))
 
-            // when
             val parsedFiles = sourceFilesParser.parseSourceFiles(compositeRecipe, inputFiles, InMemoryExecutionContext())
 
-            // then
             assertConfigurationAnnotationTypeResolved(parsedFiles)
         }
 
         test("should resolve classpath from ClasspathAwareRecipe deeply nested in composite recipes") {
-            // given
             val classpathAwareSubRecipe = FakeClasspathAwareRecipe(classpath = listOf("spring-context-6"))
             val innerComposite = FakeCompositeRecipe(FakeRecipe(), classpathAwareSubRecipe)
             val outerComposite = FakeCompositeRecipe(innerComposite)
             val inputFiles = listOf(Paths.get("src/testFixtures/inputFilesForTests/java-dir/MyConfig.java"))
 
-            // when
             val parsedFiles = sourceFilesParser.parseSourceFiles(outerComposite, inputFiles, InMemoryExecutionContext())
 
-            // then
             assertConfigurationAnnotationTypeResolved(parsedFiles)
         }
     }

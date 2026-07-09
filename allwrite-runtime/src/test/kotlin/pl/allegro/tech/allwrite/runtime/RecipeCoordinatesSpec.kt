@@ -50,7 +50,6 @@ class RecipeCoordinatesSpec : FunSpec() {
         }
 
         test("should map descriptor to coordinates") {
-            // given
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "group:some-group",
@@ -60,10 +59,8 @@ class RecipeCoordinatesSpec : FunSpec() {
                 ),
             )
 
-            // when
             val recipeCoordinates = recipeDescriptor.toRecipeCoordinatesOrNull()
 
-            // then
             recipeCoordinates shouldBe RecipeCoordinates(
                 group = "some-group",
                 action = "some-action",
@@ -73,7 +70,6 @@ class RecipeCoordinatesSpec : FunSpec() {
         }
 
         test("should map descriptor to coordinates with null versions") {
-            // given
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "group:some-group",
@@ -81,10 +77,8 @@ class RecipeCoordinatesSpec : FunSpec() {
                 ),
             )
 
-            // when
             val recipeCoordinates = recipeDescriptor.toRecipeCoordinatesOrNull()
 
-            // then
             recipeCoordinates shouldBe RecipeCoordinates(
                 group = "some-group",
                 action = "some-action",
@@ -94,62 +88,50 @@ class RecipeCoordinatesSpec : FunSpec() {
         }
 
         test("should not map descriptor to coordinates with null recipe") {
-            // given
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "group:some-group",
                 ),
             )
 
-            // when
             val recipeCoordinates = recipeDescriptor.toRecipeCoordinatesOrNull()
 
-            // then
             recipeCoordinates shouldBe null
         }
 
         test("should not map descriptor to coordinates with null group") {
-            // given
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "action:some-action",
                 ),
             )
 
-            // when
             val recipeCoordinates = recipeDescriptor.toRecipeCoordinatesOrNull()
 
-            // then
             recipeCoordinates shouldBe null
         }
 
         test("should get fromVersion from descriptor") {
-            // given
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "from:1.0.0",
                 ),
             )
 
-            // when
             val fromVersion = recipeDescriptor.getFromVersion()
 
-            // then
             fromVersion shouldBe Version.parse("1.0.0", false)
         }
 
         test("should get toVersion from descriptor") {
-            // given
             val recipeDescriptor = RecipeDescriptor(
                 tags = setOf(
                     "to:2.0.0",
                 ),
             )
 
-            // when
             val toVersion = recipeDescriptor.getToVersion()
 
-            // then
             toVersion shouldBe Version.parse("2.0.0", false)
         }
     }

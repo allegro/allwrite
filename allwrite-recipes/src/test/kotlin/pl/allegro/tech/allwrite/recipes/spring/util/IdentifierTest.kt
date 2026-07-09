@@ -14,7 +14,6 @@ class IdentifierTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
-        // then
         assertEquals("longClassNameFactoryBeanFactory", j.name.toSpringBeanName())
     }
 
@@ -26,7 +25,6 @@ class IdentifierTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
-        // then
         assertEquals("longClassNameFactoryBeanFactory", k.name.toSpringBeanName())
     }
 
@@ -40,7 +38,6 @@ class IdentifierTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.MethodDeclaration
 
-        // then
         assertEquals("longMethodName", j.name.toSpringBeanName())
     }
 
@@ -54,7 +51,6 @@ class IdentifierTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0].body.statements[0] as J.MethodDeclaration
 
-        // then
         assertEquals("longMethodName", k.name.toSpringBeanName())
     }
 
@@ -69,7 +65,6 @@ class IdentifierTest : ParsingTest() {
         ).classes[0].body.statements[0] as J.MethodDeclaration
         val variable = (j.parameters[0] as J.VariableDeclarations).variables[0]
 
-        // then
         assertEquals("longArgumentName", variable.name.toSpringBeanName())
     }
 
@@ -84,7 +79,6 @@ class IdentifierTest : ParsingTest() {
         ).classes[0].body.statements[0] as J.MethodDeclaration
         val variable = (k.parameters[0] as J.VariableDeclarations).variables[0]
 
-        // then
         assertEquals("longArgumentName", variable.name.toSpringBeanName())
     }
 }

@@ -25,10 +25,8 @@ class ConstructorTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
-        // when
         val result = jclass.getAutowiringConstructor()
 
-        // then
         assertNotNull(result)
         assertEquals(jclass.body.statements[0] as J.MethodDeclaration, result.method)
     }
@@ -47,10 +45,8 @@ class ConstructorTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
-        // when
         val result = jclass.getAutowiringConstructor()
 
-        // then
         assertNotNull(result)
         assertEquals(jclass.body.statements[1] as J.MethodDeclaration, result.method)
     }
@@ -69,10 +65,8 @@ class ConstructorTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
-        // when
         val result = jclass.getAutowiringConstructor()
 
-        // then
         assertNotNull(result)
         assertEquals(jclass.body.statements[1] as J.MethodDeclaration, result.method)
     }
@@ -90,10 +84,8 @@ class ConstructorTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
-        // when
         val result = jclass.getAutowiringConstructor()
 
-        // then
         assertNull(result)
     }
 
@@ -108,14 +100,11 @@ class ConstructorTest : ParsingTest() {
             """.trimIndent(),
         ).classes[0]
 
-        // when
         var result = kclass.getAutowiringConstructor()
 
-        // then
         assertNotNull(result)
         assertEquals(kclass.body.statements[0] as J.MethodDeclaration, result.method)
 
-        // when
         kclass = parseKotlin(
             """
             import org.springframework.beans.factory.annotation.Autowired;
@@ -126,11 +115,9 @@ class ConstructorTest : ParsingTest() {
         ).classes[0]
         result = kclass.getAutowiringConstructor()
 
-        // then
         assertNotNull(result)
         assertEquals((kclass.body.statements[1] as K.Constructor).methodDeclaration, result.method)
 
-        // when
         kclass = parseKotlin(
             """
             import org.springframework.beans.factory.annotation.Autowired;
@@ -143,10 +130,8 @@ class ConstructorTest : ParsingTest() {
         ).classes[0]
         result = kclass.getAutowiringConstructor()
 
-        // then
         assertNull(result)
 
-        // when
         kclass = parseKotlin(
             """
             import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +144,6 @@ class ConstructorTest : ParsingTest() {
         ).classes[0]
         result = kclass.getAutowiringConstructor()
 
-        // then
         assertNotNull(result)
         assertEquals((kclass.body.statements[1] as K.Constructor).methodDeclaration, result.method)
     }

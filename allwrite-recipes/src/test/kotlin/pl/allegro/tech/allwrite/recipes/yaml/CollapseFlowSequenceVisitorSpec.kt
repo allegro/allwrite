@@ -17,10 +17,8 @@ class CollapseFlowSequenceVisitorSpec :
 
         val visitor = CollapseFlowSequenceVisitor(original)
 
-        // when
         val result = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
 
-        // then
         assertThat(result.toYamlString()).isEqualTo(original.toYamlString())
     }
 
@@ -30,10 +28,8 @@ class CollapseFlowSequenceVisitorSpec :
 
         val visitor = CollapseFlowSequenceVisitor(original)
 
-        // when
         val result = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
 
-        // then
         assertThat(result.toYamlString()).isEqualTo(original.toYamlString())
     }
 
@@ -43,10 +39,8 @@ class CollapseFlowSequenceVisitorSpec :
 
         val visitor = CollapseFlowSequenceVisitor(original)
 
-        // when
         val result = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
 
-        // then
         assertThat(result.toYamlString()).isEqualTo(beforeVisit.toYamlString())
     }
 
@@ -73,10 +67,8 @@ class CollapseFlowSequenceVisitorSpec :
 
         val visitor = CollapseFlowSequenceVisitor(original)
 
-        // when
         val result = visitor.visit(beforeVisit, InMemoryExecutionContext()) as Yaml.Documents
 
-        // then
         assertThat(result.toYamlString()).isEqualTo(
             """
             seq: [1, 2]
