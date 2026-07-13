@@ -32,6 +32,16 @@
 | Release management | JReleaser + Axion Release Plugin |
 | Testing | Kotest (FunSpec), JUnit 5, MockK, OpenRewrite RewriteTest |
 
+## Documentation
+
+The documentation site is built with MkDocs from `mkdocs.yml`, `requirements-docs.txt`, and the `docs/` directory.
+
+- `docs/index.md` — project overview
+- `docs/cli.md` — CLI reference
+- `docs/contributing.md` — recipe authoring guide
+- `docs/recipes.md` — built-in recipes reference
+- `docs/stylesheets/extra.css` — custom Material theme styling
+
 # Architecture
 
 Multi-module Gradle project using **Hexagonal Architecture (Ports & Adapters)**.
