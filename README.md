@@ -5,7 +5,7 @@ It wraps OpenRewrite's runtime into a CLI that can run recipes by name, integrat
 
 - **Group ID:** `pl.allegro.tech.allwrite`
 - **License:** Apache 2.0
-- **JVM toolchain:** Java 21 (Temurin)
+- **JVM toolchain:** Java 21
 
 ## Documentation
 
