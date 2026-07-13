@@ -16,10 +16,16 @@ Use friendly recipe names instead of fully qualified Java class names, combine O
 
 ## What is included
 
-- `allwrite-cli` for running recipes and managing external recipe jars
-- `allwrite-runtime` for recipe execution and source parsing
-- `allwrite-recipes` for built-in OpenRewrite recipes
-- `allwrite-spi` for recipe authoring helpers
+The `allwrite` is a modular project, utilizing dependency injection capabilities from the [Koin](https://github.com/InsertKoinIO/koin) framework.
+
+It consists of the following Gradle modules (that may contain one or more Koin modules):
+
+- **allwrite-api** - published API with incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`) for interacting with `allwrite-runtime`
+- **allwrite-spi** - published SPI with base classes for recipe authors (`AllwriteRecipe`, `AllwriteScanningRecipe`, `RecipeMetadata`)
+- **allwrite-cli** - provides both Application and Infrastructure layers for the CLI app
+- **allwrite-runtime** - provides core implementation (implements `allwrite-api` interfaces); equivalent of the Domain layer
+- **allwrite-recipes** - contains OpenRewrite recipes to be executed by `allwrite-cli`
+- **allwrite-completions** - provides annotation processors generating CLI auto-completions
 
 ## Quick links
 

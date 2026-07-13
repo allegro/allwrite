@@ -79,28 +79,3 @@ class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ParsingAwareRecipe {
     }
 }
 ```
-
-## Architecture
-
-The `allwrite` is a modular project, utilizing dependency injection capabilities from the [Koin](https://github.com/InsertKoinIO/koin) framework.
-
-It consists of the following Gradle modules (that may contain one or more Koin modules):
-* `allwrite-api` - published API with incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`) for interacting with `allwrite-runtime`
-* `allwrite-spi` - published SPI with base classes for recipe authors (`AllwriteRecipe`, `AllwriteScanningRecipe`, `RecipeMetadata`)
-* `allwrite-cli` - provides both Application and Infrastructure layers for the CLI app
-* `allwrite-runtime` - provides core implementation (implements `allwrite-api` interfaces); equivalent of the Domain layer
-* `allwrite-recipes` - contains OpenRewrite recipes to be executed by `allwrite-cli`
-* `allwrite-completions` - provides annotation processors generating CLI auto-completions
-
-The below diagram shows Koin modules, not Gradle modules. The rule of thumb is: we don't extract Koin module as a separate Gradle module unless required
-by the build logic. For example, `allwrite-runtime` must be Gradle module, because it is used by both `allwrite-cli` (at app runtime)
-and `allwrite-completions` (at app compile time).
-
-Please keep the diagram up-to-date by editing `architecture.puml` file with the help of [PlantUML IntelliJ Plugin](https://plugins.jetbrains.com/plugin/7017-plantuml-integration) and replacing the rendered PNG.
-
-If you don't like installing IntelliJ plugins, edit `architecture.puml` and execute the following command:
-```bash
-docker run --rm -v $(pwd):/app -w /app ghcr.io/plantuml/plantuml plantuml docs/architecture.puml
-```
-
-![](docs/architecture.png)
