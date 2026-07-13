@@ -4,9 +4,6 @@ allwrite is a CLI tool and a collection of [OpenRewrite](https://docs.openrewrit
 
 It wraps OpenRewrite's runtime into a CLI that can run recipes by name, integrate with GitHub Actions, and work with Dependabot pull requests.
 
-- [Get started](cli.md){ .md-button .md-button--primary }
-- [Write a recipe](contributing.md){ .md-button }
-
 ## Why allwrite?
 
 Use friendly recipe names instead of fully qualified Java class names, combine OpenRewrite's ecosystem with project-specific migrations, and package private recipes as external JARs.

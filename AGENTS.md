@@ -40,7 +40,6 @@ The documentation site is built with MkDocs from `mkdocs.yml`, `requirements-doc
 - `docs/cli.md` — CLI reference
 - `docs/contributing.md` — recipe authoring guide
 - `docs/recipes.md` — built-in recipes reference
-- `docs/stylesheets/extra.css` — custom Material theme styling
 
 # Architecture
 

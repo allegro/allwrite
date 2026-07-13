@@ -8,12 +8,12 @@ theme:
   name: material
   language: en
   font:
-    text: Inter
+    text: sans-serif
     code: JetBrains Mono
   features:
     - navigation.instant
     - navigation.instant.progress
-    - navigation.tabs
+    - navigation.sections
     - navigation.top
     - search.highlight
     - search.share
@@ -51,5 +51,4 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
-extra_css:
-  - stylesheets/extra.css
+extra_css: []
