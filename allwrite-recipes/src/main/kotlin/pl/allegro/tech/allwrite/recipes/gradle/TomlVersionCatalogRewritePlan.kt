@@ -2,8 +2,9 @@ package pl.allegro.tech.allwrite.recipes.gradle
 
 import org.openrewrite.internal.StringUtils
 import org.openrewrite.toml.tree.Toml
-import pl.allegro.tech.allwrite.recipes.toml.name
+import pl.allegro.tech.allwrite.recipes.toml.keyValues
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
+import pl.allegro.tech.allwrite.recipes.toml.table
 
 internal data class TomlDependencyRewriteTarget(
     val oldGroupId: String,
@@ -55,8 +56,7 @@ internal class TomlVersionCatalogRewritePlanner(
             .forEach { (keyValue, library) ->
                 val entryName = keyValue.stringKey() ?: return@forEach
                 val versionRef = (library.version as? VersionRef)?.ref ?: return@forEach
-                val version = target.newVersion
-                if (version == null) return@forEach
+                val version = target.newVersion ?: return@forEach
                 val targetRef = target.targetVersionRef(entryName)
                 when {
                     isVersionRefShared(document, versionRef, keyValue) -> {
@@ -105,8 +105,7 @@ internal class TomlVersionCatalogRewritePlanner(
 
     private fun versionEntryExists(document: Toml.Document, versionName: String): Boolean =
         document.table(VERSION_CATALOG_TABLE_VERSIONS)
-            ?.values
-            ?.filterIsInstance<Toml.KeyValue>()
+            ?.keyValues()
             ?.any { it.stringKey() == versionName } == true
 
     private fun isVersionRefShared(document: Toml.Document, versionRef: String, currentEntry: Toml.KeyValue): Boolean =
@@ -131,17 +130,15 @@ internal class TomlVersionCatalogRewritePlanner(
 
     private fun Toml.Document.libraryEntries(): List<Pair<Toml.KeyValue, Library>> =
         table(VERSION_CATALOG_TABLE_LIBS)
-            ?.values
-            ?.filterIsInstance<Toml.KeyValue>()
+            ?.keyValues()
             ?.mapNotNull { keyValue -> keyValue.valueToLibrary()?.let { keyValue to it } }
+            ?.toList()
             ?: emptyList()
 
     private fun Toml.Document.pluginEntries(): List<Pair<Toml.KeyValue, Plugin>> =
         table(VERSION_CATALOG_TABLE_PLUGINS)
-            ?.values
-            ?.filterIsInstance<Toml.KeyValue>()
+            ?.keyValues()
             ?.mapNotNull { keyValue -> keyValue.valueToPlugin()?.let { keyValue to it } }
+            ?.toList()
             ?: emptyList()
-
-    private fun Toml.Document.table(name: String): Toml.Table? = values.filterIsInstance<Toml.Table>().firstOrNull { it.name() == name }
 }
