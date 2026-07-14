@@ -17,9 +17,9 @@ Every recipe within `allwrite-recipes` must provide the `visibility:[internal/pu
 
 Every public recipe must provide a friendly name in the form of 2 tags:
 * `group:<someGroup>`
-* `recipe:<someRecipe>`
+* `action:<someAction>`
 
-For example, the following set of tags [`group:workflows`, `recipe:introduceSetupGradle`] will result in a recipe that can be executed like that:
+For example, the following set of tags [`group:workflows`, `action:introduceSetupGradle`] will result in a recipe that can be executed like that:
 ```
 allwrite run workflows/introduceSetupGradle
 ```
