@@ -21,6 +21,23 @@ Run a recipe by fully-qualified name:
 allwrite run --recipe pl.allegro.tech.allwrite.recipes.SpringBoot4
 ```
 
+Run recipes listed in a JSON file:
+
+```bash
+allwrite run --file recipes.json
+```
+
+The JSON object must contain a `recipes` array of fully-qualified recipe names.
+
+The `run` command also supports:
+
+| Option | Description |
+|---|---|
+| `--fail-on-error` | Stop execution when a recipe visitor reports an error. |
+| `--continue-on-error` | Continue after recipe visitor errors. This is the default. |
+| `-v`, `--verbose` | Enable verbose command output and debug logging. |
+| `--log-level <level>` | Set the logging level explicitly. |
+
 List available recipes:
 ```bash
 allwrite ls
@@ -78,6 +95,17 @@ Remove an external recipes JAR:
 ```bash
 allwrite external rm custom-recipes
 ```
+
+All external recipe subcommands also support `-v`/`--verbose` and `--log-level`.
+
+## Dependabot automation
+
+`allwrite run-dependabot` is an internal automation command used by the GitHub integration. It reads Dependabot metadata from `GH_BOT_EXTRA_PARAMS`, finds recipes tagged for the updated artifacts and version ranges, and executes the matching migrations.
+
+| Option | Description |
+|---|---|
+| `--prm-extra <json>` | Dependabot pull-request metadata. It can also be supplied through the `GH_BOT_EXTRA_PARAMS` environment variable. |
+| `--dump-execution-result <path>` | Write execution details to a JSON file. |
 
 ### Running from sources
 

@@ -16,8 +16,9 @@ Every recipe within `allwrite-recipes` must provide the `visibility:[internal/pu
 ### Friendly names
 
 Every public recipe must provide a friendly name in the form of 2 tags:
-* `group:<someGroup>`
-* `action:<someAction>`
+
+- `group:<someGroup>`
+- `action:<someAction>`
 
 For example, the following set of tags [`group:workflows`, `action:introduceSetupGradle`] will result in a recipe that can be executed like that:
 ```
@@ -79,3 +80,31 @@ class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ParsingAwareRecipe {
     }
 }
 ```
+
+### Supplying a recipe classpath
+
+Implement `ClasspathAwareRecipe` when a recipe needs additional artifacts on the parser classpath:
+
+```kotlin
+class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ClasspathAwareRecipe {
+
+    override fun requireOnClasspath(): List<String> =
+        listOf("spring-web-6", "spring-core-6")
+}
+```
+
+allwrite resolves the requested classpath entries before parsing. Classpath-aware recipes are executed in isolated phases so recipes requiring different classpaths do not interfere with each other.
+
+### Running postprocessing
+
+Implement `PostprocessingRecipe` when work must run after OpenRewrite changes have been applied:
+
+```kotlin
+class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), PostprocessingRecipe {
+
+    override fun postprocess(): PostprocessingResult =
+        PostprocessingResult.Success
+}
+```
+
+Return `PostprocessingResult.Success` after successful postprocessing. Return `PostprocessingResult.Failure(errorMessage)` to fail the recipe execution and report the error.

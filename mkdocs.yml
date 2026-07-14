@@ -3,6 +3,7 @@ site_description: Documentation for the allwrite CLI and recipe library
 site_url: https://allegro.github.io/allwrite/
 repo_url: https://github.com/allegro/allwrite
 repo_name: allegro/allwrite
+edit_uri: edit/main/docs/
 copyright: Copyright &copy; Allegro
 theme:
   name: material
@@ -52,4 +53,4 @@ markdown_extensions:
   - toc:
       permalink: true
 extra_css:
- - extra.css
+  - extra.css
