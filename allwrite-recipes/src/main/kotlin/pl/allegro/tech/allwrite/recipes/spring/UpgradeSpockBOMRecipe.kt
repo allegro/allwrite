@@ -2,8 +2,7 @@ package pl.allegro.tech.allwrite.recipes.spring
 
 import pl.allegro.tech.allwrite.recipes.gradle.ChangeGradleDependency
 
-public fun upgradeGroovyToV5(): List<ChangeGradleDependency> =
-    listOf(UPGRADE_GROOVY, UPGRADE_SPOCK_BOM_RECIPE)
+public fun upgradeGroovyToV5(): List<ChangeGradleDependency> = listOf(UPGRADE_GROOVY, UPGRADE_SPOCK_BOM_RECIPE)
 
 private val UPGRADE_GROOVY: ChangeGradleDependency =
     ChangeGradleDependency(

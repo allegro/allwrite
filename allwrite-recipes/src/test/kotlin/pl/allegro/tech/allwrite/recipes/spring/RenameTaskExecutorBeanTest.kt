@@ -79,7 +79,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                     @Configuration
                     class MyConfigKotlin {
                         @Bean
-                        fun myString(@Qualifier("applicationTaskExecutor") taskExecutor: TaskExecutor, @Qualifier("applicationTaskExecutor") taskExecutor2: TaskExecutor) = taskExecutor.toString() + taskExecutor2.toString();
+                        fun myString(@Qualifier("applicationTaskExecutor")taskExecutor: TaskExecutor, @Qualifier("applicationTaskExecutor") taskExecutor2: TaskExecutor) = taskExecutor.toString() + taskExecutor2.toString();
                     }
                     """.trimIndent(),
                 ),
@@ -135,7 +135,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                     @Configuration
                     class MyConfigKotlin {
                         @Bean
-                        fun myString(@Qualifier("applicationTaskExecutor") taskExecutor : ConcurrentTaskExecutor) = taskExecutor.toString()
+                        fun myString(@Qualifier("applicationTaskExecutor")taskExecutor : ConcurrentTaskExecutor) = taskExecutor.toString()
                     }
                     """.trimIndent(),
                 ),
@@ -204,7 +204,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       @Configuration
                       class NestedConfig {
                         @Bean
-                        fun myString(@Qualifier("applicationTaskExecutor") taskExecutor: TaskExecutor) = taskExecutor.toString()
+                        fun myString(@Qualifier("applicationTaskExecutor")taskExecutor: TaskExecutor) = taskExecutor.toString()
                       }
                     }
                     """.trimIndent(),
@@ -980,13 +980,13 @@ class RenameTaskExecutorBeanTest : RewriteTest {
                       public fun test(): String = taskExecutor.toString()
                     }
                     @Component
-                    class MyComponent2(@Qualifier("applicationTaskExecutor") taskExecutor : TaskExecutor) {
+                    class MyComponent2(@Qualifier("applicationTaskExecutor")taskExecutor : TaskExecutor) {
                       private val inner = taskExecutor
                       public fun test(): String = inner.toString()
                     }
                     @Component
                     class MyComponent3(val taskExecutorString : String) {
-                      @Autowired constructor(@Qualifier("applicationTaskExecutor") taskExecutor : TaskExecutor) : this(taskExecutor.toString())
+                      @Autowired constructor(@Qualifier("applicationTaskExecutor")taskExecutor : TaskExecutor) : this(taskExecutor.toString())
                       public fun test(): String = taskExecutorString
                     }
                     """.trimIndent(),
@@ -1192,7 +1192,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                     @Component
                     class MyComponent(val taskExecutor: TaskExecutor, val s: String) {
-                      @Autowired constructor(@Qualifier("applicationTaskExecutor") taskExecutor: TaskExecutor) : this(taskExecutor, taskExecutor.toString())
+                      @Autowired constructor(@Qualifier("applicationTaskExecutor")taskExecutor: TaskExecutor) : this(taskExecutor, taskExecutor.toString())
                       public fun test(): String = taskExecutor.toString() + s
                     }
                     """.trimIndent(),
@@ -1225,7 +1225,7 @@ class RenameTaskExecutorBeanTest : RewriteTest {
 
                     @Component
                     class MyComponent(val taskExecutor: TaskExecutor, val s: String) {
-                      @Autowired constructor(@Qualifier("applicationTaskExecutor") taskExecutor: TaskExecutor) : this(taskExecutor = taskExecutor, s = taskExecutor.toString())
+                      @Autowired constructor(@Qualifier("applicationTaskExecutor")taskExecutor: TaskExecutor) : this(taskExecutor = taskExecutor, s = taskExecutor.toString())
                       public fun test(): String = taskExecutor.toString() + s
                     }
                     """.trimIndent(),
