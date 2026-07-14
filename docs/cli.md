@@ -33,7 +33,7 @@ allwrite ls -a
 allwrite ls --all
 ```
 
-## Recipes
+## Built-in recipes
 
 The `allwrite` CLI comes with all the free OpenRewrite migrations bundled (Java/Kotlin refactoring, Spring Boot upgrades, etc.).
 

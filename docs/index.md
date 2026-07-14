@@ -16,7 +16,7 @@ Use friendly recipe names instead of fully qualified Java class names, combine O
 
 ## What is included
 
-The `allwrite` is a modular project, utilizing dependency injection capabilities from the [Koin](https://github.com/InsertKoinIO/koin) framework.
+`allwrite` is a modular project, utilizing dependency injection capabilities from the [Koin](https://github.com/InsertKoinIO/koin) framework.
 
 It consists of the following Gradle modules (that may contain one or more Koin modules):
 
