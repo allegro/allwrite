@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: '3.x'
           cache: 'pip'
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements-docs.txt
       - name: Build docs and fail on warnings
         run: mkdocs build -sv
       - uses: actions/upload-pages-artifact@v5
