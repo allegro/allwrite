@@ -118,6 +118,27 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
+        fun `should update dependency version in build gradle with custom sourceVersionPattern`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(groupId = "org.spockframework", artifactId = "spock-bom", targetVersion = "2.4-groovy-5.0", sourceVersionPattern = "\\d+\\.\\d+.*")).validateRecipeSerialization(false)
+                },
+                buildGradle(
+                    before = """
+                    dependencies {
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-bom', version: '2.4-M4-groovy-4.0')
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-bom', version: '2.4-groovy-5.0')
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
         fun `should skip major downgrade in build gradle`() {
             rewriteRun(noChangeSpec("3.9.9"), groovyDependency("4.1.0"))
         }
@@ -206,6 +227,27 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
+        fun `should update dependency version in build gradle kts with custom sourceVersionPattern`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(groupId = "org.spockframework", artifactId = "spock-bom", targetVersion = "2.4-groovy-5.0", sourceVersionPattern = "\\d+\\.\\d+.*")).validateRecipeSerialization(false)
+                },
+                buildGradleKts(
+                    before = """
+                    dependencies {
+                        testImplementation(platform(group = 'org.spockframework', name = 'spock-bom', version = '2.4-M4-groovy-4.0'))
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        testImplementation(platform(group = 'org.spockframework', name = 'spock-bom', version = '2.4-groovy-5.0'))
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+            )
+        }
+
+        @Test
         fun `should skip major downgrade in build gradle kts`() {
             rewriteRun(noChangeSpec("3.9.9"), kotlinDependency("4.1.0"))
         }
@@ -280,6 +322,25 @@ class UpdateGradleDependencyTest {
                     jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version = "3.1.4" }
                     """.trimIndent(),
                 ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should update dependency version in toml with custom sourceVersionPattern`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(recipe(groupId = "org.spockframework", artifactId = "spock-bom", targetVersion = "2.4-groovy-5.0", sourceVersionPattern = "\\d+\\.\\d+.*")).validateRecipeSerialization(false)
+                },
+                toml(
+                    before = """
+                    [libraries]
+                    spockframework-bom = { group = "org.spockframework", name = "spock-bom", version = "2.4-M4-groovy-4.0" }
+                    """.trimIndent(),
+                    after = """
+                    [libraries]
+                    spockframework-bom = { group = "org.spockframework", name = "spock-bom", version = "2.4-groovy-5.0" }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
             )
         }
 

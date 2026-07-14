@@ -16,6 +16,7 @@ import org.openrewrite.kotlin.KotlinParser
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
 import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.recipes.buildGradle
 import pl.allegro.tech.allwrite.recipes.groovy
 import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
@@ -171,4 +172,23 @@ class SpringBoot4_0Test : RewriteTest {
             ),
         )
     }
+
+    @Test
+    fun `should update platform dependency version in build gradle`() {
+        rewriteRun(
+            buildGradle(
+                before = """
+                    dependencies {
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-bom', version: '2.4-M4-groovy-4.0')
+                    }
+                    """.trimIndent(),
+                after = """
+                    dependencies {
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-bom', version: '2.4-groovy-5.0')
+                    }
+                    """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
 }
