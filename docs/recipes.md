@@ -230,7 +230,7 @@ dependencies {
 }
 ```
 
-### `pl.allegro.tech.allwrite.recipes.gradle.UpdateGradleDependency ` { data-toc-label="UpdateGradleDependency" }
+### `pl.allegro.tech.allwrite.recipes.gradle.UpdateGradleDependency` { data-toc-label="UpdateGradleDependency" }
 
 Updates dependency versions using regular expressions. Converts build files to plain text and applies regex-based replacements. Supports dependency declarations in multiple formats:
 
@@ -267,7 +267,7 @@ classpath("com.example:some-dependency:2.0.0")
 
 ### `pl.allegro.tech.allwrite.recipes.java.ChangeType` { data-toc-label="ChangeType" }
 
-Enhanced version of the OpenRewrites `ChangeType` with additional support for renaming variables.
+Enhanced version of OpenRewrite's `ChangeType` with additional support for renaming variables.
 
 Options:
 
@@ -318,7 +318,7 @@ Given third-party class:
 public record SomeRecord(String oldName) { }
 ```
 
-than has been changed to:
+then has been changed to:
 ```java
 public record SomeRecord(String newName) { }
 ```
@@ -430,7 +430,7 @@ import com.example.Foo; // unused
 import com.example.Bar; // unused
 ```
 
-After (with `types` = `[com.example.Foor]`):
+After (with `types` = `[com.example.Foo]`):
 
 ```java
 import com.example.Bar; // unused
