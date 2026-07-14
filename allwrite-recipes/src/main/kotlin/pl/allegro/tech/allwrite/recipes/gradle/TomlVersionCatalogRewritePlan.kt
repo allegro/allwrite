@@ -12,8 +12,7 @@ internal data class TomlDependencyRewriteTarget(
     val newArtifactId: String?,
     val newVersion: String?,
 ) {
-    fun matches(library: Library): Boolean =
-        StringUtils.matchesGlob(library.group, oldGroupId) && StringUtils.matchesGlob(library.name, oldArtifactId)
+    fun matches(library: Library): Boolean = StringUtils.matchesGlob(library.group, oldGroupId) && StringUtils.matchesGlob(library.name, oldArtifactId)
 
     fun targetLibrary(library: Library, entryName: String, versionRef: String? = null): Library =
         Library(
@@ -122,11 +121,7 @@ internal class TomlVersionCatalogRewritePlanner(
                     keyValue != currentEntry && (plugin.version as? VersionRef)?.ref == versionRef
                 }
 
-    private fun isVersionRefSharedByMatchingLibraries(
-        document: Toml.Document,
-        versionRef: String,
-        currentEntry: Toml.KeyValue,
-    ): Boolean =
+    private fun isVersionRefSharedByMatchingLibraries(document: Toml.Document, versionRef: String, currentEntry: Toml.KeyValue): Boolean =
         document.libraryEntries()
             .any { (keyValue, library) ->
                 keyValue != currentEntry &&
@@ -148,6 +143,5 @@ internal class TomlVersionCatalogRewritePlanner(
             ?.mapNotNull { keyValue -> keyValue.valueToPlugin()?.let { keyValue to it } }
             ?: emptyList()
 
-    private fun Toml.Document.table(name: String): Toml.Table? =
-        values.filterIsInstance<Toml.Table>().firstOrNull { it.name() == name }
+    private fun Toml.Document.table(name: String): Toml.Table? = values.filterIsInstance<Toml.Table>().firstOrNull { it.name() == name }
 }

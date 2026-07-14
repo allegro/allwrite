@@ -1116,7 +1116,7 @@ class ChangeGradleDependencyTest {
         }
 
         @Test
-        fun `should update shared version ref for matching platform dependencies in toml`(){
+        fun `should update shared version ref for matching platform dependencies in toml`() {
             rewriteRun(
                 { spec ->
                     spec.recipe(
@@ -1125,7 +1125,7 @@ class ChangeGradleDependencyTest {
                             oldArtifactId = "*",
                             newGroupId = "org.spockframework",
                             newVersion = "2.4-groovy-5.0",
-                        )
+                        ),
                     ).validateRecipeSerialization(false)
                 },
                 toml(
