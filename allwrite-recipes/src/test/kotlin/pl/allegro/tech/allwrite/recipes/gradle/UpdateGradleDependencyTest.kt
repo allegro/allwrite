@@ -121,7 +121,14 @@ class UpdateGradleDependencyTest {
         fun `should update dependency version in build gradle with custom sourceVersionPattern`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(groupId = "org.spockframework", artifactId = "spock-bom", targetVersion = "2.4-groovy-5.0", sourceVersionPattern = "\\d+\\.\\d+.*")).validateRecipeSerialization(false)
+                    spec.recipe(
+                        recipe(
+                            groupId = "org.spockframework",
+                            artifactId = "spock-bom",
+                            targetVersion = "2.4-groovy-5.0",
+                            sourceVersionPattern = "\\d+\\.\\d+.*",
+                        ),
+                    ).validateRecipeSerialization(false)
                 },
                 buildGradle(
                     before = """
@@ -230,7 +237,14 @@ class UpdateGradleDependencyTest {
         fun `should update dependency version in build gradle kts with custom sourceVersionPattern`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(groupId = "org.spockframework", artifactId = "spock-bom", targetVersion = "2.4-groovy-5.0", sourceVersionPattern = "\\d+\\.\\d+.*")).validateRecipeSerialization(false)
+                    spec.recipe(
+                        recipe(
+                            groupId = "org.spockframework",
+                            artifactId = "spock-bom",
+                            targetVersion = "2.4-groovy-5.0",
+                            sourceVersionPattern = "\\d+\\.\\d+.*",
+                        ),
+                    ).validateRecipeSerialization(false)
                 },
                 buildGradleKts(
                     before = """
@@ -329,7 +343,14 @@ class UpdateGradleDependencyTest {
         fun `should update dependency version in toml with custom sourceVersionPattern`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(groupId = "org.spockframework", artifactId = "spock-bom", targetVersion = "2.4-groovy-5.0", sourceVersionPattern = "\\d+\\.\\d+.*")).validateRecipeSerialization(false)
+                    spec.recipe(
+                        recipe(
+                            groupId = "org.spockframework",
+                            artifactId = "spock-bom",
+                            targetVersion = "2.4-groovy-5.0",
+                            sourceVersionPattern = "\\d+\\.\\d+.*",
+                        ),
+                    ).validateRecipeSerialization(false)
                 },
                 toml(
                     before = """

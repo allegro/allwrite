@@ -186,7 +186,7 @@ class SpringBoot4_0Test : RewriteTest {
                     spock-junit = { module = "org.spockframework:spock-junit4", version.ref = "spock" }
                     spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
                     groovy = { module = "org.apache.groovy:groovy-all", version.ref = "groovy" }
-                    """.trimIndent(),
+                """.trimIndent(),
                 after = """
                     [versions]
                     spock = "2.4-groovy-5.0"
@@ -196,9 +196,8 @@ class SpringBoot4_0Test : RewriteTest {
                     spock-junit = { module = "org.spockframework:spock-junit4", version.ref = "spock" }
                     spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
                     groovy = { module = "org.apache.groovy:groovy-all", version.ref = "groovy" }
-                    """.trimIndent(),
+                """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
         )
     }
-
 }
