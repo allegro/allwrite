@@ -6,11 +6,9 @@ import org.openrewrite.toml.tree.Space
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.recipes.toml.Builders.kv
 import pl.allegro.tech.allwrite.recipes.toml.Builders.literal
-import pl.allegro.tech.allwrite.recipes.toml.keyValues
 import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 import pl.allegro.tech.allwrite.recipes.toml.stringValue
-import pl.allegro.tech.allwrite.recipes.toml.tables
 
 internal class TomlVersionCatalogDependencyRewriter(
     oldGroupId: String,
@@ -62,16 +60,7 @@ internal class TomlVersionCatalogDependencyRewriter(
     }
 
     private fun removeUnusedVersionEntries(document: Toml.Document): Toml.Document {
-        val usedVersionRefs = document.tables()
-            .flatMap { table ->
-                table.keyValues()
-                    .mapNotNull { keyValue ->
-                        (keyValue.valueToLibrary()?.version as? VersionRef)?.ref
-                            ?: (keyValue.valueToPlugin()?.version as? VersionRef)?.ref
-                    }
-                    .toList()
-            }
-            .toSet()
+        val usedVersionRefs = TomlVersionCatalog(document).usedVersionRefs()
         val values = document.values.map { value ->
             val table = value as? Toml.Table
             if (table?.name() != VERSION_CATALOG_TABLE_VERSIONS) return@map value

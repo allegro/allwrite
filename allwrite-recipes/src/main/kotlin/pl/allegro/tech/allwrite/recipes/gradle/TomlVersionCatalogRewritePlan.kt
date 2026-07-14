@@ -2,9 +2,7 @@ package pl.allegro.tech.allwrite.recipes.gradle
 
 import org.openrewrite.internal.StringUtils
 import org.openrewrite.toml.tree.Toml
-import pl.allegro.tech.allwrite.recipes.toml.keyValues
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
-import pl.allegro.tech.allwrite.recipes.toml.table
 
 internal data class TomlDependencyRewriteTarget(
     val oldGroupId: String,
@@ -46,42 +44,52 @@ internal class TomlVersionCatalogRewritePlanner(
     private val target: TomlDependencyRewriteTarget,
 ) {
     fun plan(document: Toml.Document): TomlVersionCatalogRewritePlan {
+        val catalog = TomlVersionCatalog(document)
         val versionRefRenames = mutableMapOf<String, String>()
         val versionRefOverrides = mutableMapOf<String, String>()
         val versionRefUpdates = mutableMapOf<String, String>()
         val versionEntriesToAdd = mutableMapOf<String, String>()
 
-        document.libraryEntries()
-            .filter { (keyValue, library) -> target.matches(library) && !libraryExists(document, keyValue, library) }
-            .forEach { (keyValue, library) ->
-                val entryName = keyValue.stringKey() ?: return@forEach
+        catalog.libraries
+            .filter { entry ->
+                target.matches(entry.library) &&
+                    !catalog.hasLibrary(
+                        target.newGroupId ?: entry.library.group,
+                        target.newArtifactId ?: entry.library.name,
+                        entry.keyValue,
+                    )
+            }
+            .forEach { entry ->
+                val entryName = entry.keyValue.stringKey() ?: return@forEach
+                val library = entry.library
                 val versionRef = (library.version as? VersionRef)?.ref ?: return@forEach
                 val version = target.newVersion ?: return@forEach
                 val targetRef = target.targetVersionRef(entryName)
                 when {
-                    isVersionRefShared(document, versionRef, keyValue) -> {
+                    catalog.hasOtherConsumer(versionRef, entry.keyValue, target::matches) -> {
                         versionEntriesToAdd[targetRef] = version
                         versionRefOverrides[versionRef] = targetRef
                     }
-                    isVersionRefSharedByMatchingLibraries(document, versionRef, keyValue) -> versionRefUpdates[versionRef] = version
-                    versionRef == targetRef || versionEntryExists(document, targetRef) -> versionRefUpdates[targetRef] = version
+                    catalog.hasOtherLibrary(versionRef, entry.keyValue, target::matches) -> versionRefUpdates[versionRef] = version
+                    versionRef == targetRef || catalog.hasVersion(targetRef) -> versionRefUpdates[targetRef] = version
                     else -> versionRefRenames[versionRef] = targetRef
                 }
             }
 
         if (target.newVersion != null) {
-            document.pluginEntries()
-                .filter { (_, plugin) -> (plugin.version as? VersionRef)?.ref == target.oldArtifactId }
-                .forEach { (keyValue, plugin) ->
-                    val entryName = keyValue.stringKey() ?: return@forEach
+            catalog.plugins
+                .filter { entry -> (entry.plugin.version as? VersionRef)?.ref == target.oldArtifactId }
+                .forEach { entry ->
+                    val entryName = entry.keyValue.stringKey() ?: return@forEach
+                    val plugin = entry.plugin
                     val versionRef = (plugin.version as? VersionRef)?.ref ?: return@forEach
                     val targetRef = target.targetVersionRef(entryName)
                     when {
-                        isVersionRefShared(document, versionRef, keyValue) -> {
+                        catalog.hasOtherConsumer(versionRef, entry.keyValue, target::matches) -> {
                             versionEntriesToAdd[targetRef] = target.newVersion
                             versionRefOverrides[versionRef] = targetRef
                         }
-                        versionRef == targetRef || versionEntryExists(document, targetRef) -> versionRefUpdates[targetRef] = target.newVersion
+                        versionRef == targetRef || catalog.hasVersion(targetRef) -> versionRefUpdates[targetRef] = target.newVersion
                         else -> versionRefRenames[versionRef] = targetRef
                     }
                 }
@@ -94,51 +102,4 @@ internal class TomlVersionCatalogRewritePlanner(
             versionEntriesToAdd,
         )
     }
-
-    private fun libraryExists(document: Toml.Document, currentEntry: Toml.KeyValue, library: Library): Boolean =
-        document.libraryEntries()
-            .filter { (keyValue, _) -> keyValue != currentEntry }
-            .any { (_, existingLibrary) ->
-                existingLibrary.group == (target.newGroupId ?: library.group) &&
-                    existingLibrary.name == (target.newArtifactId ?: library.name)
-            }
-
-    private fun versionEntryExists(document: Toml.Document, versionName: String): Boolean =
-        document.table(VERSION_CATALOG_TABLE_VERSIONS)
-            ?.keyValues()
-            ?.any { it.stringKey() == versionName } == true
-
-    private fun isVersionRefShared(document: Toml.Document, versionRef: String, currentEntry: Toml.KeyValue): Boolean =
-        document.libraryEntries()
-            .any { (keyValue, library) ->
-                keyValue != currentEntry &&
-                    (library.version as? VersionRef)?.ref == versionRef &&
-                    !target.matches(library)
-            } ||
-            document.pluginEntries()
-                .any { (keyValue, plugin) ->
-                    keyValue != currentEntry && (plugin.version as? VersionRef)?.ref == versionRef
-                }
-
-    private fun isVersionRefSharedByMatchingLibraries(document: Toml.Document, versionRef: String, currentEntry: Toml.KeyValue): Boolean =
-        document.libraryEntries()
-            .any { (keyValue, library) ->
-                keyValue != currentEntry &&
-                    target.matches(library) &&
-                    (library.version as? VersionRef)?.ref == versionRef
-            }
-
-    private fun Toml.Document.libraryEntries(): List<Pair<Toml.KeyValue, Library>> =
-        table(VERSION_CATALOG_TABLE_LIBS)
-            ?.keyValues()
-            ?.mapNotNull { keyValue -> keyValue.valueToLibrary()?.let { keyValue to it } }
-            ?.toList()
-            ?: emptyList()
-
-    private fun Toml.Document.pluginEntries(): List<Pair<Toml.KeyValue, Plugin>> =
-        table(VERSION_CATALOG_TABLE_PLUGINS)
-            ?.keyValues()
-            ?.mapNotNull { keyValue -> keyValue.valueToPlugin()?.let { keyValue to it } }
-            ?.toList()
-            ?: emptyList()
 }
