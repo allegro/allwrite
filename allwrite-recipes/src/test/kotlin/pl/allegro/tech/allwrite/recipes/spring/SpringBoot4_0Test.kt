@@ -15,6 +15,7 @@ import org.openrewrite.java.JavaParser
 import org.openrewrite.kotlin.KotlinParser
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
+import org.openrewrite.test.TypeValidation
 import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.recipes.groovy
 import pl.allegro.tech.allwrite.recipes.java
@@ -167,6 +168,93 @@ class SpringBoot4_0Test : RewriteTest {
                         int status = response.statusCode.value()
                     }
                 }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should relocate Spring Boot web server types`() {
+        rewriteRun(
+            { spec ->
+                spec
+                    .recipe(ChangeSpringBoot4WebServerTypes())
+                    .typeValidationOptions(TypeValidation.builder().identifiers(false).build())
+            },
+            kotlin(
+                before = """
+                    package org.springframework.boot.web.embedded.tomcat
+
+                    class TomcatWebServer
+                """.trimIndent(),
+                after = """
+                    package org.springframework.boot.tomcat
+
+                    class TomcatWebServer
+                """.trimIndent(),
+            ),
+            kotlin(
+                before = """
+                    package org.springframework.boot.web.embedded.jetty
+
+                    class JettyWebServer
+                """.trimIndent(),
+                after = """
+                    package org.springframework.boot.jetty
+
+                    class JettyWebServer
+                """.trimIndent(),
+            ),
+            kotlin(
+                before = """
+                    package org.springframework.boot.web.servlet.context
+
+                    class ServletWebServerApplicationContext
+                """.trimIndent(),
+                after = """
+                    package org.springframework.boot.web.server.servlet.context
+
+                    class ServletWebServerApplicationContext
+                """.trimIndent(),
+            ),
+            kotlin(
+                before = """
+                    package org.springframework.boot.web.reactive.context
+
+                    class ReactiveWebServerApplicationContext
+                """.trimIndent(),
+                after = """
+                    package org.springframework.boot.web.server.reactive.context
+
+                    class ReactiveWebServerApplicationContext
+                """.trimIndent(),
+            ),
+            kotlin(
+                before = """
+                    import org.springframework.boot.web.embedded.tomcat.TomcatWebServer
+                    import org.springframework.boot.web.embedded.jetty.JettyWebServer
+                    import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext
+                    import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext
+
+                    class WebServers(
+                        val tomcat: TomcatWebServer?,
+                        val jetty: JettyWebServer?,
+                        val servlet: ServletWebServerApplicationContext?,
+                        val reactive: ReactiveWebServerApplicationContext?
+                    )
+                """.trimIndent(),
+                after = """
+                    import org.springframework.boot.jetty.JettyWebServer
+                    import org.springframework.boot.tomcat.TomcatWebServer
+                    import org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContext
+                    import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext
+
+                    class WebServers(
+                        val tomcat: TomcatWebServer?,
+                        val jetty: JettyWebServer?,
+                        val servlet: ServletWebServerApplicationContext?,
+                        val reactive: ReactiveWebServerApplicationContext?
+                    )
                 """.trimIndent(),
             ),
         )
