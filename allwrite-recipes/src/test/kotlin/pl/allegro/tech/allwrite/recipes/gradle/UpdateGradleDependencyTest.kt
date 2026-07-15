@@ -14,6 +14,15 @@ class UpdateGradleDependencyTest {
         spec.recipe(recipe())
     }
 
+    private fun updateSpockWithCustomSourceVersionPatternRecipe(): UpdateGradleDependency {
+        return recipe(
+            groupId = "org.spockframework",
+            artifactId = "spock-bom",
+            targetVersion = "2.4-groovy-5.0",
+            sourceVersionPattern = "\\d+\\.\\d+.*",
+        )
+    }
+
     private fun recipe(
         groupId: String = "com.fasterxml.jackson.module",
         artifactId: String = "jackson-module-afterburner",
@@ -119,16 +128,7 @@ class UpdateGradleDependencyTest {
         @Test
         fun `should update dependency version in build gradle with custom sourceVersionPattern`() {
             rewriteRun(
-                { spec ->
-                    spec.recipe(
-                        recipe(
-                            groupId = "org.spockframework",
-                            artifactId = "spock-bom",
-                            targetVersion = "2.4-groovy-5.0",
-                            sourceVersionPattern = "\\d+\\.\\d+.*",
-                        ),
-                    )
-                },
+                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
                 buildGradle(
                     before = """
                     dependencies {
@@ -235,16 +235,7 @@ class UpdateGradleDependencyTest {
         @Test
         fun `should update dependency version in build gradle kts with custom sourceVersionPattern`() {
             rewriteRun(
-                { spec ->
-                    spec.recipe(
-                        recipe(
-                            groupId = "org.spockframework",
-                            artifactId = "spock-bom",
-                            targetVersion = "2.4-groovy-5.0",
-                            sourceVersionPattern = "\\d+\\.\\d+.*",
-                        ),
-                    )
-                },
+                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
                 buildGradleKts(
                     before = """
                     dependencies {
@@ -341,16 +332,7 @@ class UpdateGradleDependencyTest {
         @Test
         fun `should update dependency version in toml with custom sourceVersionPattern`() {
             rewriteRun(
-                { spec ->
-                    spec.recipe(
-                        recipe(
-                            groupId = "org.spockframework",
-                            artifactId = "spock-bom",
-                            targetVersion = "2.4-groovy-5.0",
-                            sourceVersionPattern = "\\d+\\.\\d+.*",
-                        ),
-                    )
-                },
+                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
                 toml(
                     before = """
                     [libraries]
