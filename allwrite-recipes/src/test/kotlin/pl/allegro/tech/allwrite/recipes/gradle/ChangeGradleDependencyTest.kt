@@ -1066,6 +1066,90 @@ class ChangeGradleDependencyTest {
         }
 
         @Test
+        fun `should remove unused shared version ref after changing the last dependency in toml`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipes(
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.module",
+                            oldArtifactId = "jackson-module-afterburner",
+                            newGroupId = "tools.jackson.module",
+                            newArtifactId = "jackson-module-blackbird",
+                            newVersion = "",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.core",
+                            oldArtifactId = "jackson-core",
+                            newGroupId = "tools.jackson.core",
+                            newArtifactId = "jackson-core",
+                            newVersion = "",
+                        ),
+                        recipe(
+                            oldGroupId = "com.fasterxml.jackson.core",
+                            oldArtifactId = "jackson-databind",
+                            newGroupId = "tools.jackson.core",
+                            newArtifactId = "jackson-databind",
+                            newVersion = "",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                toml(
+                    before = """
+                    [versions]
+                    jackson = "2.17.2"
+
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version.ref = "jackson" }
+                    jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
+                    jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+                    """.trimIndent(),
+                    after = """
+                    [versions]
+
+                    [libraries]
+                    jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird" }
+                    jackson-core = { group = "tools.jackson.core", name = "jackson-core" }
+                    jackson-databind = { group = "tools.jackson.core", name = "jackson-databind" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should update shared version ref for matching platform dependencies in toml`() {
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        ChangeGradleDependency(
+                            oldGroupId = "org.spockframework",
+                            oldArtifactId = "*",
+                            newGroupId = "org.spockframework",
+                            newVersion = "2.4-groovy-5.0",
+                        ),
+                    ).validateRecipeSerialization(false)
+                },
+                toml(
+                    before = """
+                    [versions]
+                    spock = "2.3-groovy-4.0"
+
+                    [libraries]
+                    spock-junit = { group = "org.spockframework", name = "spock-junit4", version.ref = "spock" }
+                    spock-core = { group = "org.spockframework", name = "spock-core", version.ref = "spock" }
+                    """.trimIndent(),
+                    after = """
+                    [versions]
+                    spock = "2.4-groovy-5.0"
+
+                    [libraries]
+                    spock-junit = { group = "org.spockframework", name = "spock-junit4", version.ref = "spock" }
+                    spock-core = { group = "org.spockframework", name = "spock-core", version.ref = "spock" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
         fun `should sanitize dotted toml version refs`() {
             rewriteRun(
                 { spec ->
@@ -1141,7 +1225,6 @@ class ChangeGradleDependencyTest {
                     """.trimIndent(),
                     after = """
                     [versions]
-                    jackson-module-afterburner = "2.17.2"
                     jackson-module-blackbird = "3.1.4"
 
                     [libraries]

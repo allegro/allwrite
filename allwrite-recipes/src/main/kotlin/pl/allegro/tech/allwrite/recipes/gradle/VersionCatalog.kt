@@ -4,6 +4,9 @@ import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.recipes.toml.Builders.kv
 import pl.allegro.tech.allwrite.recipes.toml.asString
 import pl.allegro.tech.allwrite.recipes.toml.findLiteralValue
+import pl.allegro.tech.allwrite.recipes.toml.keyValues
+import pl.allegro.tech.allwrite.recipes.toml.stringKey
+import pl.allegro.tech.allwrite.recipes.toml.table
 
 public sealed interface VersionCatalogType
 public object LibsToml : VersionCatalogType
@@ -32,6 +35,64 @@ public data class VersionRef(
 public data class PlainVersion(
     val version: String,
 ) : Version
+
+internal data class TomlLibraryEntry(
+    val keyValue: Toml.KeyValue,
+    val library: Library,
+)
+
+internal data class TomlPluginEntry(
+    val keyValue: Toml.KeyValue,
+    val plugin: Plugin,
+)
+
+internal class TomlVersionCatalog(
+    private val document: Toml.Document,
+) {
+    val libraries: List<TomlLibraryEntry> =
+        document.table(VERSION_CATALOG_TABLE_LIBS)
+            ?.keyValues()
+            ?.mapNotNull { keyValue -> keyValue.valueToLibrary()?.let { TomlLibraryEntry(keyValue, it) } }
+            ?.toList()
+            ?: emptyList()
+
+    val plugins: List<TomlPluginEntry> =
+        document.table(VERSION_CATALOG_TABLE_PLUGINS)
+            ?.keyValues()
+            ?.mapNotNull { keyValue -> keyValue.valueToPlugin()?.let { TomlPluginEntry(keyValue, it) } }
+            ?.toList()
+            ?: emptyList()
+
+    fun hasVersion(versionName: String): Boolean = document.table(VERSION_CATALOG_TABLE_VERSIONS)?.keyValues()?.any { it.stringKey() == versionName } == true
+
+    fun hasOtherConsumer(versionRef: String, currentEntry: Toml.KeyValue, matches: (Library) -> Boolean): Boolean =
+        libraries.any {
+            it.keyValue != currentEntry &&
+                !matches(it.library) &&
+                (it.library.version as? VersionRef)?.ref == versionRef
+        } ||
+            plugins.any { it.keyValue != currentEntry && (it.plugin.version as? VersionRef)?.ref == versionRef }
+
+    fun hasOtherLibrary(versionRef: String, currentEntry: Toml.KeyValue, matches: (Library) -> Boolean): Boolean =
+        libraries.any {
+            it.keyValue != currentEntry &&
+                matches(it.library) &&
+                (it.library.version as? VersionRef)?.ref == versionRef
+        }
+
+    fun hasLibrary(group: String, name: String, excluding: Toml.KeyValue): Boolean =
+        libraries.any {
+            it.keyValue != excluding &&
+                it.library.group == group &&
+                it.library.name == name
+        }
+
+    fun usedVersionRefs(): Set<String> =
+        (
+            libraries.mapNotNull { (it.library.version as? VersionRef)?.ref } +
+                plugins.mapNotNull { (it.plugin.version as? VersionRef)?.ref }
+            ).toSet()
+}
 
 internal const val VERSION_CATALOG_TABLE_VERSIONS: String = "versions"
 internal const val VERSION_CATALOG_TABLE_LIBS: String = "libraries"

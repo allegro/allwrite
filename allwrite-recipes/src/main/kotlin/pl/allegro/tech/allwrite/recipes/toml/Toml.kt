@@ -14,6 +14,9 @@ import java.util.UUID
 internal fun Toml.KeyValue.stringKey(): String? = (this.key as? Toml.Identifier)?.name
 internal fun Toml.KeyValue.stringValue(): String? = (this.value as? Toml.Literal)?.asString()
 internal fun Toml.Table.name() = this.name?.name
+internal fun Toml.Document.tables(): List<Toml.Table> = values.filterIsInstance<Toml.Table>()
+internal fun Toml.Document.table(name: String): Toml.Table? = tables().firstOrNull { it.name() == name }
+internal fun Toml.Table.keyValues(): Sequence<Toml.KeyValue> = values.asSequence().filterIsInstance<Toml.KeyValue>()
 internal fun Toml.Table.findLiteralValue(key: String): Toml.Literal? =
     values.filterIsInstance<Toml.KeyValue>().firstOrNull { it.stringKey() == key }?.value as? Toml.Literal
 
