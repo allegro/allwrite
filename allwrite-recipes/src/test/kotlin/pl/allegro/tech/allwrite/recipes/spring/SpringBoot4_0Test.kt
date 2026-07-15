@@ -175,10 +175,6 @@ class SpringBoot4_0Test : RewriteTest {
     @Test
     fun `should relocate Spring Boot web server types`() {
         rewriteRun(
-            { spec ->
-                spec
-                    .recipe(ChangeSpringBoot4WebServerTypes())
-            },
             kotlin(
                 before = """
                     package org.springframework.boot.web.embedded.tomcat
