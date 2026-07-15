@@ -219,7 +219,7 @@ class QualifyVariableTest {
         // then
         assertThat(result.print(Cursor(null, result))).isEqualTo(
             """
-            class A(@Qualifier("test")a: Int) { companion object {} }
+            class A(@Qualifier("test") a: Int) { companion object {} }
             """.trimIndent(),
         )
     }
