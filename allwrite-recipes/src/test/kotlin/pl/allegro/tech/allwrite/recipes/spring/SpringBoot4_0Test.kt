@@ -15,7 +15,6 @@ import org.openrewrite.java.JavaParser
 import org.openrewrite.kotlin.KotlinParser
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
-import org.openrewrite.test.TypeValidation
 import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.recipes.groovy
 import pl.allegro.tech.allwrite.recipes.java
@@ -179,7 +178,6 @@ class SpringBoot4_0Test : RewriteTest {
             { spec ->
                 spec
                     .recipe(ChangeSpringBoot4WebServerTypes())
-                    .typeValidationOptions(TypeValidation.builder().identifiers(false).build())
             },
             kotlin(
                 before = """
