@@ -16,7 +16,7 @@ import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.util.isKotlin
 import java.util.*
 
-public class AddNonNullableTypeBoundsToSpringRepositories :
+internal class AddNonNullableTypeBoundsToSpringRepositories :
     AllwriteRecipe(
         displayName = "Add non-nullable type bounds to Spring Data repository type parameters (Kotlin)",
         description = "Adds `: Any` upper bounds to type parameters of Kotlin classes/interfaces extending Spring Data " +
