@@ -100,7 +100,7 @@ class UpdateGradleDependencyTest {
         fun `should trim whitespace around target version in build gradle`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(targetVersion = " 3.1.4 ")).validateRecipeSerialization(false)
+                    spec.recipe(recipe(targetVersion = " 3.1.4 "))
                 },
                 buildGradle(
                     before = """
@@ -128,7 +128,7 @@ class UpdateGradleDependencyTest {
                             targetVersion = "2.4-groovy-5.0",
                             sourceVersionPattern = "\\d+\\.\\d+.*",
                         ),
-                    ).validateRecipeSerialization(false)
+                    )
                 },
                 buildGradle(
                     before = """
@@ -244,7 +244,7 @@ class UpdateGradleDependencyTest {
                             targetVersion = "2.4-groovy-5.0",
                             sourceVersionPattern = "\\d+\\.\\d+.*",
                         ),
-                    ).validateRecipeSerialization(false)
+                    )
                 },
                 buildGradleKts(
                     before = """
@@ -350,7 +350,7 @@ class UpdateGradleDependencyTest {
                             targetVersion = "2.4-groovy-5.0",
                             sourceVersionPattern = "\\d+\\.\\d+.*",
                         ),
-                    ).validateRecipeSerialization(false)
+                    )
                 },
                 toml(
                     before = """
@@ -361,7 +361,7 @@ class UpdateGradleDependencyTest {
                     [libraries]
                     spockframework-bom = { group = "org.spockframework", name = "spock-bom", version = "2.4-groovy-5.0" }
                     """.trimIndent(),
-                ) { path("build.gradle") },
+                ) { path("gradle/libs.versions.toml") },
             )
         }
 
