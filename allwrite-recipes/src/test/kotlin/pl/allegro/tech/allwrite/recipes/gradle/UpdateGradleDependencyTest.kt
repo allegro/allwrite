@@ -11,7 +11,7 @@ import pl.allegro.tech.allwrite.recipes.toml
 class UpdateGradleDependencyTest {
 
     private fun defaultSpec(spec: RecipeSpec) {
-        spec.recipe(recipe()).validateRecipeSerialization(false)
+        spec.recipe(recipe())
     }
 
     private fun recipe(
@@ -43,7 +43,6 @@ class UpdateGradleDependencyTest {
     private fun noChangeSpec(targetVersion: String): RecipeSpec.() -> Unit =
         {
             recipe(recipe(targetVersion = targetVersion))
-                .validateRecipeSerialization(false)
                 .expectedCyclesThatMakeChanges(0)
         }
 
