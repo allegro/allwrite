@@ -14,14 +14,13 @@ class UpdateGradleDependencyTest {
         spec.recipe(recipe())
     }
 
-    private fun updateSpockWithCustomSourceVersionPatternRecipe(): UpdateGradleDependency {
-        return recipe(
+    private fun updateSpockWithCustomSourceVersionPatternRecipe(): UpdateGradleDependency =
+        recipe(
             groupId = "org.spockframework",
             artifactId = "spock-bom",
             targetVersion = "2.4-groovy-5.0",
             sourceVersionPattern = "\\d+\\.\\d+.*",
         )
-    }
 
     private fun recipe(
         groupId: String = "com.fasterxml.jackson.module",
