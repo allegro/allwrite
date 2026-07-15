@@ -4,7 +4,6 @@ site_url: https://allegro.github.io/allwrite/
 repo_url: https://github.com/allegro/allwrite
 repo_name: allegro/allwrite
 edit_uri: edit/main/docs/
-copyright: Copyright &copy; Allegro
 theme:
   name: material
   language: en
@@ -54,3 +53,6 @@ markdown_extensions:
       permalink: true
 extra_css:
   - extra.css
+extra:
+  version:
+    provider: mike

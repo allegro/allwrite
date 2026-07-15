@@ -1,0 +1,39 @@
+name: Docs Publish
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version to publish
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ github.event.release.tag_name || inputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      - run: pip install -r docs/requirements.txt
+      - name: Publish versioned docs
+        run: |
+          version="${RELEASE_VERSION#v}"
+          major="${version%%.*}"
+          mike deploy --push --update-aliases "$version" "$major" latest

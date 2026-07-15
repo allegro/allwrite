@@ -6,16 +6,16 @@ The following list covers all custom recipes provided by `allwrite`.
 
 The `allwrite-spi` module provides the following public helpers for recipe authors:
 
-| Helper | Purpose |
-|---|---|
-| `AllwriteRecipe` | Base class for regular recipes. Builds display metadata and allwrite tags. |
-| `AllwriteScanningRecipe` | Base class for OpenRewrite scanning recipes with the same metadata support. |
-| `RecipeMetadata` | Builds display name, description, visibility, friendly-name, version, and Dependabot tags. |
-| `RecipeVisibility` | Marks a recipe as `INTERNAL` or `PUBLIC`. |
-| `ParsingAwareRecipe` | Restricts the files parsed for a recipe. |
-| `ClasspathAwareRecipe` | Requests additional parser classpath entries and isolated execution. |
-| `PostprocessingRecipe` | Runs additional work after recipe changes are applied. |
-| `PostprocessingResult` | Reports postprocessing success or a failure with an error message. |
+| Helper                   | Purpose                                                                                    |
+|--------------------------|--------------------------------------------------------------------------------------------|
+| `AllwriteRecipe`         | Base class for regular recipes. Builds display metadata and allwrite tags.                 |
+| `AllwriteScanningRecipe` | Base class for OpenRewrite scanning recipes with the same metadata support.                |
+| `RecipeMetadata`         | Builds display name, description, visibility, friendly-name, version, and Dependabot tags. |
+| `RecipeVisibility`       | Marks a recipe as `INTERNAL` or `PUBLIC`.                                                  |
+| `ParsingAwareRecipe`     | Restricts the files parsed for a recipe.                                                   |
+| `ClasspathAwareRecipe`   | Requests additional parser classpath entries and isolated execution.                       |
+| `PostprocessingRecipe`   | Runs additional work after recipe changes are applied.                                     |
+| `PostprocessingResult`   | Reports postprocessing success or a failure with an error message.                         |
 
 See [Writing recipes](contributing.md) for usage guidelines and examples.
 
@@ -614,110 +614,4 @@ i18n:
 After:
 ```yaml
 myapp.i18n.language-bundle.enabled: true
-```
-
-### `pl.allegro.tech.allwrite.recipes.spring.RenameTaskExecutorBean` { data-toc-label="RenameTaskExecutorBean" }
-
-Adds `@Qualifier("applicationTaskExecutor")` to `TaskExecutor` injection points (constructor parameters, `@Bean` method parameters, and `@Autowired` fields) to align with the [Spring Boot 3.5](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.5-Release-Notes#auto-configured-taskexecutor-names) bean naming change. Skips projects that define their own custom `taskExecutor` bean.
-
-Before:
-```java
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.stereotype.Component;
-
-@Component
-public class MyService {
-    public MyService(TaskExecutor taskExecutor) {}
-}
-```
-
-After:
-```java
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.stereotype.Component;
-
-@Component
-public class MyService {
-    public MyService(@Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {}
-}
-```
-
-### `pl.allegro.tech.allwrite.recipes.spring.AddNonNullableTypeBoundsToSpringRepositories` { data-toc-label="AddNonNullableTypeBoundsToSpringRepositories" }
-
-Adds `: Any` upper bounds to type parameters of Kotlin classes/interfaces extending Spring Data repository interfaces,
-as required by Spring Framework 7 / Spring Boot 4 JSpecify nullability annotations. Only applies to Kotlin source files.
-This recipe is automatically included in the Spring Boot 4.0 migration.
-
-Before:
-
-```kotlin
-import org.springframework.data.repository.CrudRepository
-
-interface UserRepository<T, ID> : CrudRepository<T, ID>
-```
-
-After:
-
-```kotlin
-import org.springframework.data.repository.CrudRepository
-
-interface UserRepository<T : Any, ID : Any> : CrudRepository<T, ID>
-```
-
-### `pl.allegro.tech.allwrite.recipes.spring.ReplaceStatusCodeValue` { data-toc-label="ReplaceStatusCodeValue" }
-
-Replaces deprecated `ResponseEntity.getStatusCodeValue()` / `.statusCodeValue` with `getStatusCode().value()` / `.statusCode.value()` as required by Spring
-Framework 7 / Spring Boot 4. Works across Java, Groovy, and Kotlin source files. Included in the `SpringBoot4_0` upgrade recipe.
-
-Before (Java):
-
-```java
-import org.springframework.http.ResponseEntity;
-
-class Example {
-    void test() {
-        ResponseEntity<String> response = ResponseEntity.ok("hello");
-        int status = response.getStatusCodeValue();
-    }
-}
-```
-
-After (Java):
-
-```java
-import org.springframework.http.ResponseEntity;
-
-class Example {
-    void test() {
-        ResponseEntity<String> response = ResponseEntity.ok("hello");
-        int status = response.getStatusCode().value();
-    }
-}
-```
-
-Before (Kotlin/Groovy):
-
-```kotlin
-import org.springframework.http.ResponseEntity
-
-class Example {
-    fun test() {
-        val response: ResponseEntity<String> = ResponseEntity.ok("hello")
-        val status: Int = response.statusCodeValue
-    }
-}
-```
-
-After (Kotlin/Groovy):
-
-```kotlin
-import org.springframework.http.ResponseEntity
-
-class Example {
-    fun test() {
-        val response: ResponseEntity<String> = ResponseEntity.ok("hello")
-        val status: Int = response.statusCode.value()
-    }
-}
 ```
