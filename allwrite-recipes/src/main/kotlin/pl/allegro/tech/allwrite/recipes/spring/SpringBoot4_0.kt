@@ -8,5 +8,6 @@ public class SpringBoot4_0 : IsolatedSpringRecipe(from = "3.5", to = "4.0") {
         super.getRecipeList() +
             AddNonNullableTypeBoundsToSpringRepositories() +
             ReplaceStatusCodeValue() +
+            ChangeSpringBoot4WebServerTypes() +
             upgradeGroovyToV5()
 }
