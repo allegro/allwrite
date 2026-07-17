@@ -6,16 +6,13 @@ import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.ListRecipesCommand
 import pl.allegro.tech.allwrite.cli.application.RunCommand
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.Telemetry
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.cli.fake.external.FakeTelemetryPublisher
 import pl.allegro.tech.allwrite.cli.fake.os.FakeGitMetadata
-import pl.allegro.tech.allwrite.cli.fake.os.FakeOperatingSystemModule
 import pl.allegro.tech.allwrite.cli.fake.os.FakeSystemInfo
-import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 import java.time.Instant
 import kotlin.time.Duration
@@ -28,8 +25,8 @@ class TelemetryRecordingSpec : BaseCliSpec() {
 
     override fun additionalModules() =
         listOf(
-            FakeRuntimeModule().module,
-            FakeOperatingSystemModule().module,
+            TestModules.fakeRuntime,
+            TestModules.operatingSystem,
         )
 
     init {

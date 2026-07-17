@@ -2,10 +2,8 @@ package pl.allegro.tech.allwrite.cli
 
 import com.github.ajalt.clikt.testing.test
 import io.kotest.matchers.shouldBe
-import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.ListRecipesCommand
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
-import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class ListRecipesCommandSpec : BaseCliSpec() {
@@ -14,7 +12,7 @@ class ListRecipesCommandSpec : BaseCliSpec() {
 
     override fun additionalModules() =
         listOf(
-            FakeRuntimeModule().module,
+            TestModules.fakeRuntime,
         )
 
     init {

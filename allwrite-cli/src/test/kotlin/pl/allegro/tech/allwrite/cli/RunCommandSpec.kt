@@ -7,13 +7,11 @@ import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
 import io.kotest.matchers.string.shouldContain
-import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.Messages
 import pl.allegro.tech.allwrite.cli.application.RunCommand
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeExecutor
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
-import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class RunCommandSpec : BaseCliSpec() {
@@ -23,7 +21,7 @@ class RunCommandSpec : BaseCliSpec() {
 
     override fun additionalModules() =
         listOf(
-            FakeRuntimeModule().module,
+            TestModules.fakeRuntime,
         )
 
     init {

@@ -4,15 +4,12 @@ import com.github.ajalt.clikt.testing.test
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
-import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.AddExternalRecipeCommand
 import pl.allegro.tech.allwrite.cli.application.ListExternalRecipesCommand
 import pl.allegro.tech.allwrite.cli.application.RemoveExternalRecipeCommand
 import pl.allegro.tech.allwrite.cli.application.UpdateExternalRecipeCommand
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.cli.fake.os.FakeJarFetcher
-import pl.allegro.tech.allwrite.cli.fake.os.FakeOperatingSystemModule
-import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
 import pl.allegro.tech.allwrite.runtime.port.outgoing.ExternalRecipeProvider
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
@@ -27,8 +24,8 @@ class ExternalRecipeCommandsSpec : BaseCliSpec() {
 
     override fun additionalModules() =
         listOf(
-            FakeRuntimeModule().module,
-            FakeOperatingSystemModule().module,
+            TestModules.fakeRuntime,
+            TestModules.operatingSystem,
         )
 
     init {

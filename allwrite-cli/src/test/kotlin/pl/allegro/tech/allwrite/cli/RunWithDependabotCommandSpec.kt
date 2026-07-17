@@ -6,13 +6,10 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
-import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.RunWithDependabotCommand
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
-import pl.allegro.tech.allwrite.cli.fake.github.FakeGithubModule
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeExecutor
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
-import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class RunWithDependabotCommandSpec : BaseCliSpec() {
@@ -22,8 +19,8 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
 
     override fun additionalModules() =
         listOf(
-            FakeRuntimeModule().module,
-            FakeGithubModule().module,
+            TestModules.fakeRuntime,
+            TestModules.github,
         )
 
     init {

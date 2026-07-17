@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     ksp(libs.koin.ksp.compiler)
+    "kspTest"(libs.koin.ksp.compiler)
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)

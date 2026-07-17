@@ -80,12 +80,12 @@ allwrite/
 │   │   ├── runner/infrastructure/    OS, GitHub, PR manager adapters (incl. external recipe store)
 │   │   └── runner/util/              Utility classes
 │   ├── src/main/resources/           logback.xml
-│   ├── src/test/kotlin/              Unit tests (Kotest FunSpec)
+│   ├── src/test/kotlin/              Unit tests and Koin test-module adapters (Kotest FunSpec)
 │   └── src/e2e/kotlin/              End-to-end tests
 │
 ├── allwrite-runtime/
 │   ├── src/main/kotlin/              Outgoing ports, recipe executor, source file parser
-│   ├── src/test/kotlin/              Unit tests (Kotest FunSpec)
+│   ├── src/test/kotlin/              Unit tests and Koin test-module adapters (Kotest FunSpec)
 │   └── src/testFixtures/kotlin/      Shared test fakes/fixtures
 │
 ├── allwrite-recipes/

@@ -1,13 +1,10 @@
 package pl.allegro.tech.allwrite.cli
 
 import io.kotest.matchers.shouldBe
-import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.port.incoming.AppEntrypoint
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
-import pl.allegro.tech.allwrite.cli.fake.os.FakeOperatingSystemModule
 import pl.allegro.tech.allwrite.cli.fake.os.FakeSystemEnvironment
 import pl.allegro.tech.allwrite.cli.fake.recipes.FailingPostProcessingRecipe
-import pl.allegro.tech.allwrite.cli.infrastructure.bot.GithubBotModule
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 import java.nio.file.Files
 import java.nio.file.Path
@@ -25,8 +22,8 @@ class CliIntegrationSpec : BaseCliSpec() {
 
     override fun additionalModules() =
         listOf(
-            GithubBotModule().module,
-            FakeOperatingSystemModule().module,
+            TestModules.githubBot,
+            TestModules.operatingSystem,
         )
 
     init {

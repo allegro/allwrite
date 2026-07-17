@@ -2,11 +2,9 @@ package pl.allegro.tech.allwrite.cli
 
 import io.kotest.matchers.shouldBe
 import org.koin.core.module.Module
-import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.cli.application.PullRequestDescriptionEnricher
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.PullRequestContext
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
-import pl.allegro.tech.allwrite.cli.fake.github.FakeGithubModule
 import pl.allegro.tech.allwrite.cli.fake.github.FakePullRequestContext
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipe
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
@@ -18,7 +16,7 @@ class PullRequestDescriptionEnricherSpec : BaseCliSpec() {
 
     override fun additionalModules(): List<Module> =
         listOf(
-            FakeGithubModule().module,
+            TestModules.github,
         )
 
     init {

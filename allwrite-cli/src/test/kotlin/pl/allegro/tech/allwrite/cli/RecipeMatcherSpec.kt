@@ -2,20 +2,18 @@ package pl.allegro.tech.allwrite.cli
 
 import com.github.zafarkhaja.semver.Version
 import io.kotest.matchers.equals.shouldBeEqual
-import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.api.RecipeCoordinates
 import pl.allegro.tech.allwrite.cli.application.RecipeMatcher
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipe
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
-import pl.allegro.tech.allwrite.runtime.fake.FakeRuntimeModule
 import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class RecipeMatcherSpec : BaseCliSpec() {
 
     override fun additionalModules() =
         listOf(
-            FakeRuntimeModule().module,
+            TestModules.fakeRuntime,
         )
 
     private val recipeMatcher: RecipeMatcher by injectEagerly()

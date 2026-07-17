@@ -6,12 +6,10 @@ import com.spotify.github.v3.clients.RepositoryClient
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.every
 import io.mockk.mockk
-import org.koin.ksp.generated.module
 import org.koin.test.mock.declareMock
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.NoPullRequestContext
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.PullRequestContext
 import pl.allegro.tech.allwrite.cli.base.BaseCliSpec
-import pl.allegro.tech.allwrite.cli.infrastructure.github.GithubModule
 import pl.allegro.tech.allwrite.cli.infrastructure.github.GithubPullRequestContext
 import pl.allegro.tech.allwrite.cli.infrastructure.os.port.incoming.SystemEnvironment
 import pl.allegro.tech.allwrite.runtime.util.declareFake
@@ -23,7 +21,7 @@ class GithubModuleSpec : BaseCliSpec() {
 
     override fun additionalModules() =
         listOf(
-            GithubModule().module,
+            TestModules.githubModule,
         )
 
     init {
