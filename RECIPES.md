@@ -707,12 +707,12 @@ class Example {
 
 ### `pl.allegro.tech.allwrite.recipes.java.RemoveAnnotatedMethod`
 
-Abstract base class for recipes that remove methods annotated with a specific annotation. A method is removed when all of the following are true:
+Open class for recipes that remove methods annotated with a specific annotation. A method is removed when all the following are true:
 
-- It has exactly one annotation matching `annotationName`.
-- It has no parameters.
-- Its return type matches `returnType`.
-- Its body is not complex — i.e., it only calls methods listed in `allowedBodyMethods` (an empty set means any method call blocks removal).
+- It has exactly one annotation matching `annotationName`
+- It has no parameters
+- Its return type matches `returnType`
+- Its body is not complex - i.e., it only calls methods listed in `allowedBodyMethods` (an empty set means only constructor is allowed).
 
 When a method is removed, its return type import is also removed. The annotation import is removed only if no other method in the file uses the same annotation.
 
