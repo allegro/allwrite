@@ -19,6 +19,8 @@ import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.recipes.groovy
 import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
+import pl.allegro.tech.allwrite.recipes.properties
+import pl.allegro.tech.allwrite.recipes.text
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
 
 class SpringBoot4_0Test : RewriteTest {
@@ -67,7 +69,12 @@ class SpringBoot4_0Test : RewriteTest {
     @Test
     fun `SpringBoot4_0 recipe list contains custom recipes`() {
         val recipeNames = recipe.recipeList.map { it::class.simpleName }
-        assertThat(recipeNames).contains("AddNonNullableTypeBoundsToSpringRepositories", "ReplaceStatusCodeValue")
+        assertThat(recipeNames).contains(
+            "AddNonNullableTypeBoundsToSpringRepositories",
+            "ReplaceStatusCodeValue",
+            "ChangeSpringBoot4WebServerTypes",
+            "ChangeSpringBoot4MongoProperties",
+        )
     }
 
     @Test
@@ -249,6 +256,26 @@ class SpringBoot4_0Test : RewriteTest {
                         val servlet: ServletWebServerApplicationContext?,
                         val reactive: ReactiveWebServerApplicationContext?
                     )
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should replace Spring Boot MongoDB properties`() {
+        rewriteRun(
+            text(
+                before = """
+                    fun updateConfiguration(registry: DynamicPropertyRegistry) {
+                        registry.add("spring.data.mongodb.uri") { mongoListener.url() }
+                        registry.add("spring.data.mongodb.database") { DATABASE_NAME }
+                    }
+                """.trimIndent(),
+                after = """
+                    fun updateConfiguration(registry: DynamicPropertyRegistry) {
+                        registry.add("spring.mongodb.uri") { mongoListener.url() }
+                        registry.add("spring.mongodb.database") { DATABASE_NAME }
+                    }
                 """.trimIndent(),
             ),
         )
