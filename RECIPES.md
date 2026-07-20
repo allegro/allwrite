@@ -704,3 +704,41 @@ class Example {
     }
 }
 ```
+
+### `pl.allegro.tech.allwrite.recipes.java.RemoveAnnotatedMethod`
+
+Abstract base class for recipes that remove methods annotated with a specific annotation. A method is removed when all of the following are true:
+
+- It has exactly one annotation matching `annotationName`.
+- It has no parameters.
+- Its return type matches `returnType`.
+- Its body is not complex — i.e., it only calls methods listed in `allowedBodyMethods` (an empty set means any method call blocks removal).
+
+When a method is removed, its return type import is also removed. The annotation import is removed only if no other method in the file uses the same annotation.
+
+This recipe is marked as internal — subclasses supply the concrete configuration.
+
+Options:
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `returnType` | `String` | Yes      | Fully qualified return type of the method to remove. If `null`, the recipe is a no-op. |
+| `annotationName` | `String` | Yes      | Fully qualified annotation name the method must have. If `null`, the recipe is a no-op. |
+| `allowedBodyMethods` | `Set<String>` | No       | Simple method names permitted in the method body. Any call to a method not in this set blocks removal. Defaults to empty set — only methods with no body calls are removed by default. |
+
+Before (Kotlin, with `annotationName = "pl.allegro.example.SomeAnnotation"`, `returnType = "pl.allegro.example.SomeClassUsedAsABean"`):
+
+```kotlin
+class SomeConfig {
+
+    @SomeAnnotation
+    fun someClass(): SomeClass = SomeClass()
+}
+```
+
+After:
+
+```kotlin
+class SomeConfig {
+}
+```
