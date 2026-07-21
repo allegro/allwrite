@@ -2,9 +2,26 @@
 
 The following list covers all custom recipes provided by `allwrite`.
 
+## Recipe authoring helpers
+
+The `allwrite-spi` module provides the following public helpers for recipe authors:
+
+| Helper                   | Purpose                                                                                    |
+|--------------------------|--------------------------------------------------------------------------------------------|
+| `AllwriteRecipe`         | Base class for regular recipes. Builds display metadata and allwrite tags.                 |
+| `AllwriteScanningRecipe` | Base class for OpenRewrite scanning recipes with the same metadata support.                |
+| `RecipeMetadata`         | Builds display name, description, visibility, friendly-name, version, and Dependabot tags. |
+| `RecipeVisibility`       | Marks a recipe as `INTERNAL` or `PUBLIC`.                                                  |
+| `ParsingAwareRecipe`     | Restricts the files parsed for a recipe.                                                   |
+| `ClasspathAwareRecipe`   | Requests additional parser classpath entries and isolated execution.                       |
+| `PostprocessingRecipe`   | Runs additional work after recipe changes are applied.                                     |
+| `PostprocessingResult`   | Reports postprocessing success or a failure with an error message.                         |
+
+See [Writing recipes](contributing.md) for usage guidelines and examples.
+
 ## YAML
 
-### `pl.allegro.tech.allwrite.recipes.yaml.ExpandMappings`
+### `pl.allegro.tech.allwrite.recipes.yaml.ExpandMappings` { data-toc-label="ExpandMappings" }
 
 Transforms flat/collapsed YAML properties into a hierarchical structure and merges duplicate paths.
 
@@ -38,7 +55,7 @@ myapp:
     enabled: true
 ```
 
-### `pl.allegro.tech.allwrite.recipes.yaml.UnnestProperties`
+### `pl.allegro.tech.allwrite.recipes.yaml.UnnestProperties` { data-toc-label="UnnestProperties" }
 
 Removes one level of nesting from a YAML mapping at a specified path, moving child entries up to the parent level.
 
@@ -67,7 +84,7 @@ spring:
       auto-new-line: true
 ```
 
-### `pl.allegro.tech.allwrite.recipes.yaml.AddTopLevelLineBreaks`
+### `pl.allegro.tech.allwrite.recipes.yaml.AddTopLevelLineBreaks` { data-toc-label="AddTopLevelLineBreaks" }
 
 Ensures top-level YAML mapping entries are separated by blank lines for conventional formatting.
 
@@ -97,7 +114,7 @@ management:
     enabled: true
 ```
 
-### `pl.allegro.tech.allwrite.recipes.yaml.DeleteProperty`
+### `pl.allegro.tech.allwrite.recipes.yaml.DeleteProperty` { data-toc-label="DeleteProperty" }
 
 Enhanced version of OpenRewrite's `DeleteProperty` that:
 - allows deletion of properties from documents with anchors
@@ -127,7 +144,7 @@ server.port: 8080 # comment should stay
 smth-else: 1
 ```
 
-### `pl.allegro.tech.allwrite.recipes.yaml.FindKey`
+### `pl.allegro.tech.allwrite.recipes.yaml.FindKey` { data-toc-label="FindKey" }
 
 A lighter and faster alternative to OpenRewrite's `FindKey`. Searches for a YAML key using simple case-insensitive matching instead of JsonPath. Intended for use as a precondition that fires when a YAML document contains a specified key.
 
@@ -137,7 +154,7 @@ Options:
 |------|------|----------|-------------|
 | `key` | `String` | No | The YAML key to search for (case-insensitive, dot-separated path). |
 
-### `pl.allegro.tech.allwrite.recipes.yaml.YamlEntryHasValue`
+### `pl.allegro.tech.allwrite.recipes.yaml.YamlEntryHasValue` { data-toc-label="YamlEntryHasValue" }
 
 Precondition recipe that matches YAML entries at a given JSON path having a specific value.
 
@@ -152,7 +169,7 @@ Options:
 
 ## Gradle
 
-### `pl.allegro.tech.allwrite.recipes.gradle.AddGradleDependency`
+### `pl.allegro.tech.allwrite.recipes.gradle.AddGradleDependency` { data-toc-label="AddGradleDependency" }
 
 A two-pass scanning recipe that adds a dependency to a Gradle project. In the scan phase, it parses the TOML version catalog (`gradle/libs.versions.toml`) and discovers module roots. In the transform phase, it adds the library entry to the version catalog and a dependency reference in `build.gradle(.kts)`.
 
@@ -198,7 +215,7 @@ dependencies {
 }
 ```
 
-### `pl.allegro.tech.allwrite.recipes.gradle.ChangeGradleDependency`
+### `pl.allegro.tech.allwrite.recipes.gradle.ChangeGradleDependency` { data-toc-label="ChangeGradleDependency" }
 
 Changes a Gradle dependency's group ID, artifact ID, and optional version. It supports `build.gradle`, `build.gradle.kts`, and `gradle/libs.versions.toml`, updating matching version-catalog entries and refs when present. The old group and artifact IDs accept glob patterns, so `*` can match any coordinate segment.
 
@@ -230,7 +247,7 @@ dependencies {
 }
 ```
 
-### `pl.allegro.tech.allwrite.recipes.gradle.UpdateGradleDependency `
+### `pl.allegro.tech.allwrite.recipes.gradle.UpdateGradleDependency` { data-toc-label="UpdateGradleDependency" }
 
 Updates dependency versions using regular expressions. Converts build files to plain text and applies regex-based replacements. Supports dependency declarations in multiple formats:
 
@@ -265,9 +282,9 @@ classpath("com.example:some-dependency:2.0.0")
 
 ## Java / Kotlin
 
-### `pl.allegro.tech.allwrite.recipes.java.ChangeType`
+### `pl.allegro.tech.allwrite.recipes.java.ChangeType` { data-toc-label="ChangeType" }
 
-Enhanced version of the OpenRewrites `ChangeType` with additional support for renaming variables.
+Enhanced version of OpenRewrite's `ChangeType` with additional support for renaming variables.
 
 Options:
 
@@ -301,7 +318,7 @@ public class Main {
 }
 ```
 
-### `pl.allegro.tech.allwrite.recipes.java.ChangeRecordField`
+### `pl.allegro.tech.allwrite.recipes.java.ChangeRecordField` { data-toc-label="ChangeRecordField" }
 
 Renames a field on a Java record type across all usages, including field access expressions and accessor method invocations.
 
@@ -318,7 +335,7 @@ Given third-party class:
 public record SomeRecord(String oldName) { }
 ```
 
-than has been changed to:
+then has been changed to:
 ```java
 public record SomeRecord(String newName) { }
 ```
@@ -361,7 +378,7 @@ fun foo(someRecord: SomeRecord): String {
 }
 ```
 
-### `pl.allegro.tech.allwrite.recipes.java.SimplifyMethodChain`
+### `pl.allegro.tech.allwrite.recipes.java.SimplifyMethodChain` { data-toc-label="SimplifyMethodChain" }
 
 Enhanced version of OpenRewrite's `SimplifyMethodChain` with support for Kotlin.
 
@@ -385,7 +402,7 @@ After:
 fun getAuthorName(book: Book) = book.authorName
 ```
 
-### `pl.allegro.tech.allwrite.recipes.java.RemoveUnusedPrivateFields`
+### `pl.allegro.tech.allwrite.recipes.java.RemoveUnusedPrivateFields` { data-toc-label="RemoveUnusedPrivateFields" }
 
 Enhanced version of OpenRewrite's `RemoveUnusedPrivateFields` with additional `onlyRemoveFieldsOfType` parameter.
 
@@ -412,7 +429,7 @@ class Example {
 }
 ```
 
-### `pl.allegro.tech.allwrite.recipes.java.RemoveUnusedImportsOfType`
+### `pl.allegro.tech.allwrite.recipes.java.RemoveUnusedImportsOfType` { data-toc-label="RemoveUnusedImportsOfType" }
 
 Removes unused imports, but only of given type.
 
@@ -430,13 +447,13 @@ import com.example.Foo; // unused
 import com.example.Bar; // unused
 ```
 
-After (with `types` = `[com.example.Foor]`):
+After (with `types` = `[com.example.Foo]`):
 
 ```java
 import com.example.Bar; // unused
 ```
 
-### `pl.allegro.tech.allwrite.recipes.java.ReplaceFactoryWithConstructor`
+### `pl.allegro.tech.allwrite.recipes.java.ReplaceFactoryWithConstructor` { data-toc-label="ReplaceFactoryWithConstructor" }
 
 Replaces factory method invocations with direct constructor calls. Handles both `new Factory().create(args)` and identifier-based factory invocations. Automatically manages import changes.
 
@@ -473,7 +490,7 @@ class Foo {
 
 ## Spring
 
-### `pl.allegro.tech.allwrite.recipes.spring.FindSpringProperty`
+### `pl.allegro.tech.allwrite.recipes.spring.FindSpringProperty` { data-toc-label="FindSpringProperty" }
 
 Searches for a Spring property by key across `application*.properties`, `application*.yml`, and `application*.yaml` files. Supports relaxed binding and glob patterns for both key matching and profile filtering via file name suffix.
 
@@ -485,7 +502,7 @@ Options:
 | `expectedValue` | `String` | Yes | The property value to match. If `null`, matches any value. |
 | `fileNameSuffix` | `String` | No | Glob pattern for file name suffix, used to filter by Spring profile (e.g. `-integration`). |
 
-### `pl.allegro.tech.allwrite.recipes.spring.DeleteSpringProperty`
+### `pl.allegro.tech.allwrite.recipes.spring.DeleteSpringProperty` { data-toc-label="DeleteSpringProperty" }
 
 Deletes a Spring property by key from both YAML and `.properties` files.
 
@@ -515,7 +532,7 @@ myapp:
     123
 ```
 
-### `pl.allegro.tech.allwrite.recipes.spring.DeleteSpringPropertyWithValue`
+### `pl.allegro.tech.allwrite.recipes.spring.DeleteSpringPropertyWithValue` { data-toc-label="DeleteSpringPropertyWithValue" }
 
 Deletes a Spring property only if it has a specific value. Works across both YAML and `.properties` files.
 
@@ -543,7 +560,7 @@ management:
       enabled: true
 ```
 
-### `pl.allegro.tech.allwrite.recipes.spring.DeleteSpringPropertyFromSpringAnnotations`
+### `pl.allegro.tech.allwrite.recipes.spring.DeleteSpringPropertyFromSpringAnnotations` { data-toc-label="DeleteSpringPropertyFromSpringAnnotations" }
 
 Removes property entries from `@SpringBootTest(properties = ...)` and `@TestPropertySource(properties = ...)` annotations in Java source code. Supports glob matching on property names with relaxed binding.
 
@@ -576,7 +593,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class Example {}
 ```
 
-### `pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKey`
+### `pl.allegro.tech.allwrite.recipes.spring.ChangeSpringPropertyKey` { data-toc-label="ChangeSpringPropertyKey" }
 
 Renames a Spring property key across YAML, `.properties`, and other files (e.g. Markdown). For YAML and `.properties`, delegates to OpenRewrite's `ChangeSpringPropertyKey`. For other files, performs a regex find-and-replace supporting both `lower-hyphen` and `lowerCamel` case formats.
 
@@ -597,110 +614,4 @@ i18n:
 After:
 ```yaml
 myapp.i18n.language-bundle.enabled: true
-```
-
-### `pl.allegro.tech.allwrite.recipes.spring.RenameTaskExecutorBean`
-
-Adds `@Qualifier("applicationTaskExecutor")` to `TaskExecutor` injection points (constructor parameters, `@Bean` method parameters, and `@Autowired` fields) to align with the [Spring Boot 3.5](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.5-Release-Notes#auto-configured-taskexecutor-names) bean naming change. Skips projects that define their own custom `taskExecutor` bean.
-
-Before:
-```java
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.stereotype.Component;
-
-@Component
-public class MyService {
-    public MyService(TaskExecutor taskExecutor) {}
-}
-```
-
-After:
-```java
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.stereotype.Component;
-
-@Component
-public class MyService {
-    public MyService(@Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {}
-}
-```
-
-### `pl.allegro.tech.allwrite.recipes.spring.AddNonNullableTypeBoundsToSpringRepositories`
-
-Adds `: Any` upper bounds to type parameters of Kotlin classes/interfaces extending Spring Data repository interfaces,
-as required by Spring Framework 7 / Spring Boot 4 JSpecify nullability annotations. Only applies to Kotlin source files.
-This recipe is automatically included in the Spring Boot 4.0 migration.
-
-Before:
-
-```kotlin
-import org.springframework.data.repository.CrudRepository
-
-interface UserRepository<T, ID> : CrudRepository<T, ID>
-```
-
-After:
-
-```kotlin
-import org.springframework.data.repository.CrudRepository
-
-interface UserRepository<T : Any, ID : Any> : CrudRepository<T, ID>
-```
-
-### `pl.allegro.tech.allwrite.recipes.spring.ReplaceStatusCodeValue`
-
-Replaces deprecated `ResponseEntity.getStatusCodeValue()` / `.statusCodeValue` with `getStatusCode().value()` / `.statusCode.value()` as required by Spring
-Framework 7 / Spring Boot 4. Works across Java, Groovy, and Kotlin source files. Included in the `SpringBoot4_0` upgrade recipe.
-
-Before (Java):
-
-```java
-import org.springframework.http.ResponseEntity;
-
-class Example {
-    void test() {
-        ResponseEntity<String> response = ResponseEntity.ok("hello");
-        int status = response.getStatusCodeValue();
-    }
-}
-```
-
-After (Java):
-
-```java
-import org.springframework.http.ResponseEntity;
-
-class Example {
-    void test() {
-        ResponseEntity<String> response = ResponseEntity.ok("hello");
-        int status = response.getStatusCode().value();
-    }
-}
-```
-
-Before (Kotlin/Groovy):
-
-```kotlin
-import org.springframework.http.ResponseEntity
-
-class Example {
-    fun test() {
-        val response: ResponseEntity<String> = ResponseEntity.ok("hello")
-        val status: Int = response.statusCodeValue
-    }
-}
-```
-
-After (Kotlin/Groovy):
-
-```kotlin
-import org.springframework.http.ResponseEntity
-
-class Example {
-    fun test() {
-        val response: ResponseEntity<String> = ResponseEntity.ok("hello")
-        val status: Int = response.statusCode.value()
-    }
-}
 ```
