@@ -14,14 +14,14 @@ import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility
 
 public open class RemoveAnnotatedMethod(
-    @Option(displayName = "Return Type", description = "Fully qualified return type")
+    @Option(displayName = "Return Type", description = "Fully qualified class name of the method return type to match (e.g. com.example.MyBean).", required = true)
     public val returnType: String? = null,
 
-    @Option(displayName = "Annotation Name", description = "Fully qualified annotation name")
+    @Option(displayName = "Annotation Name", description = "Fully qualified class name of the annotation the method must have (e.g. org.springframework.context.annotation.Bean).", required = true)
     public val annotationName: String? = null,
 
-    @Option(displayName = "Allowed Body Methods", description = "Method names allowed in the body")
-    public val allowedBodyMethods: Set<String> = emptySet(),
+    @Option(displayName = "Allowed Body Calls", description = "Simple method names that may appear in the method body without blocking removal. Any call not in this set causes the method to be treated as complex and skipped.", required = false)
+    public val allowedBodyCalls: Set<String> = emptySet(),
 ) : AllwriteRecipe(
     description = """
         Removes methods annotated with a specific annotation. Example:
@@ -102,7 +102,7 @@ public open class RemoveAnnotatedMethod(
         if (tree.body != null) {
             object : JavaVisitor<ExecutionContext>() {
                 override fun visitMethodInvocation(method: J.MethodInvocation, ctx: ExecutionContext): J {
-                    if (!allowedBodyMethods.contains(method.simpleName)) {
+                    if (!allowedBodyCalls.contains(method.simpleName)) {
                         isComplex = true
                     }
                     return super.visitMethodInvocation(method, ctx)

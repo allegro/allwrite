@@ -22,7 +22,7 @@ class RemoveAnnotatedMethodTest {
         RemoveAnnotatedMethod(
             returnType = "pl.allegro.example.SomeClassUsedAsABean",
             annotationName = "pl.allegro.example.SomeAnnotation",
-            allowedBodyMethods = setOf("someAllowedMethod"),
+            allowedBodyCalls = setOf("someAllowedMethod", "println"),
         )
 
     @Nested
@@ -502,8 +502,10 @@ class RemoveAnnotatedMethodTest {
                             class SomeConfig {
 
                                 @SomeAnnotation
-                                fun someClassUsedAsABean(): SomeClassUsedAsABean =
-                                    SomeClassUsedAsABean().someAllowedMethod()
+                                fun someClassUsedAsABean(): SomeClassUsedAsABean {
+                                    println("this println call is allowed")
+                                    return SomeClassUsedAsABean().someAllowedMethod()
+                                }
                             }
                         """.trimIndent(),
                         after = """
@@ -568,6 +570,7 @@ class RemoveAnnotatedMethodTest {
 
                                 @SomeAnnotation
                                 public SomeClassUsedAsABean someClassUsedAsABean() {
+                                    System.out.println("this println call is allowed");
                                     return new SomeClassUsedAsABean().someAllowedMethod();
                                 }
                             }
@@ -635,6 +638,7 @@ class RemoveAnnotatedMethodTest {
 
                                 @SomeAnnotation
                                 SomeClassUsedAsABean someClassUsedAsABean() {
+§                                    println("this println call is allowed")
                                     return new SomeClassUsedAsABean().someAllowedMethod()
                                 }
                             }
