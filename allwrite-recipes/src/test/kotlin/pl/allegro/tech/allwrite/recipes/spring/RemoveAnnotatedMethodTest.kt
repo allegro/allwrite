@@ -17,7 +17,7 @@ class RemoveAnnotatedMethodTest {
             annotationName = "pl.allegro.example.SomeAnnotation",
         )
 
-    class RemoveSomeClassUsedAsABeanMethodWithAllowedBodyMethods :
+    class RemoveSomeClassUsedAsABeanMethodWithAllowedBodyCalls :
         RemoveAnnotatedMethod(
             returnType = "pl.allegro.example.SomeClassUsedAsABean",
             annotationName = "pl.allegro.example.SomeAnnotation",
@@ -473,10 +473,10 @@ class RemoveAnnotatedMethodTest {
     }
 
     @Nested
-    inner class WithAllowedBodyMethodsTest : RewriteTest {
+    inner class WithAllowedBodyCallsTest : RewriteTest {
 
         override fun defaults(spec: RecipeSpec) {
-            spec.recipe(RemoveSomeClassUsedAsABeanMethodWithAllowedBodyMethods())
+            spec.recipe(RemoveSomeClassUsedAsABeanMethodWithAllowedBodyCalls())
                 .typeValidationOptions(TypeValidation.none())
         }
 

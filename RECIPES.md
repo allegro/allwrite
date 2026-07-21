@@ -712,7 +712,7 @@ Open class for recipes that remove methods annotated with a specific annotation.
 - It has exactly one annotation matching `annotationName`
 - It has no parameters
 - Its return type matches `returnType`
-- Its body is not complex - i.e., it only calls methods listed in `allowedBodyMethods` (an empty set means only constructor is allowed).
+- Its body is not complex - i.e., it only calls methods listed in `allowedBodyCalls` (an empty set means only constructor is allowed).
 
 When a method is removed, its return type import is also removed. The annotation import is removed only if the annotation is not used elsewhere in the file.
 
