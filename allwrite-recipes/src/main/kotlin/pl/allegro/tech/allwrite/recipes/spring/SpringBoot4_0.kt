@@ -9,5 +9,6 @@ public class SpringBoot4_0 : IsolatedSpringRecipe(from = "3.5", to = "4.0") {
             AddNonNullableTypeBoundsToSpringRepositories() +
             ReplaceStatusCodeValue() +
             ChangeSpringBoot4WebServerTypes() +
-            ChangeSpringBoot4MongoProperties()
+            ChangeSpringBoot4MongoProperties() +
+            upgradeGroovyToV5()
 }

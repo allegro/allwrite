@@ -20,6 +20,7 @@ import pl.allegro.tech.allwrite.recipes.groovy
 import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
 import pl.allegro.tech.allwrite.recipes.text
+import pl.allegro.tech.allwrite.recipes.toml
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
 
 class SpringBoot4_0Test : RewriteTest {
@@ -175,6 +176,34 @@ class SpringBoot4_0Test : RewriteTest {
                 }
                 """.trimIndent(),
             ),
+        )
+    }
+
+    @Test
+    fun `should update gradle spock dependency`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [versions]
+                    spock = "2.3-groovy-4.0"
+                    groovy = "4.0.12"
+
+                    [libraries]
+                    spock-junit = { module = "org.spockframework:spock-junit4", version.ref = "spock" }
+                    spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
+                    groovy = { module = "org.apache.groovy:groovy-all", version.ref = "groovy" }
+                """.trimIndent(),
+                after = """
+                    [versions]
+                    spock = "2.4-groovy-5.0"
+                    groovy = "5.0.7"
+
+                    [libraries]
+                    spock-junit = { module = "org.spockframework:spock-junit4", version.ref = "spock" }
+                    spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
+                    groovy = { module = "org.apache.groovy:groovy-all", version.ref = "groovy" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
         )
     }
 
