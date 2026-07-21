@@ -638,7 +638,7 @@ class RemoveAnnotatedMethodTest {
 
                                 @SomeAnnotation
                                 SomeClassUsedAsABean someClassUsedAsABean() {
-§                                    println("this println call is allowed")
+                                    println("this println call is allowed")
                                     return new SomeClassUsedAsABean().someAllowedMethod()
                                 }
                             }
