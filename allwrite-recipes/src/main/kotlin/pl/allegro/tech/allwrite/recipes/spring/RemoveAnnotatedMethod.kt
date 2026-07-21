@@ -10,7 +10,6 @@ import org.openrewrite.java.JavaVisitor
 import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.TypeUtils
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.ClasspathAwareRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility
 
 public open class RemoveAnnotatedMethod(
@@ -52,10 +51,7 @@ public open class RemoveAnnotatedMethod(
         .
     """.trimIndent(),
     visibility = RecipeVisibility.INTERNAL,
-),
-    ClasspathAwareRecipe {
-
-    override fun requireOnClasspath(): List<String> = emptyList()
+) {
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
         return object : JavaVisitor<ExecutionContext>() {

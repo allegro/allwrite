@@ -8,7 +8,6 @@ import org.openrewrite.test.TypeValidation
 import pl.allegro.tech.allwrite.recipes.groovy
 import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
-import pl.allegro.tech.allwrite.runtime.util.withRecipeClasspath
 
 class RemoveAnnotatedMethodTest {
 
@@ -30,7 +29,6 @@ class RemoveAnnotatedMethodTest {
 
         override fun defaults(spec: RecipeSpec) {
             spec.recipe(RemoveSomeClassUsedAsABeanMethod())
-                .withRecipeClasspath()
                 .typeValidationOptions(TypeValidation.none())
         }
 
@@ -479,7 +477,6 @@ class RemoveAnnotatedMethodTest {
 
         override fun defaults(spec: RecipeSpec) {
             spec.recipe(RemoveSomeClassUsedAsABeanMethodWithAllowedBodyMethods())
-                .withRecipeClasspath()
                 .typeValidationOptions(TypeValidation.none())
         }
 
