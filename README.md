@@ -16,7 +16,7 @@ OpenRewrite provides the transformation engine and a broad recipe ecosystem. all
 - [Overview](docs/index.md)
 - [CLI reference](docs/cli.md)
 - [Writing recipes](docs/contributing.md)
-- [Built-in recipes](docs/recipes.md)
+- [Built-in recipes](docs/recipes/index.md)
 
 ## Quick start
 

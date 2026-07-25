@@ -58,7 +58,7 @@ allwrite ls --all
 
 The `allwrite` CLI comes with all the free OpenRewrite migrations bundled (Java/Kotlin refactoring, Spring Boot upgrades, etc.).
 
-In addition, it provides a collection of custom recipes that aim to fill the gaps. See [the recipes reference](recipes.md) for the full list.
+In addition, it provides a collection of custom recipes that aim to fill the gaps. See [the recipes reference](recipes/index.md) for the full list.
 
 If you're a library maintainer and want to automate the migration process for your users (or just have prepared a recipe that may be useful for others),
 we would love to see your contribution! ❤️

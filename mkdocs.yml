@@ -39,7 +39,32 @@ nav:
   - Overview: index.md
   - CLI reference: cli.md
   - Writing recipes: contributing.md
-  - Recipes reference: recipes.md
+  - Recipes:
+      - Overview: recipes/index.md
+      - YAML:
+          - ExpandMappings: recipes/yaml/expand-mappings.md
+          - UnnestProperties: recipes/yaml/unnest-properties.md
+          - AddTopLevelLineBreaks: recipes/yaml/add-top-level-line-breaks.md
+          - DeleteProperty: recipes/yaml/delete-property.md
+          - FindKey: recipes/yaml/find-key.md
+          - YamlEntryHasValue: recipes/yaml/yaml-entry-has-value.md
+      - Gradle:
+          - AddGradleDependency: recipes/gradle/add-gradle-dependency.md
+          - ChangeGradleDependency: recipes/gradle/change-gradle-dependency.md
+          - UpdateGradleDependency: recipes/gradle/update-gradle-dependency.md
+      - Java / Kotlin:
+          - ChangeType: recipes/java/change-type.md
+          - ChangeRecordField: recipes/java/change-record-field.md
+          - SimplifyMethodChain: recipes/java/simplify-method-chain.md
+          - RemoveUnusedPrivateFields: recipes/java/remove-unused-private-fields.md
+          - RemoveUnusedImportsOfType: recipes/java/remove-unused-imports-of-type.md
+          - ReplaceFactoryWithConstructor: recipes/java/replace-factory-with-constructor.md
+      - Spring:
+          - FindSpringProperty: recipes/spring/find-spring-property.md
+          - DeleteSpringProperty: recipes/spring/delete-spring-property.md
+          - DeleteSpringPropertyWithValue: recipes/spring/delete-spring-property-with-value.md
+          - DeleteSpringPropertyFromSpringAnnotations: recipes/spring/delete-spring-property-from-spring-annotations.md
+          - ChangeSpringPropertyKey: recipes/spring/change-spring-property-key.md
 markdown_extensions:
   - admonition
   - attr_list

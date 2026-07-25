@@ -12,12 +12,6 @@ OpenRewrite provides the transformation engine and a broad recipe ecosystem. all
 
 Use friendly recipe names instead of fully qualified Java class names, combine OpenRewrite's ecosystem with project-specific migrations, and package private recipes as external JARs.
 
-## Project at a glance
-
-- **Group ID:** `pl.allegro.tech.allwrite`
-- **License:** Apache 2.0
-- **JVM toolchain:** Java 21 (Temurin)
-
 ## What is included
 
 `allwrite` is a modular project, utilizing dependency injection capabilities from the [Koin](https://github.com/InsertKoinIO/koin) framework.
@@ -35,4 +29,4 @@ It consists of the following Gradle modules (that may contain one or more Koin m
 
 - [CLI reference](cli.md)
 - [Writing recipes](contributing.md)
-- [Built-in recipes](recipes.md)
+- [Built-in recipes](recipes/index.md)

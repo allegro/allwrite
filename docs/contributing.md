@@ -108,3 +108,26 @@ class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), PostprocessingRecipe {
 ```
 
 Return `PostprocessingResult.Success` after successful postprocessing. Return `PostprocessingResult.Failure(errorMessage)` to fail the recipe execution and report the error.
+
+## Working on the documentation
+
+The documentation site is built with MkDocs. From the `docs/` directory, create a virtual environment and install the documentation dependencies:
+
+```bash
+python3 -m venv .venv
+./.venv/bin/python -m pip install -r requirements.txt
+```
+
+Build the documentation locally with:
+
+```bash
+./.venv/bin/python -m mkdocs build --config-file ../mkdocs.yml --strict
+```
+
+To preview the documentation while editing, start the local development server:
+
+```bash
+./.venv/bin/python -m mkdocs serve --config-file ../mkdocs.yml
+```
+
+Then open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in a browser. MkDocs automatically rebuilds the site when source files change.

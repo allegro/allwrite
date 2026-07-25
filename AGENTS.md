@@ -39,7 +39,8 @@ The documentation site is built with MkDocs from `mkdocs.yml`, `docs/requirement
 - `docs/index.md` — project overview
 - `docs/cli.md` — CLI reference
 - `docs/contributing.md` — recipe authoring guide
-- `docs/recipes.md` — built-in recipes reference
+- `docs/recipes/index.md` — built-in recipes overview and authoring helpers
+- `docs/recipes/{yaml,gradle,java,spring}/` — individual built-in recipe pages grouped by category
 - `docs/extra.css` — documentation layout overrides
 
 # Architecture
@@ -128,7 +129,7 @@ allwrite/
 │   └── wrapper/
 │
 ├── .github/workflows/               CI, documentation build/publish, and releases
-├── docs/                            MkDocs documentation source and dependencies
+├── docs/                            MkDocs documentation source, recipe catalog, and dependencies
 └── mkdocs.yml                       MkDocs site configuration
 ```
 
