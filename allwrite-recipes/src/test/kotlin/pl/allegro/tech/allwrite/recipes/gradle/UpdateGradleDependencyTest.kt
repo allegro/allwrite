@@ -11,8 +11,16 @@ import pl.allegro.tech.allwrite.recipes.toml
 class UpdateGradleDependencyTest {
 
     private fun defaultSpec(spec: RecipeSpec) {
-        spec.recipe(recipe()).validateRecipeSerialization(false)
+        spec.recipe(recipe())
     }
+
+    private fun updateSpockWithCustomSourceVersionPatternRecipe(): UpdateGradleDependency =
+        recipe(
+            groupId = "org.spockframework",
+            artifactId = "spock-bom",
+            targetVersion = "2.4-groovy-5.0",
+            sourceVersionPattern = "\\d+\\.\\d+.*",
+        )
 
     private fun recipe(
         groupId: String = "com.fasterxml.jackson.module",
@@ -43,7 +51,6 @@ class UpdateGradleDependencyTest {
     private fun noChangeSpec(targetVersion: String): RecipeSpec.() -> Unit =
         {
             recipe(recipe(targetVersion = targetVersion))
-                .validateRecipeSerialization(false)
                 .expectedCyclesThatMakeChanges(0)
         }
 
@@ -100,7 +107,7 @@ class UpdateGradleDependencyTest {
         fun `should trim whitespace around target version in build gradle`() {
             rewriteRun(
                 { spec ->
-                    spec.recipe(recipe(targetVersion = " 3.1.4 ")).validateRecipeSerialization(false)
+                    spec.recipe(recipe(targetVersion = " 3.1.4 "))
                 },
                 buildGradle(
                     before = """
@@ -111,6 +118,25 @@ class UpdateGradleDependencyTest {
                     after = """
                     dependencies {
                         implementation "com.fasterxml.jackson.module:jackson-module-afterburner:3.1.4"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+            )
+        }
+
+        @Test
+        fun `should update dependency version in build gradle with custom sourceVersionPattern`() {
+            rewriteRun(
+                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
+                buildGradle(
+                    before = """
+                    dependencies {
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-bom', version: '2.4-M4-groovy-4.0')
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-bom', version: '2.4-groovy-5.0')
                     }
                     """.trimIndent(),
                 ) { path("build.gradle") },
@@ -206,6 +232,25 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
+        fun `should update dependency version in build gradle kts with custom sourceVersionPattern`() {
+            rewriteRun(
+                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
+                buildGradleKts(
+                    before = """
+                    dependencies {
+                        testImplementation(platform(group = 'org.spockframework', name = 'spock-bom', version = '2.4-M4-groovy-4.0'))
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        testImplementation(platform(group = 'org.spockframework', name = 'spock-bom', version = '2.4-groovy-5.0'))
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+            )
+        }
+
+        @Test
         fun `should skip major downgrade in build gradle kts`() {
             rewriteRun(noChangeSpec("3.9.9"), kotlinDependency("4.1.0"))
         }
@@ -278,6 +323,23 @@ class UpdateGradleDependencyTest {
                     after = """
                     [libraries]
                     jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner", version = "3.1.4" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should update dependency version in toml with custom sourceVersionPattern`() {
+            rewriteRun(
+                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
+                toml(
+                    before = """
+                    [libraries]
+                    spockframework-bom = { group = "org.spockframework", name = "spock-bom", version = "2.4-M4-groovy-4.0" }
+                    """.trimIndent(),
+                    after = """
+                    [libraries]
+                    spockframework-bom = { group = "org.spockframework", name = "spock-bom", version = "2.4-groovy-5.0" }
                     """.trimIndent(),
                 ) { path("gradle/libs.versions.toml") },
             )

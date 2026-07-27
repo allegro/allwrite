@@ -19,6 +19,8 @@ import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.recipes.groovy
 import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
+import pl.allegro.tech.allwrite.recipes.text
+import pl.allegro.tech.allwrite.recipes.toml
 import pl.allegro.tech.allwrite.runtime.fake.FakeRecipeSource
 
 class SpringBoot4_0Test : RewriteTest {
@@ -67,7 +69,12 @@ class SpringBoot4_0Test : RewriteTest {
     @Test
     fun `SpringBoot4_0 recipe list contains custom recipes`() {
         val recipeNames = recipe.recipeList.map { it::class.simpleName }
-        assertThat(recipeNames).contains("AddNonNullableTypeBoundsToSpringRepositories", "ReplaceStatusCodeValue")
+        assertThat(recipeNames).contains(
+            "AddNonNullableTypeBoundsToSpringRepositories",
+            "ReplaceStatusCodeValue",
+            "ChangeSpringBoot4WebServerTypes",
+            "ChangeSpringBoot4MongoProperties",
+        )
     }
 
     @Test
@@ -173,6 +180,34 @@ class SpringBoot4_0Test : RewriteTest {
     }
 
     @Test
+    fun `should update gradle spock dependency`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [versions]
+                    spock = "2.3-groovy-4.0"
+                    groovy = "4.0.12"
+
+                    [libraries]
+                    spock-junit = { module = "org.spockframework:spock-junit4", version.ref = "spock" }
+                    spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
+                    groovy = { module = "org.apache.groovy:groovy-all", version.ref = "groovy" }
+                """.trimIndent(),
+                after = """
+                    [versions]
+                    spock = "2.4-groovy-5.0"
+                    groovy = "5.0.7"
+
+                    [libraries]
+                    spock-junit = { module = "org.spockframework:spock-junit4", version.ref = "spock" }
+                    spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
+                    groovy = { module = "org.apache.groovy:groovy-all", version.ref = "groovy" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
     fun `should relocate Spring Boot web server types`() {
         rewriteRun(
             kotlin(
@@ -249,6 +284,26 @@ class SpringBoot4_0Test : RewriteTest {
                         val servlet: ServletWebServerApplicationContext?,
                         val reactive: ReactiveWebServerApplicationContext?
                     )
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should replace Spring Boot MongoDB properties`() {
+        rewriteRun(
+            text(
+                before = """
+                    fun updateConfiguration(registry: DynamicPropertyRegistry) {
+                        registry.add("spring.data.mongodb.uri") { mongoListener.url() }
+                        registry.add("spring.data.mongodb.database") { DATABASE_NAME }
+                    }
+                """.trimIndent(),
+                after = """
+                    fun updateConfiguration(registry: DynamicPropertyRegistry) {
+                        registry.add("spring.mongodb.uri") { mongoListener.url() }
+                        registry.add("spring.mongodb.database") { DATABASE_NAME }
+                    }
                 """.trimIndent(),
             ),
         )
