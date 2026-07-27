@@ -11,10 +11,6 @@
 
 **allwrite** is a CLI tool and collection of [OpenRewrite](https://docs.openrewrite.org/) recipes for automated code transformations across YAML, Gradle, Java/Kotlin, and Spring projects. It wraps OpenRewrite's runtime into a CLI that can run recipes by name, integrate with GitHub Actions, and work with Dependabot PRs.
 
-- **Group ID:** `pl.allegro.tech.allwrite`
-- **License:** Apache 2.0
-- **JVM toolchain:** Java 21 (Temurin)
-
 # Tech Stack
 
 | Category | Technology |
