@@ -65,6 +65,7 @@ nav:
           - DeleteSpringPropertyWithValue: recipes/spring/delete-spring-property-with-value.md
           - DeleteSpringPropertyFromSpringAnnotations: recipes/spring/delete-spring-property-from-spring-annotations.md
           - ChangeSpringPropertyKey: recipes/spring/change-spring-property-key.md
+          - RemoveAnnotatedMethod: recipes/spring/remove-annotated-method.md
 markdown_extensions:
   - admonition
   - attr_list
