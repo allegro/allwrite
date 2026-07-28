@@ -16,7 +16,7 @@ import pl.allegro.tech.allwrite.recipes.kotlin.KotlinPropertyMatcher
 import pl.allegro.tech.allwrite.recipes.util.DelegatingJVisitor
 import pl.allegro.tech.allwrite.recipes.util.isKotlin
 
-public class ReplaceStatusCodeValue :
+internal class ReplaceStatusCodeValue :
     AllwriteRecipe(
         displayName = "Replace ResponseEntity.getStatusCodeValue() with getStatusCode().value()",
         description = "Replaces deprecated `ResponseEntity.getStatusCodeValue()` / `.statusCodeValue` " +

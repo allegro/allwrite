@@ -6,6 +6,10 @@ on:
       - published
   workflow_dispatch:
 
+permissions:
+  actions: write
+  contents: write
+
 env:
   JRELEASER_GITHUB_TOKEN: ${{ github.token }}
 
@@ -59,3 +63,10 @@ jobs:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PRIVATE_KEY_PASSWORD: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
+
+      - name: Dispatch documentation publication
+        run: |
+          version="$(gh release view --json tagName --jq '.tagName')"
+          gh workflow run docs-publish.yml --ref "$version" -f version="$version"
+        env:
+          GH_TOKEN: ${{ github.token }}
