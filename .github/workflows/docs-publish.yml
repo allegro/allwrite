@@ -37,3 +37,4 @@ jobs:
           version="${RELEASE_VERSION#v}"
           major="${version%%.*}"
           mike deploy --push --update-aliases "$version" "$major" latest
+          mike set-default latest --push
