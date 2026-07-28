@@ -1,9 +1,6 @@
 name: Docs Publish
 
 on:
-  release:
-    types:
-      - published
   workflow_dispatch:
     inputs:
       version:
@@ -22,7 +19,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      RELEASE_VERSION: ${{ github.event.release.tag_name || inputs.version }}
+      RELEASE_VERSION: ${{ inputs.version }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -34,6 +31,9 @@ jobs:
       - run: pip install -r docs/requirements.txt
       - name: Publish versioned docs
         run: |
+          git config --global --add safe.directory $(pwd)
+          git config --global user.name github-runner-no-reply
+          git config --global user.email github-runner-no-reply@allegro.pl
           version="${RELEASE_VERSION#v}"
           major="${version%%.*}"
           mike deploy --push --update-aliases "$version" "$major" latest
