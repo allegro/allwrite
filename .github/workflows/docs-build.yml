@@ -1,0 +1,33 @@
+name: Docs Build
+
+on:
+  pull_request:
+    paths:
+      - docs/**
+      - mkdocs.yml
+      - docs/requirements.txt
+      - README.md
+      - CONTRIBUTING.md
+      - .github/workflows/docs-build.yml
+      - .github/workflows/docs-publish.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      - run: pip install -r docs/requirements.txt
+      - name: Build docs and fail on warnings
+        run: mkdocs build --strict

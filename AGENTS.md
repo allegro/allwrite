@@ -11,10 +11,6 @@
 
 **allwrite** is a CLI tool and collection of [OpenRewrite](https://docs.openrewrite.org/) recipes for automated code transformations across YAML, Gradle, Java/Kotlin, and Spring projects. It wraps OpenRewrite's runtime into a CLI that can run recipes by name, integrate with GitHub Actions, and work with Dependabot PRs.
 
-- **Group ID:** `pl.allegro.tech.allwrite`
-- **License:** Apache 2.0
-- **JVM toolchain:** Java 21 (Temurin)
-
 # Tech Stack
 
 | Category | Technology |
@@ -31,6 +27,17 @@
 | Build system | Gradle (Kotlin DSL) with composite build |
 | Release management | JReleaser + Axion Release Plugin |
 | Testing | Kotest (FunSpec), JUnit 5, MockK, OpenRewrite RewriteTest |
+
+## Documentation
+
+The documentation site is built with MkDocs from `mkdocs.yml`, `docs/requirements.txt`, and the `docs/` directory.
+
+- `docs/index.md` — project overview
+- `docs/cli.md` — CLI reference
+- `docs/contributing.md` — recipe authoring guide
+- `docs/recipes/index.md` — built-in recipes overview and authoring helpers
+- `docs/recipes/{yaml,gradle,java,spring}/` — individual built-in recipe pages grouped by category
+- `docs/extra.css` — documentation layout overrides
 
 # Architecture
 
@@ -117,8 +124,9 @@ allwrite/
 │   ├── libs.versions.toml            Central dependency version catalog
 │   └── wrapper/
 │
-├── .github/workflows/               CI/CD
-└── docs/                            Architecture diagrams
+├── .github/workflows/               CI, documentation build/publish, and releases
+├── docs/                            MkDocs documentation source, recipe catalog, and dependencies
+└── mkdocs.yml                       MkDocs site configuration
 ```
 
 # Entry Point

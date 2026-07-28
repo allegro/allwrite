@@ -20,7 +20,7 @@ import pl.allegro.tech.allwrite.recipes.spring.util.getBeanMethodDeclarations
 import pl.allegro.tech.allwrite.recipes.spring.util.getSpringComponentAnnotation
 import pl.allegro.tech.allwrite.recipes.spring.util.hasConfigurationAnnotation
 
-public class RenameTaskExecutorBean :
+internal class RenameTaskExecutorBean :
     AllwriteScanningRecipe<RenameTaskExecutorBean.Context>(
         displayName = "Rename task executor bean",
         description = "Rename task executor bean, as required by [Spring Boot 3.5](https://github.com/spring-projects/spring-boot/wiki/" +
