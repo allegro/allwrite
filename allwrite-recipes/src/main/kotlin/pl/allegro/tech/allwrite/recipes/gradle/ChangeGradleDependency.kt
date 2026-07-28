@@ -5,8 +5,9 @@ import org.openrewrite.Option
 import org.openrewrite.SourceFile
 import org.openrewrite.Tree
 import org.openrewrite.TreeVisitor
+import org.openrewrite.text.PlainTextParser
 import org.openrewrite.toml.tree.Toml
-import pl.allegro.tech.allwrite.AllwriteRecipe
+import pl.allegro.tech.allwrite.AllwriteScanningRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility
 import kotlin.io.path.Path
 
@@ -21,12 +22,20 @@ public class ChangeGradleDependency(
     private val newArtifactId: String = "",
     @Option(description = "The new version to set. When omitted, the version is removed from the dependency.", required = false, example = "3.1.4")
     private val newVersion: String = "",
-) : AllwriteRecipe(
+) : AllwriteScanningRecipe<ChangeGradleDependency.GradleVersionsContext>(
     displayName = "Change Gradle dependency with TOML support",
     description = "Changes Gradle dependencies and also updates matching entries in gradle/libs.versions.toml.",
     visibility = RecipeVisibility.INTERNAL,
 ) {
-    override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
+    public data class GradleVersionsContext(
+        val usedVersionKeys: MutableSet<String> = HashSet(),
+    )
+
+    override fun getInitialValue(ctx: ExecutionContext): GradleVersionsContext = GradleVersionsContext()
+
+    override fun getScanner(acc: GradleVersionsContext): TreeVisitor<*, ExecutionContext> = GradleVersionCatalogUsageScanner(acc.usedVersionKeys)
+
+    override fun getVisitor(acc: GradleVersionsContext): TreeVisitor<*, ExecutionContext> {
         if (oldGroupId.isBlank() || oldArtifactId.isBlank()) {
             return object : TreeVisitor<Tree, ExecutionContext>() {
                 override fun visit(tree: Tree?, ctx: ExecutionContext): Tree? = tree
@@ -54,6 +63,7 @@ public class ChangeGradleDependency(
             newGroupId = newGroupId.takeIf { it.isNotBlank() },
             newArtifactId = newArtifactId.takeIf { it.isNotBlank() },
             newVersion = newVersion.takeIf { it.isNotBlank() },
+            gradleUsedVersionKeys = acc.usedVersionKeys,
         )
         return object : TreeVisitor<Tree, ExecutionContext>() {
             private val TOML_VERSION_CATALOG_PATH = Path("gradle/libs.versions.toml")
@@ -72,5 +82,21 @@ public class ChangeGradleDependency(
                 return tree
             }
         }
+    }
+}
+
+internal class GradleVersionCatalogUsageScanner(
+    private val usedVersionKeys: MutableSet<String>,
+) : TreeVisitor<Tree, ExecutionContext>() {
+    override fun visit(tree: Tree?, p: ExecutionContext): Tree? {
+        val sourceFile = tree as? SourceFile ?: return tree
+        if (!sourceFile.isBuildGradleFile()) return tree
+        val text = PlainTextParser.convert(sourceFile).text
+        LIBS_VERSIONS_PLAIN.findAll(text).forEach { usedVersionKeys.add(it.groupValues[1]) }
+        return tree
+    }
+
+    private companion object {
+        private val LIBS_VERSIONS_PLAIN = Regex("""libs\.versions\.([A-Za-z0-9_-]+)""")
     }
 }
