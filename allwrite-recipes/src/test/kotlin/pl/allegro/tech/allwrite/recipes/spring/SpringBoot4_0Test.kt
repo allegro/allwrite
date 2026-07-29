@@ -82,7 +82,6 @@ class SpringBoot4_0Test : RewriteTest {
             "AddNonNullableTypeBoundsToSpringRepositories",
             "ReplaceStatusCodeValue",
             "ChangeSpringBoot4WebServerTypes",
-            "PreconditionsAwareAddDependency",
         )
     }
 
