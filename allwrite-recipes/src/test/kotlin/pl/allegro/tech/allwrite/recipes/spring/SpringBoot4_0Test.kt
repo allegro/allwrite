@@ -114,11 +114,33 @@ class SpringBoot4_0Test : RewriteTest {
                 """.trimIndent(),
             ),
             buildGradle(
-                before = "dependencies {\n}\n",
+                before = """
+                    dependencies {
+                    }
+                """.trimIndent(),
                 after = """
                     dependencies {
                         testImplementation("org.springframework.boot:spring-boot-webtestclient")
                         testImplementation("org.springframework.boot:spring-boot-resttestclient")
+                    }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should upgrade Testcontainers modules`() {
+        // given
+        rewriteRun(
+            buildGradle(
+                before = """
+                    dependencies {
+                        testImplementation("org.testcontainers:postgresql:1.20.0")
+                    }
+                """.trimIndent(),
+                after = """
+                    dependencies {
+                        testImplementation("org.testcontainers:testcontainers-postgresql")
                     }
                 """.trimIndent(),
             ),
