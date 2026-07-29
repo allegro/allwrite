@@ -10,7 +10,7 @@ public enum class RecipeVisibility {
     INTERNAL,
 
     /**
-     * For usage by the end users, can be executed via friendly name and via ID:
+     * For usage by end users. Recipes with a group and action can be executed via a friendly name:
      * ```
      * allwrite run group/friendlyName
      *
