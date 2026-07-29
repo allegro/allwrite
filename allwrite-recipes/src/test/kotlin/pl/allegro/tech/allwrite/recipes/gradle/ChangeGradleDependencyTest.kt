@@ -1357,4 +1357,90 @@ class ChangeGradleDependencyTest {
             )
         }
     }
+
+    @Nested
+    inner class TomlAndBuildGradleGroovy : BaseSpec() {
+
+        @Test
+        fun `should not remove version from toml when it's being used in build gradle`() {
+            rewriteRun(
+                buildGradle(
+                    beforeAndAfter = """
+                    java {
+                        toolchain {
+                            languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
+                        }
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+                toml(
+                    beforeAndAfter = """
+                    [versions]
+                    java = "21"
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should not remove version from toml when it's being used via string interpolation in build gradle`() {
+            rewriteRun(
+                buildGradle(
+                    beforeAndAfter = $$"""
+                    dependencies {
+                        implementation "org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.get()}"
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+                toml(
+                    beforeAndAfter = """
+                    [versions]
+                    kotlin = "2.0.0"
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+    }
+
+    @Nested
+    inner class TomlAndBuildGradleKts : BaseSpec() {
+
+        @Test
+        fun `should not remove version from toml when it's being used in build gradle kts`() {
+            rewriteRun(
+                buildGradleKts(
+                    beforeAndAfter = """
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
+    }
+}
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+                toml(
+                    beforeAndAfter = """
+                    [versions]
+                    java = "21"
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
+        fun `should not remove version from toml when it's being used via string interpolation in build gradle kts`() {
+            rewriteRun(
+                buildGradleKts(
+                    beforeAndAfter = $$"""
+                        val kotlinVersion = "${libs.versions.kotlin.get()}"
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+                toml(
+                    beforeAndAfter = """
+                    [versions]
+                    kotlin = "2.0.0"
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+    }
 }

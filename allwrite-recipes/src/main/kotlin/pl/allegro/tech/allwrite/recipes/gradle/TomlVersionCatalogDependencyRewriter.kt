@@ -16,6 +16,7 @@ internal class TomlVersionCatalogDependencyRewriter(
     newGroupId: String?,
     newArtifactId: String?,
     newVersion: String?,
+    private val gradleUsedVersionKeys: Set<String> = emptySet(),
 ) : TomlIsoVisitor<ExecutionContext>() {
     private val target = TomlDependencyRewriteTarget(oldGroupId, oldArtifactId, newGroupId, newArtifactId, newVersion)
     private val planner = TomlVersionCatalogRewritePlanner(target)
@@ -66,7 +67,7 @@ internal class TomlVersionCatalogDependencyRewriter(
             if (table?.name() != VERSION_CATALOG_TABLE_VERSIONS) return@map value
             val entries = table.values.filter { versionEntry ->
                 val key = (versionEntry as? Toml.KeyValue)?.stringKey()
-                key in usedVersionRefs
+                key in usedVersionRefs || key in gradleUsedVersionKeys
             }
             if (entries.size == table.values.size) value else table.withValues(entries)
         }
