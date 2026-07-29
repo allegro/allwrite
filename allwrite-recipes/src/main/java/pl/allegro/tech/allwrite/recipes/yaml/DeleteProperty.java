@@ -41,6 +41,10 @@ import static org.openrewrite.Tree.randomId;
  - preserving prefixes (comments) of deleted entries when needed
  */
 public class DeleteProperty extends Recipe {
+    @Override
+    public Set<String> getTags() {
+        return Set.of("visibility:PUBLIC");
+    }
 
     @Option(displayName = "Property key",
         description = "The key to be deleted.",

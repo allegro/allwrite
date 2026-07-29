@@ -23,7 +23,7 @@ public class ChangeGradleDependency(
 ) : AllwriteRecipe(
     displayName = "Change Gradle dependency with TOML support",
     description = "Changes Gradle dependencies and also updates matching entries in gradle/libs.versions.toml.",
-    visibility = RecipeVisibility.INTERNAL,
+    visibility = RecipeVisibility.PUBLIC,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
         if (oldGroupId.isBlank() || oldArtifactId.isBlank()) {

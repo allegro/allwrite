@@ -15,10 +15,8 @@ public class RecipeMetadata @JvmOverloads public constructor(
 
     public val tags: Set<String> = buildSet {
         add("visibility:$visibility")
-        if (visibility == RecipeVisibility.PUBLIC) {
-            group?.let { add("group:$it") } ?: error("For public recipes, you must specify a 'group' tag!")
-            action?.let { add("action:$it") } ?: error("For public recipes, you must specify a 'action' tag!")
-        }
+        group?.let { add("group:$it") }
+        action?.let { add("action:$it") }
         from?.let { add("from:$it") }
         to?.let { add("to:$it") }
         dependabotArtifacts.forEach { add("dependabot-artifact:$it") }

@@ -57,6 +57,10 @@ import static java.util.Objects.requireNonNull;
 import static org.openrewrite.Tree.randomId;
 
 public class ChangeType extends Recipe {
+    @Override
+    public Set<String> getTags() {
+        return Set.of("visibility:PUBLIC");
+    }
 
     String oldFullyQualifiedTypeName;
     String newFullyQualifiedTypeName;

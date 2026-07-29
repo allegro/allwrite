@@ -25,8 +25,13 @@ import org.openrewrite.java.tree.JavaType;
 import pl.allegro.tech.allwrite.recipes.kotlin.KotlinPropertyMatcher;
 
 import java.util.List;
+import java.util.Set;
 
 public class SimplifyMethodChain extends Recipe {
+    @Override
+    public Set<String> getTags() {
+        return Set.of("visibility:PUBLIC");
+    }
 
     List<String> methodPatternChain;
     String newMethodName;

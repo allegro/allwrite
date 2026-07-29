@@ -32,7 +32,7 @@ public class RemoveUnusedImportsOfType extends Recipe  {
 
     @NotNull
     public Set<String> getTags() {
-        return Set.of("visibility:internal");
+        return Set.of("visibility:PUBLIC");
     }
 
     @Option(displayName = "Types to remove from imports if they are not used",

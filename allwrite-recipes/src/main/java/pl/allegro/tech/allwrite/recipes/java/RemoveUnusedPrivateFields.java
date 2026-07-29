@@ -60,7 +60,7 @@ public class RemoveUnusedPrivateFields extends Recipe {
 
     @Override
     public Set<String> getTags() {
-        return Collections.singleton("RSPEC-S1068");
+        return Set.of("RSPEC-S1068", "visibility:PUBLIC");
     }
 
     @Override
