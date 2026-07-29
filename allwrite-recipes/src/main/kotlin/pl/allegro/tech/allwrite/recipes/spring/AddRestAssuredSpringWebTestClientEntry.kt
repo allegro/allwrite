@@ -17,7 +17,6 @@ import pl.allegro.tech.allwrite.recipes.gradle.VersionCatalogType
 import pl.allegro.tech.allwrite.recipes.gradle.isBuildGradleFile
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.Path as KotlinPath
 
 internal class AddRestAssuredSpringWebTestClientEntry :
     AllwriteScanningRecipe<AddRestAssuredSpringWebTestClientEntry.Context>(
@@ -58,6 +57,10 @@ internal class AddRestAssuredSpringWebTestClientEntry :
                 if (source is Toml.Document && source.sourcePath == TOML_VERSION_CATALOG_PATH) {
                     acc.versionCatalogType = LibsToml
                     ParseTomlVersionCatalog(acc.versionCatalog).visit(source, p, cursor)
+                    acc.restAssuredDetected = acc.restAssuredDetected ||
+                        acc.versionCatalog.libraries.values.any {
+                            it.group == REST_ASSURED_GROUP && it.name == REST_ASSURED_ARTIFACT
+                        }
                 }
                 if (source.isBuildGradleFile()) {
                     acc.moduleRoots.add(source.sourcePath.parent ?: Paths.get(""))
@@ -88,7 +91,7 @@ internal class AddRestAssuredSpringWebTestClientEntry :
     }
 
     private companion object {
-        val TOML_VERSION_CATALOG_PATH = KotlinPath("gradle/libs.versions.toml")
+        val TOML_VERSION_CATALOG_PATH = Path.of("gradle/libs.versions.toml")
         const val REST_ASSURED_GROUP = "io.rest-assured"
         const val REST_ASSURED_ARTIFACT = "rest-assured"
         const val SPRING_WEB_TEST_CLIENT_ARTIFACT = "spring-web-test-client"

@@ -33,10 +33,10 @@ class AddRestAssuredSpringWebTestClientEntryTest : RewriteTest {
                 """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
             buildGradle(
-                before = "dependencies {\n    testImplementation(\"io.rest-assured:rest-assured:5.5.0\")\n}\n",
+                before = "dependencies {\n    testImplementation(libs.rest.assured)\n}\n",
                 after = """
                     dependencies {
-                        testImplementation("io.rest-assured:rest-assured:5.5.0")
+                        testImplementation(libs.rest.assured)
                         testImplementation(libs.spring.web.test.client)
                     }
                 """.trimIndent(),

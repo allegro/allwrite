@@ -18,7 +18,6 @@ import pl.allegro.tech.allwrite.recipes.gradle.VersionCatalogType
 import pl.allegro.tech.allwrite.recipes.gradle.isBuildGradleFile
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.Path as KotlinPath
 
 internal class AddWebTestClientDependency :
     AllwriteScanningRecipe<AddWebTestClientDependency.Context>(
@@ -90,7 +89,7 @@ internal class AddWebTestClientDependency :
     }
 
     private companion object {
-        private val TOML_VERSION_CATALOG_PATH = KotlinPath("gradle/libs.versions.toml")
+        private val TOML_VERSION_CATALOG_PATH = Path.of("gradle/libs.versions.toml")
         private const val WEB_TEST_CLIENT = "spring-boot-webtestclient"
         private const val WEB_TEST_CLIENT_TYPE = "org.springframework.test.web.reactive.server.WebTestClient"
         private const val AUTO_CONFIGURE_WEB_TEST_CLIENT_TYPE =

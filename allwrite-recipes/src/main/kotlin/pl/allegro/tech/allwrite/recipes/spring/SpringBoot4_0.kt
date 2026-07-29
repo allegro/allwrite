@@ -12,6 +12,7 @@ public class SpringBoot4_0 : IsolatedSpringRecipe(from = "3.5", to = "4.0") {
             ChangeSpringBoot4MongoProperties() +
             RelocateAutoConfigureWebTestClient() +
             AddWebTestClientDependency() +
+            AddRestTestClientDependency() +
             upgradeGroovyToV5() +
             upgradeTestcontainersToV2() +
             AddRestAssuredSpringWebTestClientEntry()
