@@ -60,7 +60,8 @@ nav:
           - RemoveUnusedImportsOfType: recipes/java/remove-unused-imports-of-type.md
           - ReplaceFactoryWithConstructor: recipes/java/replace-factory-with-constructor.md
       - Spring:
-          - FindSpringProperty: recipes/spring/find-spring-property.md
+         - PreconditionsAwareAddDependency: recipes/spring/preconditions-aware-add-dependency.md
+         - FindSpringProperty: recipes/spring/find-spring-property.md
           - DeleteSpringProperty: recipes/spring/delete-spring-property.md
           - DeleteSpringPropertyWithValue: recipes/spring/delete-spring-property-with-value.md
           - DeleteSpringPropertyFromSpringAnnotations: recipes/spring/delete-spring-property-from-spring-annotations.md

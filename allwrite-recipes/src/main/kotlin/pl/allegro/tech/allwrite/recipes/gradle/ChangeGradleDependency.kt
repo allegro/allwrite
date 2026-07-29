@@ -8,7 +8,6 @@ import org.openrewrite.TreeVisitor
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility
-import kotlin.io.path.Path
 
 public class ChangeGradleDependency(
     @Option(description = "The old group ID to replace.", example = "org.openrewrite.recipe")
@@ -56,17 +55,15 @@ public class ChangeGradleDependency(
             newVersion = newVersion.takeIf { it.isNotBlank() },
         )
         return object : TreeVisitor<Tree, ExecutionContext>() {
-            private val TOML_VERSION_CATALOG_PATH = Path("gradle/libs.versions.toml")
-
             override fun isAcceptable(sourceFile: SourceFile, ctx: ExecutionContext): Boolean =
-                sourceFile.isBuildGradleFile() || sourceFile is Toml.Document && sourceFile.sourcePath == TOML_VERSION_CATALOG_PATH
+                sourceFile.isBuildGradleFile() || sourceFile.isTomlVersionCatalogFile()
 
             override fun visit(tree: Tree?, ctx: ExecutionContext): Tree? {
                 if (tree !is SourceFile) return tree
                 if (tree.isBuildGradleFile()) {
                     return gradleDependencyRewriter.update(tree)
                 }
-                if (tree is Toml.Document && tree.sourcePath == TOML_VERSION_CATALOG_PATH) {
+                if (tree is Toml.Document && tree.isTomlVersionCatalogFile()) {
                     return tomlDependencyRewriter.visitNonNull(tree, ctx)
                 }
                 return tree

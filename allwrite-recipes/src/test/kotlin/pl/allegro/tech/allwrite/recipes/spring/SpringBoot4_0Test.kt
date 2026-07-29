@@ -83,11 +83,7 @@ class SpringBoot4_0Test : RewriteTest {
             "ReplaceStatusCodeValue",
             "ChangeSpringBoot4WebServerTypes",
             "ChangeSpringBoot4MongoProperties",
-            "RelocateAutoConfigureWebTestClient",
-            "AddWebTestClientDependency",
-            "AddRestTestClientDependency",
-            "ChangeGradleDependency",
-            "AddRestAssuredSpringWebTestClientEntry",
+            "PreconditionsAwareAddDependency",
         )
     }
 
@@ -98,19 +94,23 @@ class SpringBoot4_0Test : RewriteTest {
             java(
                 before = """
                     import org.springframework.boot.test.web.client.TestRestTemplate;
+                    import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
                     import org.springframework.test.web.reactive.server.WebTestClient;
 
                     class Example {
                         TestRestTemplate restTemplate;
+                        WebTestClientBuilderCustomizer webTestClientCustomizer;
                         WebTestClient webTestClient;
                     }
                 """.trimIndent(),
                 after = """
                     import org.springframework.boot.resttestclient.TestRestTemplate;
+                    import org.springframework.boot.webtestclient.autoconfigure.WebTestClientBuilderCustomizer;
                     import org.springframework.test.web.reactive.server.WebTestClient;
 
                     class Example {
                         TestRestTemplate restTemplate;
+                        WebTestClientBuilderCustomizer webTestClientCustomizer;
                         WebTestClient webTestClient;
                     }
                 """.trimIndent(),
