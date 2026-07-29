@@ -13,7 +13,10 @@ public enum class RecipeVisibility {
      * For usage by end users. Recipes with a group and action can be executed via a friendly name:
      * ```
      * allwrite run group/friendlyName
+     * ```
      *
+     * And via an ID:
+     * ```
      * allwrite run --recipe pl.allegro.tech.recipes.SomePublicRecipe
      * ```
      */
