@@ -29,7 +29,10 @@ public open class PreconditionsAwareAddDependency(
     public val requiredClasspath: List<String> = emptyList(),
     @Option(description = "Fully qualified types whose usage triggers dependency insertion.", example = "com.example.MyType")
     public val detectedTypes: List<String> = emptyList(),
-    @Option(description = "Gradle dependencies whose presence triggers dependency insertion, in groupId:artifactId format.", example = "io.rest-assured:rest-assured")
+    @Option(
+        description = "Gradle dependencies whose presence triggers dependency insertion, in groupId:artifactId format.",
+        example = "io.rest-assured:rest-assured",
+    )
     public val detectedDependencies: List<String> = emptyList(),
     @Option(description = "Gradle configuration to add the dependency to.", example = "testImplementation")
     public val configuration: String = "",

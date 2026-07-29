@@ -12,5 +12,4 @@ internal fun Tree?.isBuildGradleFile(): Boolean =
         sourcePath.endsWith("build.gradle") || sourcePath.endsWith("build.gradle.kts")
     } == true
 
-internal fun Tree?.isTomlVersionCatalogFile(): Boolean =
-    this is Toml.Document && sourcePath == TOML_VERSION_CATALOG_PATH
+internal fun Tree?.isTomlVersionCatalogFile(): Boolean = this is Toml.Document && sourcePath == TOML_VERSION_CATALOG_PATH
