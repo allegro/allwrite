@@ -127,15 +127,4 @@ internal class RegexpDependencyChanger(
         }
 
     private fun trimVersionSeparator(separator: String): String = separator.replace(Regex("[,:\\s]+$"), "")
-
-    private fun globToTokenRegex(pattern: String): String =
-        buildString {
-            pattern.forEach { char ->
-                when (char) {
-                    '*' -> append("[^'\",:\\s]*")
-                    '?' -> append("[^'\",:\\s]")
-                    else -> append(Regex.escape(char.toString()))
-                }
-            }
-        }
 }

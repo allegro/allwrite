@@ -1,6 +1,7 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
 import com.github.zafarkhaja.semver.Version
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 internal class RegexpDependencyUpdater(
@@ -21,36 +22,63 @@ internal class RegexpDependencyUpdater(
      * - phoenix-provisioning-plugin = { group = "GROUP", name = "ID", version.ref = "propertyName" } // TOML format
      */
     private val regexpDependencyDeclaration =
-        "(?<group>$groupId)" +
+        "(?<group>${Regex.escape(groupId)})" +
             "(?<separator1>['\",:\\s]+)" +
             "(?<nameKey>name[:=\\s'\"]+)?" +
-            "(?<artifactId>$artifactId)" +
+            "(?<artifactId>${globToTokenRegex(artifactId)})" +
             "(?<separator2>['\",:\\s]+)" +
             "(?<versionKey>version(.ref)?[:=\\s'\"]+)?" +
             "(?<version>[^('|\")]+)"
 
     fun update(originalText: String): String {
         val patternOptions = Pattern.MULTILINE
+        val compiledVersionPattern = Pattern.compile(versionPattern)
         val matcher = Pattern
             .compile(regexpDependencyDeclaration, patternOptions)
             .matcher(originalText)
 
         if (!matcher.find()) {
-            // didn't find a dependency declaration matching specified regular expression
             return originalText
         }
 
-        val versionFound = matcher.group("version")
-        val versionPattern = Pattern.compile(versionPattern)
-        val versionMatcher = versionPattern.matcher(versionFound)
-        val currentSemver = parseSemver(versionFound)
+        val (textWithDirectVersionsReplaced, variableNamesRequiringUpdate) = replaceDirectVersions(matcher, compiledVersionPattern)
 
-        return if (versionMatcher.find() && currentSemver != null && !targetSemver.isLowerThan(currentSemver)) {
-            // version found and it matches version pattern, replace the version
-            matcher.replaceFirst($$"${group}${separator1}${nameKey}${artifactId}${separator2}${versionKey}$$normalizedTargetVersion")
-        } else {
-            updateVersionInVariable(originalText, versionFound, patternOptions, versionPattern)
+        return variableNamesRequiringUpdate.fold(textWithDirectVersionsReplaced) { text, versionFound ->
+            updateVersionInVariable(text, versionFound, patternOptions, compiledVersionPattern)
         }
+    }
+
+    private data class ReplacementResult(
+        val textWithDirectVersionsReplaced: String,
+        val variableNamesRequiringUpdate: List<String>,
+    )
+
+    private fun replaceDirectVersions(matcher: Matcher, compiledVersionPattern: Pattern): ReplacementResult {
+        val result = StringBuffer()
+        val variableVersionsToUpdate = mutableListOf<String>()
+
+        do {
+            val versionFound = matcher.group("version")
+            val versionMatcher = compiledVersionPattern.matcher(versionFound)
+            val currentSemver = parseSemver(versionFound)
+
+            if (versionMatcher.find() && currentSemver != null && !targetSemver.isLowerThan(currentSemver)) {
+                val replacement = matcher.group("group") +
+                    matcher.group("separator1") +
+                    (matcher.group("nameKey") ?: "") +
+                    matcher.group("artifactId") +
+                    matcher.group("separator2") +
+                    (matcher.group("versionKey") ?: "") +
+                    normalizedTargetVersion
+                matcher.appendReplacement(result, Matcher.quoteReplacement(replacement))
+            } else {
+                variableVersionsToUpdate.add(versionFound)
+                matcher.appendReplacement(result, Matcher.quoteReplacement(matcher.group()))
+            }
+        } while (matcher.find())
+
+        matcher.appendTail(result)
+        return ReplacementResult(result.toString(), variableVersionsToUpdate)
     }
 
     private fun updateVersionInVariable(originalText: String, versionFound: String, patternOptions: Int, versionPattern: Pattern): String {
