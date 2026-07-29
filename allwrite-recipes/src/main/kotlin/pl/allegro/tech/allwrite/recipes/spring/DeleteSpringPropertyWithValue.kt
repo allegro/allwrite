@@ -11,7 +11,7 @@ import org.openrewrite.properties.tree.Properties
 import org.openrewrite.yaml.search.FindProperty
 import org.openrewrite.yaml.tree.Yaml.Documents
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.util.Find
 import pl.allegro.tech.allwrite.recipes.yaml.DeleteProperty as DeleteYamlProperty
 
@@ -30,7 +30,7 @@ public class DeleteSpringPropertyWithValue(
     public val propertyValue: String,
 ) : AllwriteRecipe(
     displayName = "Delete Spring property having specific value",
-    visibility = PUBLIC,
+    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor(propertyKey, propertyValue)
 

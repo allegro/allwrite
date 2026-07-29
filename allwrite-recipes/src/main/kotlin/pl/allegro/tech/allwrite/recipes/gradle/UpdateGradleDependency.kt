@@ -9,7 +9,7 @@ import org.openrewrite.Tree
 import org.openrewrite.TreeVisitor
 import org.openrewrite.text.PlainTextParser
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 
 public class UpdateGradleDependency(
     @Option
@@ -39,7 +39,7 @@ public class UpdateGradleDependency(
         | - classpath group: 'GROUP', name: 'ID', version: "${'$'}versionInVariable" +
         | - plugin-name = { group = "GROUP", name = "ID", version.ref = \"versionInVariable\" } // TOML format.
     """.trimMargin(),
-    visibility = PUBLIC,
+    visibility = INTERNAL,
 ) {
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> =

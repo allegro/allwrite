@@ -11,7 +11,7 @@ import org.openrewrite.java.search.UsesType
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.gradle.AddGradleDependency
 import pl.allegro.tech.allwrite.recipes.gradle.LibsToml
 import pl.allegro.tech.allwrite.recipes.gradle.ParseTomlVersionCatalog
@@ -45,7 +45,7 @@ public open class PreconditionsAwareAddDependency(
 ) : AllwriteScanningRecipe<PreconditionsAwareAddDependency.Context>(
     displayName = displayName,
     description = description,
-    visibility = PUBLIC,
+    visibility = INTERNAL,
 ),
     ClasspathAwareRecipe {
 

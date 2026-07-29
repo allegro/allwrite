@@ -10,7 +10,7 @@ import org.openrewrite.internal.NameCaseConvention.LOWER_HYPHEN
 import org.openrewrite.properties.tree.Properties
 import org.openrewrite.yaml.tree.Yaml
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.util.FindAndReplace
 import java.util.regex.Pattern
 import org.openrewrite.java.spring.ChangeSpringPropertyKey as DefaultChangeSpringPropertyKey
@@ -26,7 +26,7 @@ public class ChangeSpringPropertyKey(
     public val newKey: String,
 ) : AllwriteRecipe(
     displayName = "Change a key of spring application property",
-    visibility = PUBLIC,
+    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor(oldKey, newKey)
 

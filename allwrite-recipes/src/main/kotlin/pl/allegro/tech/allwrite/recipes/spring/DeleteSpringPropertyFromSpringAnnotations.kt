@@ -10,7 +10,7 @@ import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.JavaType.FullyQualified
 import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.java.AnnotationArgument
 import pl.allegro.tech.allwrite.recipes.java.MultiValueAnnotationArgument
 import pl.allegro.tech.allwrite.recipes.java.PrimitiveAnnotationArgument
@@ -22,7 +22,7 @@ public class DeleteSpringPropertyFromSpringAnnotations(
     private val propertyName: String,
 ) : AllwriteRecipe(
     displayName = "Remove Spring property from @SpringBootTest and @TestPropertySource annotations",
-    visibility = PUBLIC,
+    visibility = INTERNAL,
 ),
     ClasspathAwareRecipe {
 

@@ -26,7 +26,7 @@ public class AddGradleDependency(
 ) : AllwriteScanningRecipe<AddGradleDependency.GradleContext>(
     displayName = "Adds dependency to gradle",
     description = "Adds a dependency to gradle with support of TOML version catalog and build.kts.",
-    visibility = RecipeVisibility.PUBLIC,
+    visibility = RecipeVisibility.INTERNAL,
 ) {
 
     public data class GradleContext(

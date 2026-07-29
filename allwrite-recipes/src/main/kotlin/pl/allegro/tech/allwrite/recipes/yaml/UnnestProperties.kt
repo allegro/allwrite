@@ -20,7 +20,7 @@ public class UnnestProperties(
 ) : AllwriteRecipe(
     displayName = "Unnest properties",
     description = "Remove one level of nesting from mapping.",
-    visibility = RecipeVisibility.PUBLIC,
+    visibility = RecipeVisibility.INTERNAL,
 ) {
     private val targetMappingPath = targetPath.substringBeforeLast('.')
     private val targetMappingEntryKey = targetPath.substringAfterLast('.')

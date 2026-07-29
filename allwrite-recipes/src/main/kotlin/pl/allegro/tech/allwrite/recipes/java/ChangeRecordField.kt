@@ -6,13 +6,13 @@ import org.openrewrite.java.JavaIsoVisitor
 import org.openrewrite.java.tree.J
 import org.openrewrite.java.tree.JavaType
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
+import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 
 public class ChangeRecordField(
     private val declaringTypeFqn: String,
     private val oldFieldName: String,
     private val newFieldName: String,
-) : AllwriteRecipe(visibility = PUBLIC) {
+) : AllwriteRecipe(visibility = INTERNAL) {
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> =
         object : JavaIsoVisitor<ExecutionContext>() {

@@ -50,7 +50,7 @@ public open class RemoveAnnotatedMethod(
         }
         .
     """.trimIndent(),
-    visibility = RecipeVisibility.PUBLIC,
+    visibility = RecipeVisibility.INTERNAL,
 ) {
 
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> {

@@ -15,7 +15,6 @@ import org.openrewrite.java.tree.TypeUtils;
 import org.openrewrite.kotlin.tree.K;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
@@ -30,10 +29,6 @@ public class RemoveUnusedImportsOfType extends Recipe  {
         this.types = types;
     }
 
-    @NotNull
-    public Set<String> getTags() {
-        return Set.of("visibility:PUBLIC");
-    }
 
     @Option(displayName = "Types to remove from imports if they are not used",
         description = "An array of fully-qualified type names to remove from imports if they are not used in the code.",
