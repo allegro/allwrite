@@ -74,6 +74,10 @@ class SpringBoot4_0Test : RewriteTest {
             "ReplaceStatusCodeValue",
             "ChangeSpringBoot4WebServerTypes",
             "ChangeSpringBoot4MongoProperties",
+            "RelocateAutoConfigureWebTestClient",
+            "AddWebTestClientDependency",
+            "ChangeGradleDependency",
+            "AddRestAssuredSpringWebTestClientEntry",
         )
     }
 

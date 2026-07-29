@@ -119,7 +119,7 @@ All external recipe subcommands also support `-v`/`--verbose` and `--log-level`.
 
 ### Running from sources
 
-To build and run from source without installing, use Gradle directly:
+To build and run from source without installing, run Gradle from the repository root:
 
 ```bash
 ./gradlew :allwrite-cli:run --args "run springBoot/upgrade 3 4"
