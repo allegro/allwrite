@@ -6,13 +6,13 @@ public class SpringBoot4_0 : IsolatedSpringRecipe(from = "3.5", to = "4.0") {
 
     override fun getRecipeList(): List<Recipe> =
         super.getRecipeList() +
-//            AddNonNullableTypeBoundsToSpringRepositories() +
-//            ReplaceStatusCodeValue() +
-//            ChangeSpringBoot4WebServerTypes() +
-//            ChangeSpringBoot4MongoProperties() +
+            AddNonNullableTypeBoundsToSpringRepositories() +
+            ReplaceStatusCodeValue() +
+            ChangeSpringBoot4WebServerTypes() +
+            ChangeSpringBoot4MongoProperties() +
             RelocateAutoConfigureWebTestClient() +
             AddWebTestClientDependency() +
-//            upgradeGroovyToV5() +
+            upgradeGroovyToV5() +
             upgradeTestcontainersToV2() +
             AddRestAssuredSpringWebTestClientEntry()
 }
