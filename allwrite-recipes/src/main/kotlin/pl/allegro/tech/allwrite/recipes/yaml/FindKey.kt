@@ -23,8 +23,6 @@ public class FindKey(
 
     override fun getDescription(): String = "Should be used as precondition, which fires when YAML contains the specified key."
 
-    override fun getTags(): Set<String> = setOf("visibility:PUBLIC")
-
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = if (key == null) TreeVisitor.noop<Tree, ExecutionContext>() else Visitor(key)
 
     internal class Visitor(

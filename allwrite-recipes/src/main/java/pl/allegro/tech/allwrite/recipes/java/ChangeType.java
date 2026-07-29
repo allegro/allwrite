@@ -58,7 +58,6 @@ import static org.openrewrite.Tree.randomId;
 
 public class ChangeType extends Recipe {
 
-
     String oldFullyQualifiedTypeName;
     String newFullyQualifiedTypeName;
     Boolean ignoreDefinition;

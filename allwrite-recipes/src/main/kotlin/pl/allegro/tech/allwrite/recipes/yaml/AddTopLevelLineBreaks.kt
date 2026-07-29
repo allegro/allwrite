@@ -12,8 +12,6 @@ public class AddTopLevelLineBreaks : Recipe() {
 
     override fun getDescription(): String = "Adds  conventional line breaks so that top level entries had an empty lines between."
 
-    override fun getTags(): Set<String> = setOf("visibility:PUBLIC")
-
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor
 
     internal object Visitor : YamlIsoVisitor<ExecutionContext>() {
