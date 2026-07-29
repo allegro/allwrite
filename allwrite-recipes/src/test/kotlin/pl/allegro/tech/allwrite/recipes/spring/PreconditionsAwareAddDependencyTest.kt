@@ -18,7 +18,7 @@ internal class PreconditionsAwareAddDependencyTest : RewriteTest {
     inner class GradleBuildCases {
 
         @Test
-        fun `should add dependency when any configured type is used`() {
+        fun `should add dependency when any required type is used`() {
             // given
             rewriteRun(
                 java(
@@ -45,7 +45,7 @@ internal class PreconditionsAwareAddDependencyTest : RewriteTest {
         }
 
         @Test
-        fun `should not add dependency when no configured type is used`() {
+        fun `should not add dependency when no required type is used`() {
             // given
             rewriteRun(
                 { spec -> spec.expectedCyclesThatMakeChanges(0) },
@@ -64,7 +64,7 @@ internal class PreconditionsAwareAddDependencyTest : RewriteTest {
     inner class TomlVersionCatalogCases {
 
         @Test
-        fun `should add version catalog dependency when a configured type is used`() {
+        fun `should add version catalog dependency when a required type is used`() {
             // given
             rewriteRun(
                 { spec -> spec.recipe(recipe(versionCatalogName = "example")) },
