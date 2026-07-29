@@ -33,6 +33,8 @@ class UpgradeTestcontainersToV2Test : RewriteTest {
                     [libraries]
                     mongodb = { module = "org.testcontainers:mongodb", version.ref = "testcontainers" }
                     junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+                    active-mq = { module = "org.testcontainers:activemq", version.ref = "testcontainers" }
+                    yugabyte = { module = "org.testcontainers:yugabytedb", version.ref = "testcontainers" }
                 """.trimIndent(),
                 after = """
                     [versions]
@@ -40,15 +42,37 @@ class UpgradeTestcontainersToV2Test : RewriteTest {
                     [libraries]
                     testcontainers-mongodb = { group = "org.testcontainers", name = "testcontainers-mongodb" }
                     junit = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
+                    active-mq = { group = "org.testcontainers", name = "testcontainers-activemq" }
+                    yugabyte = { group = "org.testcontainers", name = "testcontainers-yugabytedb" }
                 """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
             buildGradle(
-                before = "dependencies { implementation(\"org.testcontainers:mongodb:1.20.0\") }",
-                after = "dependencies { implementation(\"org.testcontainers:testcontainers-mongodb\") }",
+                before = """
+                    dependencies {
+                        implementation("org.testcontainers:mongodb:1.20.0")
+                        implementation("org.testcontainers:oracle-xe:1.20.0")
+                    }
+                """.trimIndent(),
+                after = """
+                    dependencies {
+                        implementation("org.testcontainers:testcontainers-mongodb")
+                        implementation("org.testcontainers:testcontainers-oracle-xe")
+                    }
+                """.trimIndent(),
             ),
             buildGradleKts(
-                before = "dependencies { implementation(\"org.testcontainers:junit-jupiter:1.20.0\") }",
-                after = "dependencies { implementation(\"org.testcontainers:testcontainers-junit-jupiter\") }",
+                before = """
+                    dependencies {
+                        implementation("org.testcontainers:junit-jupiter:1.20.0")
+                        implementation("org.testcontainers:typesense:1.20.0")
+                    }
+                """.trimIndent(),
+                after = """
+                    dependencies {
+                        implementation("org.testcontainers:testcontainers-junit-jupiter")
+                        implementation("org.testcontainers:testcontainers-typesense")
+                    }
+                """.trimIndent(),
             ),
         )
     }
