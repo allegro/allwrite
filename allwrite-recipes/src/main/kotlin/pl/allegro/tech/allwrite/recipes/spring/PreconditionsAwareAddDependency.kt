@@ -28,12 +28,12 @@ public open class PreconditionsAwareAddDependency(
     @Option(description = "Classpath entries required to parse the configured types.", required = false)
     public val requiredClasspath: List<String> = emptyList(),
     @Option(description = "Fully qualified types whose usage triggers dependency insertion.", example = "com.example.MyType")
-    public val detectedTypes: List<String> = emptyList(),
+    public val requiredTypes: List<String> = emptyList(),
     @Option(
         description = "Gradle dependencies whose presence triggers dependency insertion, in groupId:artifactId format.",
         example = "io.rest-assured:rest-assured",
     )
-    public val detectedDependencies: List<String> = emptyList(),
+    public val requiredDependencies: List<String> = emptyList(),
     @Option(description = "Gradle configuration to add the dependency to.", example = "testImplementation")
     public val configuration: String = "",
     @Option(description = "Group ID of the dependency to add.", example = "org.springframework.boot")
@@ -62,7 +62,7 @@ public open class PreconditionsAwareAddDependency(
 
     override fun getScanner(acc: Context): TreeVisitor<*, ExecutionContext> {
         val dependencyCoordinates = dependencyCoordinates()
-        require(detectedTypes.isNotEmpty() || dependencyCoordinates.isNotEmpty()) {
+        require(requiredTypes.isNotEmpty() || dependencyCoordinates.isNotEmpty()) {
             "At least one type or dependency must be configured."
         }
         require(configuration.isNotBlank() && groupId.isNotBlank() && artifactId.isNotBlank()) {
@@ -75,7 +75,7 @@ public open class PreconditionsAwareAddDependency(
                     return tree
                 }
             }
-            private val findUsedType = detectedTypes
+            private val findUsedType = requiredTypes
                 .takeIf { it.isNotEmpty() }
                 ?.let { types ->
                     Preconditions.check(
@@ -119,7 +119,7 @@ public open class PreconditionsAwareAddDependency(
     }
 
     private fun dependencyCoordinates(): List<DependencyCoordinates> =
-        detectedDependencies.map { dependency ->
+        requiredDependencies.map { dependency ->
             val (groupId, artifactId) = dependency.split(":").also { parts ->
                 require(parts.size == 2 && parts.all { it.isNotBlank() }) {
                     "Detected dependencies must use the groupId:artifactId format."

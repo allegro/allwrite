@@ -58,8 +58,6 @@ public class ExpandMappings(
         Transforms properties from plain structure into hierarchical and merges paths.
         """.trimIndent()
 
-    override fun getTags(): Set<String> = setOf("visibility:PUBLIC")
-
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor(prefix, excludes)
 
     public open class Visitor(
