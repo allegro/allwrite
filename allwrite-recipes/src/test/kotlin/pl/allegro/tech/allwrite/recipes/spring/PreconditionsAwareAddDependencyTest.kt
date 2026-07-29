@@ -129,10 +129,7 @@ internal class PreconditionsAwareAddDependencyTest : RewriteTest {
         }
     }
 
-    private fun recipe(
-        versionCatalogName: String = "example-dependency",
-        requiredClasspath: List<String> = emptyList(),
-    ): PreconditionsAwareAddDependency =
+    private fun recipe(versionCatalogName: String = "example-dependency", requiredClasspath: List<String> = emptyList()): PreconditionsAwareAddDependency =
         PreconditionsAwareAddDependency(
             requiredClasspath = requiredClasspath,
             detectedTypes = listOf("java.util.List", "java.util.Set"),
