@@ -14,10 +14,10 @@ class UpdateGradleDependencyTest {
         spec.recipe(recipe())
     }
 
-    private fun updateSpockWithCustomSourceVersionPatternRecipe(): UpdateGradleDependency =
+    private fun updateSpockWithWildcardArtifactIdRecipe(): UpdateGradleDependency =
         recipe(
             groupId = "org.spockframework",
-            artifactId = "spock-bom",
+            artifactId = "*",
             targetVersion = "2.4-groovy-5.0",
             sourceVersionPattern = "\\d+\\.\\d+.*",
         )
@@ -125,18 +125,20 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
-        fun `should update dependency version in build gradle with custom sourceVersionPattern`() {
+        fun `should update dependency version in build gradle with wildcard artifactId`() {
             rewriteRun(
-                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
+                { spec -> spec.recipe(updateSpockWithWildcardArtifactIdRecipe()) },
                 buildGradle(
                     before = """
                     dependencies {
-                        testImplementation platform(group: 'org.spockframework', name: 'spock-bom', version: '2.4-M4-groovy-4.0')
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-core', version: '2.4-M4-groovy-4.0')
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-spring', version: '2.4-M4-groovy-4.0')
                     }
                     """.trimIndent(),
                     after = """
                     dependencies {
-                        testImplementation platform(group: 'org.spockframework', name: 'spock-bom', version: '2.4-groovy-5.0')
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-core', version: '2.4-groovy-5.0')
+                        testImplementation platform(group: 'org.spockframework', name: 'spock-spring', version: '2.4-groovy-5.0')
                     }
                     """.trimIndent(),
                 ) { path("build.gradle") },
@@ -232,18 +234,20 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
-        fun `should update dependency version in build gradle kts with custom sourceVersionPattern`() {
+        fun `should update dependency version in build gradle kts with wildcard artifactId`() {
             rewriteRun(
-                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
+                { spec -> spec.recipe(updateSpockWithWildcardArtifactIdRecipe()) },
                 buildGradleKts(
                     before = """
                     dependencies {
-                        testImplementation(platform(group = 'org.spockframework', name = 'spock-bom', version = '2.4-M4-groovy-4.0'))
+                        testImplementation(platform(group = 'org.spockframework', name = 'spock-core', version = '2.4-M4-groovy-4.0'))
+                        testImplementation(platform(group = 'org.spockframework', name = 'spock-spring', version = '2.4-M4-groovy-4.0'))
                     }
                     """.trimIndent(),
                     after = """
                     dependencies {
-                        testImplementation(platform(group = 'org.spockframework', name = 'spock-bom', version = '2.4-groovy-5.0'))
+                        testImplementation(platform(group = 'org.spockframework', name = 'spock-core', version = '2.4-groovy-5.0'))
+                        testImplementation(platform(group = 'org.spockframework', name = 'spock-spring', version = '2.4-groovy-5.0'))
                     }
                     """.trimIndent(),
                 ) { path("build.gradle.kts") },
@@ -329,17 +333,19 @@ class UpdateGradleDependencyTest {
         }
 
         @Test
-        fun `should update dependency version in toml with custom sourceVersionPattern`() {
+        fun `should update dependency version in toml with wildcard artifactId`() {
             rewriteRun(
-                { spec -> spec.recipe(updateSpockWithCustomSourceVersionPatternRecipe()) },
+                { spec -> spec.recipe(updateSpockWithWildcardArtifactIdRecipe()) },
                 toml(
                     before = """
                     [libraries]
-                    spockframework-bom = { group = "org.spockframework", name = "spock-bom", version = "2.4-M4-groovy-4.0" }
+                    spockframework-core = { group = "org.spockframework", name = "spock-core", version = "2.4-M4-groovy-4.0" }
+                    spockframework-spring = { group = "org.spockframework", name = "spock-spring", version = "2.4-M4-groovy-4.0" }
                     """.trimIndent(),
                     after = """
                     [libraries]
-                    spockframework-bom = { group = "org.spockframework", name = "spock-bom", version = "2.4-groovy-5.0" }
+                    spockframework-core = { group = "org.spockframework", name = "spock-core", version = "2.4-groovy-5.0" }
+                    spockframework-spring = { group = "org.spockframework", name = "spock-spring", version = "2.4-groovy-5.0" }
                     """.trimIndent(),
                 ) { path("gradle/libs.versions.toml") },
             )
