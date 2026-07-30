@@ -1,6 +1,7 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
 import com.github.zafarkhaja.semver.Version
+import pl.allegro.tech.allwrite.recipes.util.globToTokenRegex
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -25,7 +26,7 @@ internal class RegexpDependencyUpdater(
         "(?<group>${Regex.escape(groupId)})" +
             "(?<separator1>['\",:\\s]+)" +
             "(?<nameKey>name[:=\\s'\"]+)?" +
-            "(?<artifactId>${globToTokenRegex(artifactId)})" +
+            "(?<artifactId>${artifactId.globToTokenRegex()})" +
             "(?<separator2>['\",:\\s]+)" +
             "(?<versionKey>version(.ref)?[:=\\s'\"]+)?" +
             "(?<version>[^('|\")]+)"

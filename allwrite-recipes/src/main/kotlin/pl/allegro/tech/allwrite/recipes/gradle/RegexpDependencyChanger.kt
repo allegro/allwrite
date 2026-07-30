@@ -1,5 +1,6 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
+import pl.allegro.tech.allwrite.recipes.util.globToTokenRegex
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -25,10 +26,10 @@ internal class RegexpDependencyChanger(
         Rule(
             type = RuleType.VERSION_KEY,
             pattern = Pattern.compile(
-                "(?<group>${globToTokenRegex(oldGroupId)})" +
+                "(?<group>${oldGroupId.globToTokenRegex()})" +
                     "(?<separator1>['\",:\\s]+)" +
                     "(?<nameKey>name[:=\\s'\"]+)?" +
-                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
+                    "(?<artifactId>${oldArtifactId.globToTokenRegex()})" +
                     "(?<separator2>['\",:\\s]+)" +
                     "(?<versionKey>version(\\.ref)?[:=\\s]+)" +
                     "(?<versionQuote>['\"]?)" +
@@ -40,9 +41,9 @@ internal class RegexpDependencyChanger(
         Rule(
             type = RuleType.VERSION_VALUE,
             pattern = Pattern.compile(
-                "(?<group>${globToTokenRegex(oldGroupId)})" +
+                "(?<group>${oldGroupId.globToTokenRegex()})" +
                     "(?<separator1>['\",: \\t]+)" +
-                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
+                    "(?<artifactId>${oldArtifactId.globToTokenRegex()})" +
                     "(?<separator2>['\",: \\t]+)" +
                     "(?<version>\\$\\{[^}]+}|[^()'\"\\s,}]+)",
                 Pattern.MULTILINE,
@@ -51,10 +52,10 @@ internal class RegexpDependencyChanger(
         Rule(
             type = RuleType.VERSIONLESS,
             pattern = Pattern.compile(
-                "(?<group>${globToTokenRegex(oldGroupId)})" +
+                "(?<group>${oldGroupId.globToTokenRegex()})" +
                     "(?<separator1>['\",:\\s]+)" +
                     "(?<nameKey>name[:=\\s'\"]+)?" +
-                    "(?<artifactId>${globToTokenRegex(oldArtifactId)})" +
+                    "(?<artifactId>${oldArtifactId.globToTokenRegex()})" +
                     "(?<separator2>['\",:\\s]+)" +
                     "(?=[,)\\]}\\s]|$)",
                 Pattern.MULTILINE,

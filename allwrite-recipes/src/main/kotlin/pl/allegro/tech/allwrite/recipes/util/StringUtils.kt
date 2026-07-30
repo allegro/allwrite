@@ -1,8 +1,9 @@
-package pl.allegro.tech.allwrite.recipes.gradle
+package pl.allegro.tech.allwrite.recipes.util
 
-internal fun globToTokenRegex(pattern: String): String =
-    buildString {
-        pattern.forEach { char ->
+internal fun String.globToTokenRegex(): String {
+    val thisString = this
+    return buildString {
+        thisString.forEach { char ->
             when (char) {
                 '*' -> append("[^'\",:\\s]*")
                 '?' -> append("[^'\",:\\s]")
@@ -10,3 +11,4 @@ internal fun globToTokenRegex(pattern: String): String =
             }
         }
     }
+}
