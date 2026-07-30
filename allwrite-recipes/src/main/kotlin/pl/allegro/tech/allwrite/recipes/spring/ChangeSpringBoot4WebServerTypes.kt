@@ -3,14 +3,12 @@ package pl.allegro.tech.allwrite.recipes.spring
 import org.openrewrite.Recipe
 import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.java.ChangeType
 
 internal class ChangeSpringBoot4WebServerTypes :
     AllwriteRecipe(
         displayName = "Change Spring Boot 4 web server types",
         description = "Move Spring Boot web server types to their Spring Boot 4 packages.",
-        visibility = INTERNAL,
     ),
     ClasspathAwareRecipe {
 

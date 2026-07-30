@@ -5,16 +5,13 @@ import org.openrewrite.ScanningRecipe
 public abstract class AllwriteScanningRecipe<T : Any> @JvmOverloads public constructor(
     displayName: String? = null,
     description: String? = null,
-    visibility: RecipeVisibility = RecipeVisibility.INTERNAL,
-    group: String? = null,
-    recipe: String? = null,
     from: String? = null,
     to: String? = null,
     dependabotArtifacts: List<String> = emptyList(),
 ) : ScanningRecipe<T>() {
 
     private val metadata =
-        RecipeMetadata(displayName, description, visibility, group, recipe, from, to, dependabotArtifacts)
+        RecipeMetadata(displayName, description, from, to, dependabotArtifacts)
 
     override fun getDisplayName(): String = metadata.displayName
     override fun getDescription(): String = metadata.description

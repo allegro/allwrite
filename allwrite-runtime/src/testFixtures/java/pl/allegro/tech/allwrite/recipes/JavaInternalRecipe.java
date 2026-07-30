@@ -22,6 +22,6 @@ public class JavaInternalRecipe extends Recipe {
     @NotNull
     @Override
     public Set<String> getTags() {
-        return Set.of("visibility:internal");
+        return Set.of();
     }
 }

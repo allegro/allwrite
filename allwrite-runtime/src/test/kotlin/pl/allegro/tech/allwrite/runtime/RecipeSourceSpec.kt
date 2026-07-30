@@ -17,7 +17,7 @@ class RecipeSourceSpec : BaseRuntimeSpec() {
     init {
         val recipeSource: RecipeSource by inject()
 
-        test("should find all allegro recipes with public visibility") {
+        test("should find all CLI recipes") {
             // when
             val recipes = recipeSource.findAll()
 

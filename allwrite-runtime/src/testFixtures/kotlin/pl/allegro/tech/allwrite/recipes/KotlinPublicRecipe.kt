@@ -1,7 +1,6 @@
 package pl.allegro.tech.allwrite.recipes
 
 import org.openrewrite.Recipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 
 class KotlinPublicRecipe : Recipe() {
 
@@ -9,5 +8,5 @@ class KotlinPublicRecipe : Recipe() {
 
     override fun getDescription() = "Public Kotlin recipe description."
 
-    override fun getTags() = setOf("visibility:${RecipeVisibility.PUBLIC}")
+    override fun getTags() = setOf("group:kotlin", "action:upgrade")
 }

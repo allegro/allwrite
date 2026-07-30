@@ -8,6 +8,7 @@ import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.api.RecipeCoordinates
 import pl.allegro.tech.allwrite.api.getFromVersion
 import pl.allegro.tech.allwrite.api.getToVersion
+import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
 import java.net.URI
 
@@ -121,6 +122,23 @@ class RecipeCoordinatesSpec : FunSpec() {
 
             // then
             recipeCoordinates shouldBe null
+        }
+
+        test("should identify CLI recipes independently of version tags") {
+            // given
+            val recipeDescriptor = RecipeDescriptor(
+                tags = setOf(
+                    "group:some-group",
+                    "action:some-action",
+                    "from:not-a-version",
+                ),
+            )
+
+            // when
+            val isCliRecipe = recipeDescriptor.isCliRecipe()
+
+            // then
+            isCliRecipe shouldBe true
         }
 
         test("should get fromVersion from descriptor") {

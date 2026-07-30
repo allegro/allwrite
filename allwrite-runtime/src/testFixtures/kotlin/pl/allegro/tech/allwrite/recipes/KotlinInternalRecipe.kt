@@ -8,5 +8,4 @@ class KotlinInternalRecipe : Recipe() {
 
     override fun getDescription() = "Internal Kotlin recipe description."
 
-    override fun getTags() = setOf("visibility:internal")
 }

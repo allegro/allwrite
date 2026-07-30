@@ -5,8 +5,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
+import pl.allegro.tech.allwrite.CliAllwriteRecipe
 import pl.allegro.tech.allwrite.RecipeMetadata
-import pl.allegro.tech.allwrite.RecipeVisibility
 
 class RecipeMetadataSpec : FunSpec() {
     init {
@@ -15,9 +15,6 @@ class RecipeMetadataSpec : FunSpec() {
             val metadata = RecipeMetadata(
                 displayName = "Test",
                 description = "Test.",
-                visibility = RecipeVisibility.PUBLIC,
-                group = "test-group",
-                action = "upgrade",
                 from = "1",
                 to = "2",
                 dependabotArtifacts = listOf("org.example:lib"),
@@ -32,9 +29,6 @@ class RecipeMetadataSpec : FunSpec() {
             val metadata = RecipeMetadata(
                 displayName = "Test",
                 description = "Test.",
-                visibility = RecipeVisibility.PUBLIC,
-                group = "test-group",
-                action = "upgrade",
                 from = "1",
                 to = "2",
                 dependabotArtifacts = emptyList(),
@@ -44,14 +38,22 @@ class RecipeMetadataSpec : FunSpec() {
             metadata.tags.none { it.startsWith("dependabot-artifact:") } shouldBe true
         }
 
+        test("should produce CLI tags") {
+            // given
+            val recipe = TestCliRecipe(
+                group = "test-group",
+                action = "upgrade",
+            )
+
+            // expect
+            recipe.tags shouldContainAll listOf("group:test-group", "action:upgrade")
+        }
+
         test("should produce multiple dependabot-artifact tags for multiple artifacts") {
             // given
             val metadata = RecipeMetadata(
                 displayName = "Test",
                 description = "Test.",
-                visibility = RecipeVisibility.PUBLIC,
-                group = "test-group",
-                action = "upgrade",
                 from = "1",
                 to = "2",
                 dependabotArtifacts = listOf("org.example:lib-a", "org.example:lib-b"),
@@ -64,46 +66,31 @@ class RecipeMetadataSpec : FunSpec() {
             )
         }
 
-        test("should require a group for public CLI recipes") {
+        test("should require a group for CLI recipes") {
             // given
-            val metadata = {
-                RecipeMetadata(
-                    displayName = "Test",
-                    description = "Test.",
-                    visibility = RecipeVisibility.PUBLIC,
-                    group = null,
-                    action = "upgrade",
-                    from = "1",
-                    to = "2",
-                )
-            }
+            val recipe = { TestCliRecipe(group = "", action = "upgrade") }
 
             // when
-            val exception = shouldThrow<IllegalStateException> { metadata() }
+            val exception = shouldThrow<IllegalArgumentException> { recipe() }
 
             // then
-            exception.message shouldBe "Public CLI recipes must specify a group."
+            exception.message shouldBe "CLI recipes must specify a group."
         }
 
-        test("should require an action for public CLI recipes") {
+        test("should require an action for CLI recipes") {
             // given
-            val metadata = {
-                RecipeMetadata(
-                    displayName = "Test",
-                    description = "Test.",
-                    visibility = RecipeVisibility.PUBLIC,
-                    group = "test-group",
-                    action = null,
-                    from = "1",
-                    to = "2",
-                )
-            }
+            val recipe = { TestCliRecipe(group = "test-group", action = "") }
 
             // when
-            val exception = shouldThrow<IllegalStateException> { metadata() }
+            val exception = shouldThrow<IllegalArgumentException> { recipe() }
 
             // then
-            exception.message shouldBe "Public CLI recipes must specify an action."
+            exception.message shouldBe "CLI recipes must specify an action."
         }
     }
+
+    private class TestCliRecipe(
+        group: String,
+        action: String,
+    ) : CliAllwriteRecipe(group, action)
 }

@@ -22,6 +22,6 @@ public class JavaPublicRecipe extends Recipe {
     @NotNull
     @Override
     public Set<String> getTags() {
-        return Set.of("visibility:public");
+        return Set.of("group:java", "action:upgrade");
     }
 }

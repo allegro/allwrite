@@ -8,14 +8,10 @@ In general, you should follow the official [Authoring Recipes](https://docs.open
 
 However, `allwrite` has some custom features that you can use.
 
-### Visibility
-
-Every recipe within `allwrite-recipes` must provide the `visibility:[internal/public]` tag. Public recipes will be presented to the user via
-`allwrite ls` command.
-
 ### Friendly names
 
-Every public recipe must provide a friendly name in the form of 2 tags:
+`allwrite ls` presents recipes with a group and action. All other recipes are available through `allwrite ls --all` and can always
+be run using their full recipe ID. `CliAllwriteRecipe` requires a group and action, which form its friendly name:
 
 - `group:<someGroup>`
 - `action:<someAction>`
@@ -27,14 +23,14 @@ allwrite run workflows/introduceSetupGradle
 
 ### Convenient base classes
 
-For convenience, you can extend either `AllwriteRecipe` or `AllwriteScanningRecipe` (from the `allwrite-spi` module). They will build all required tags for you:
+For convenience, extend `CliAllwriteRecipe` for recipes launched by a friendly name, or `AllwriteRecipe` and `AllwriteScanningRecipe`
+for all other recipes:
 ```kotlin
-class SomeRecipe : AllwriteRecipe(
+class SomeRecipe : CliAllwriteRecipe(
     displayName = "Some recipe", // optional, defaults to class name
     description = "Some description.", // optional, defaults to displayName + '.'
-    visibility = PUBLIC, // optional, defaults to INTERNAL
-    group = "some-group", // required if the visibility is PUBLIC
-    action = "some-action" // required if the visibility is PUBLIC
+    group = "some-group",
+    action = "some-action",
 ) {
     // your implementation
 }
@@ -44,8 +40,7 @@ class SomeRecipe : AllwriteRecipe(
 
 If your recipe should be triggered automatically when Dependabot bumps a specific dependency, declare `dependabotArtifacts`:
 ```kotlin
-class SomeMigrationRecipe : AllwriteRecipe(
-    visibility = PUBLIC,
+class SomeMigrationRecipe : CliAllwriteRecipe(
     group = "some-group",
     action = "upgrade",
     dependabotArtifacts = listOf("com.example:some-library"),
@@ -57,7 +52,6 @@ class SomeMigrationRecipe : AllwriteRecipe(
 For declarative YAML recipes, add `dependabot-artifact:<coordinates>` tags:
 ```yaml
 tags:
-  - visibility:public
   - group:some-group
   - action:upgrade
   - dependabot-artifact:com.example:some-library
@@ -73,7 +67,7 @@ When `allwrite run-dependabot` processes a Dependabot PR that bumps `com.example
 If your recipe is only interested in very specific files (for example it only modifies the `tycho.yaml` file) you can implement the `ParsingAwareRecipe`
 interface:
 ```kotlin
-class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ParsingAwareRecipe {
+class SomeRecipe : AllwriteRecipe(), ParsingAwareRecipe {
 
     override fun selectFilesToParse(inputFiles: List<Path>): List<Path> {
         // return the files to be parsed
@@ -86,7 +80,7 @@ class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ParsingAwareRecipe {
 Implement `ClasspathAwareRecipe` when a recipe needs additional artifacts on the parser classpath:
 
 ```kotlin
-class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ClasspathAwareRecipe {
+class SomeRecipe : AllwriteRecipe(), ClasspathAwareRecipe {
 
     override fun requireOnClasspath(): List<String> =
         listOf("spring-web-6", "spring-core-6")
@@ -100,7 +94,7 @@ allwrite resolves the requested classpath entries before parsing. Classpath-awar
 Implement `PostprocessingRecipe` when work must run after OpenRewrite changes have been applied:
 
 ```kotlin
-class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), PostprocessingRecipe {
+class SomeRecipe : AllwriteRecipe(), PostprocessingRecipe {
 
     override fun postprocess(): PostprocessingResult =
         PostprocessingResult.Success

@@ -11,7 +11,6 @@ import org.openrewrite.java.tree.JavaType
 import org.openrewrite.java.tree.Space
 import org.openrewrite.marker.Markers
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import java.util.UUID
 
 public class ReplaceFactoryWithConstructor(
@@ -19,7 +18,7 @@ public class ReplaceFactoryWithConstructor(
     private val fullyQualifiedTypeName: String,
     @Option
     private val factoryClassNamePattern: String,
-) : AllwriteRecipe(visibility = INTERNAL) {
+) : AllwriteRecipe() {
 
     override fun getDisplayName(): String = "Replace factory with constructor"
     override fun getDescription(): String = "Replace factory with constructor."

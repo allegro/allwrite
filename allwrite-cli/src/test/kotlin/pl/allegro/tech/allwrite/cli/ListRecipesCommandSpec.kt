@@ -35,7 +35,7 @@ class ListRecipesCommandSpec : BaseCliSpec() {
             """.trimIndent()
         }
 
-        test("should list all recipes including internal when --all flag is used") {
+        test("should list all recipes including non-CLI ones when --all flag is used") {
             // when
             val result = listRecipesCommand.test("--all")
 
@@ -57,7 +57,7 @@ class ListRecipesCommandSpec : BaseCliSpec() {
             """.trimIndent()
         }
 
-        test("should list all recipes including internal when -a flag is used") {
+        test("should list all recipes including non-CLI ones when -a flag is used") {
             // when
             val result = listRecipesCommand.test("-a")
 

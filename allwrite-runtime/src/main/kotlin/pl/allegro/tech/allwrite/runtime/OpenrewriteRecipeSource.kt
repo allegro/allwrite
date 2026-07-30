@@ -6,9 +6,8 @@ import org.openrewrite.Recipe
 import org.openrewrite.config.ClasspathScanningLoader
 import org.openrewrite.config.Environment
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 import pl.allegro.tech.allwrite.api.RecipeSource
-import pl.allegro.tech.allwrite.api.tagPropertyOrNull
+import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.runtime.port.outgoing.ExternalRecipeProvider
 import java.net.URLClassLoader
 
@@ -19,11 +18,11 @@ internal class OpenrewriteRecipeSource(
 
     private val environment: Environment = buildEnvironment()
 
-    override fun findAll(includeInternal: Boolean): List<RecipeDescriptor> =
+    override fun findAll(includeNonCli: Boolean): List<RecipeDescriptor> =
         environment
             .listRecipeDescriptors()
             .distinctBy(RecipeDescriptor::getName)
-            .filter { includeInternal || PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), ignoreCase = true) }
+            .filter { includeNonCli || it.isCliRecipe() }
 
     override fun get(recipe: String): Recipe = environment.activateRecipes(recipe)
 

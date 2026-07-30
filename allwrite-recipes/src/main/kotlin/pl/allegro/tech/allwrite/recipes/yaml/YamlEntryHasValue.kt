@@ -7,7 +7,6 @@ import org.openrewrite.yaml.JsonPathMatcher
 import org.openrewrite.yaml.YamlVisitor
 import org.openrewrite.yaml.tree.Yaml
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 
 public class YamlEntryHasValue(
     key: String,
@@ -17,7 +16,6 @@ public class YamlEntryHasValue(
     description = """
         |Find YAML entries specified by JSON path with the given value
     """.trimMargin(),
-    visibility = INTERNAL,
 ) {
     private val matcher = JsonPathMatcher(key)
 

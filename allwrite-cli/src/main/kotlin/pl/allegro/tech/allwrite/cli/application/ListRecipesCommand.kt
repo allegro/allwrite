@@ -6,9 +6,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import io.koalaql.markout.md.markdown
 import org.koin.core.annotation.Single
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 import pl.allegro.tech.allwrite.api.RecipeSource
-import pl.allegro.tech.allwrite.api.tagPropertyOrNull
+import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.api.toCompactString
 import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
 import pl.allegro.tech.allwrite.cli.application.CommandExecutionResult.ExecutionResult
@@ -19,10 +18,10 @@ internal class ListRecipesCommand(
     private val recipeSource: RecipeSource,
 ) : SubCommand(name = COMMAND_NAME, help = "Lists all recipes") {
 
-    private val all by option("-a", "--all", help = "Show all recipes including internal ones").flag(default = false)
+    private val all by option("-a", "--all", help = "Show all recipes including non-CLI ones").flag(default = false)
 
     override fun runSubCommand(): ExecutionResult {
-        val recipes = recipeSource.findAll(includeInternal = all).sortedBy { it.name }
+        val recipes = recipeSource.findAll(includeNonCli = all).sortedBy { it.name }
 
         if (!verbose) {
             echo(if (all) renderAllRecipesListing(recipes) else renderRecipesListing(recipes))
@@ -85,11 +84,9 @@ internal class ListRecipesCommand(
     }
 
     private fun renderAllwriteGroup(recipes: List<RecipeDescriptor>): String {
-        val (publicRecipes, internalRecipes) = recipes.partition {
-            PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), ignoreCase = true)
-        }
+        val (cliRecipes, nonCliRecipes) = recipes.partition { it.isCliRecipe() }
 
-        val publicLines = publicRecipes
+        val cliLines = cliRecipes
             .mapNotNull { descriptor ->
                 descriptor.toRecipeCoordinatesOrNull()?.let { it to descriptor }
             }
@@ -103,11 +100,11 @@ internal class ListRecipesCommand(
                 }
             }
 
-        val internalLines = internalRecipes
+        val nonCliLines = nonCliRecipes
             .sortedBy { it.name }
             .map { it.name }
 
-        return (publicLines + internalLines).joinToString("\n")
+        return (cliLines + nonCliLines).joinToString("\n")
     }
 
     private fun String.basePackage(): String = split(".").take(2).joinToString(".")

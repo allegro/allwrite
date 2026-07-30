@@ -71,7 +71,7 @@ class RecipeMatcherSpec : BaseCliSpec() {
             // given
             val directRecipe = FakeRecipe(
                 id = "pl.allegro.tech.allwrite.recipes.spring-boot-2-to-4",
-                tags = setOf("visibility:PUBLIC", "from:2", "to:4", "group:spring-boot", "action:upgrade"),
+                tags = setOf("from:2", "to:4", "group:spring-boot", "action:upgrade"),
             )
             val matcher = RecipeMatcher(
                 FakeRecipeSource(
