@@ -17,7 +17,12 @@ package pl.allegro.tech.allwrite.recipes.yaml;
 
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
-import org.openrewrite.*;
+import org.openrewrite.ExecutionContext;
+import org.openrewrite.FindSourceFiles;
+import org.openrewrite.Option;
+import org.openrewrite.Preconditions;
+import org.openrewrite.Recipe;
+import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.internal.NameCaseConvention;
 import org.openrewrite.marker.Marker;
@@ -28,7 +33,12 @@ import pl.allegro.tech.allwrite.recipes.yaml.visitor.CopyDeletedPropertyComments
 import pl.allegro.tech.allwrite.recipes.yaml.visitor.PreOrderTraversalSnapshot;
 import pl.allegro.tech.allwrite.recipes.yaml.visitor.PreOrderVisitor;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Spliterators.spliteratorUnknownSize;

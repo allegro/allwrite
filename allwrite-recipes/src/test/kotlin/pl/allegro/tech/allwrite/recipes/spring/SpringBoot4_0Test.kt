@@ -16,6 +16,7 @@ import org.openrewrite.kotlin.KotlinParser
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
 import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.recipes.buildGradle
 import pl.allegro.tech.allwrite.recipes.groovy
 import pl.allegro.tech.allwrite.recipes.java
 import pl.allegro.tech.allwrite.recipes.kotlin
@@ -58,7 +59,15 @@ class SpringBoot4_0Test : RewriteTest {
 
     override fun defaults(spec: RecipeSpec) {
         val ctx = InMemoryExecutionContext()
-        val classpath = arrayOf("spring-data-commons-3", "spring-data-jpa-3", "spring-data-mongodb-4", "spring-web-6", "spring-core-6")
+        val classpath = arrayOf(
+            "spring-data-commons-3",
+            "spring-data-jpa-3",
+            "spring-data-mongodb-4",
+            "spring-boot-test-3",
+            "spring-core-6",
+            "spring-test-6",
+            "spring-web-6",
+        )
         spec
             .recipe(recipe)
             .parser(JavaParser.fromJavaVersion().classpathFromResources(ctx, *classpath))
@@ -73,7 +82,68 @@ class SpringBoot4_0Test : RewriteTest {
             "AddNonNullableTypeBoundsToSpringRepositories",
             "ReplaceStatusCodeValue",
             "ChangeSpringBoot4WebServerTypes",
-            "ChangeSpringBoot4MongoProperties",
+        )
+    }
+
+    @Test
+    fun `should migrate test clients`() {
+        // given
+        rewriteRun(
+            java(
+                before = """
+                    import org.springframework.boot.test.web.client.TestRestTemplate;
+                    import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
+                    import org.springframework.test.web.reactive.server.WebTestClient;
+
+                    class Example {
+                        TestRestTemplate restTemplate;
+                        WebTestClientBuilderCustomizer webTestClientCustomizer;
+                        WebTestClient webTestClient;
+                    }
+                """.trimIndent(),
+                after = """
+                    import org.springframework.boot.resttestclient.TestRestTemplate;
+                    import org.springframework.boot.webtestclient.autoconfigure.WebTestClientBuilderCustomizer;
+                    import org.springframework.test.web.reactive.server.WebTestClient;
+
+                    class Example {
+                        TestRestTemplate restTemplate;
+                        WebTestClientBuilderCustomizer webTestClientCustomizer;
+                        WebTestClient webTestClient;
+                    }
+                """.trimIndent(),
+            ),
+            buildGradle(
+                before = """
+                    dependencies {
+                    }
+                """.trimIndent(),
+                after = """
+                    dependencies {
+                        testImplementation("org.springframework.boot:spring-boot-webtestclient")
+                        testImplementation("org.springframework.boot:spring-boot-resttestclient")
+                    }
+                """.trimIndent(),
+            ),
+        )
+    }
+
+    @Test
+    fun `should upgrade Testcontainers modules`() {
+        // given
+        rewriteRun(
+            buildGradle(
+                before = """
+                    dependencies {
+                        testImplementation("org.testcontainers:postgresql:1.20.0")
+                    }
+                """.trimIndent(),
+                after = """
+                    dependencies {
+                        testImplementation("org.testcontainers:testcontainers-postgresql")
+                    }
+                """.trimIndent(),
+            ),
         )
     }
 

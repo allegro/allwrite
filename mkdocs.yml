@@ -53,6 +53,7 @@ nav:
           - ChangeGradleDependency: recipes/gradle/change-gradle-dependency.md
           - UpdateGradleDependency: recipes/gradle/update-gradle-dependency.md
       - Java / Kotlin:
+          - Java upgrades: recipes/java/java-upgrades.md
           - ChangeType: recipes/java/change-type.md
           - ChangeRecordField: recipes/java/change-record-field.md
           - SimplifyMethodChain: recipes/java/simplify-method-chain.md
@@ -60,6 +61,8 @@ nav:
           - RemoveUnusedImportsOfType: recipes/java/remove-unused-imports-of-type.md
           - ReplaceFactoryWithConstructor: recipes/java/replace-factory-with-constructor.md
       - Spring:
+          - Spring Boot upgrades: recipes/spring/spring-boot-upgrades.md
+          - PreconditionsAwareAddDependency: recipes/spring/preconditions-aware-add-dependency.md
           - FindSpringProperty: recipes/spring/find-spring-property.md
           - DeleteSpringProperty: recipes/spring/delete-spring-property.md
           - DeleteSpringPropertyWithValue: recipes/spring/delete-spring-property-with-value.md

@@ -11,9 +11,6 @@ import pl.allegro.tech.allwrite.AllwriteScanningRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.Path
-
-private val TOML_VERSION_CATALOG_PATH = Path("gradle/libs.versions.toml")
 
 public class AddGradleDependency(
     @Option(description = "Gradle configuration to add dependency to", example = "implementation")
@@ -46,7 +43,7 @@ public class AddGradleDependency(
                 val cursor = cursor
                 val tree = tree as? SourceFile ?: return tree
 
-                if (tree is Toml.Document && tree.sourcePath == TOML_VERSION_CATALOG_PATH) {
+                if (tree.isTomlVersionCatalogFile()) {
                     acc.versionCatalogType = LibsToml
                     ParseTomlVersionCatalog(acc.versionCatalog).visit(tree, p, cursor)
                 }
@@ -69,7 +66,7 @@ public class AddGradleDependency(
             override fun visit(tree: Tree?, p: ExecutionContext): Tree? {
                 // add a dependency to the version catalog
                 if (tree is Toml.Document &&
-                    tree.sourcePath == TOML_VERSION_CATALOG_PATH &&
+                    tree.isTomlVersionCatalogFile() &&
                     context.versionCatalogType == LibsToml &&
                     existingDependency == null
                 ) {

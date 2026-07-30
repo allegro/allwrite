@@ -98,7 +98,7 @@ allwrite/
 ├── allwrite-recipes/
 │   ├── src/main/kotlin/
 │   │   ├── recipes/yaml/            YAML transformation recipes
-│   │   ├── recipes/spring/          Spring property/annotation and migration recipes
+│   │   ├── recipes/spring/          Spring property/annotation and migration recipes, including conditional dependency and Spring Boot 4 migration helpers
 │   │   ├── recipes/java/            Java refactoring recipes
 │   │   ├── recipes/gradle/          Gradle dependency recipes
 │   │   │   └── *DependencyRewriter.kt  Dedicated helpers for Gradle dependency transforms
