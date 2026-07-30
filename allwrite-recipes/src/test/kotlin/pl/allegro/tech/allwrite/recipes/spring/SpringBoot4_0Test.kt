@@ -345,8 +345,8 @@ class SpringBoot4_0Test : RewriteTest {
                 after = """
                     import org.springframework.boot.jetty.JettyWebServer
                     import org.springframework.boot.tomcat.TomcatWebServer
-                    import org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContext
                     import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext
+                    import org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContext
 
                     class WebServers(
                         val tomcat: TomcatWebServer?,
