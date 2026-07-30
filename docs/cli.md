@@ -38,13 +38,13 @@ The `run` command also supports:
 | `-v`, `--verbose`     | Enable verbose command output and debug logging.           |
 | `--log-level <level>` | Set the logging level explicitly.                          |
 
-List available recipes:
+List user-facing recipes by their friendly names:
 
 ```bash
 allwrite ls
 ```
 
-List all available recipes (the output will be huge):
+List every available recipe, including recipes that can be run only by fully-qualified name:
 
 ```bash
 allwrite ls -a
@@ -53,6 +53,9 @@ allwrite ls -a
 
 allwrite ls --all
 ```
+
+Recipes are listed by default only when they declare both `group:<group>` and `action:<action>` tags. Those tags are reserved for
+recipes that need no recipe options; see [Writing recipes](contributing.md#creating-a-cli-recipe) for the authoring rule.
 
 ## Built-in recipes
 

@@ -8,37 +8,96 @@ In general, you should follow the official [Authoring Recipes](https://docs.open
 
 However, `allwrite` has some custom features that you can use.
 
-### Friendly names
+### Choosing a recipe base class
 
-`allwrite ls` presents recipes with a group and action. All other recipes are available through `allwrite ls --all` and can always
-be run using their full recipe ID. `CliAllwriteRecipe` requires a group and action, which form its friendly name:
+Choose the base class according to how authors should invoke the recipe:
 
-- `group:<someGroup>`
-- `action:<someAction>`
+| Recipe type | Base class | Discovery | Invocation |
+| --- | --- | --- | --- |
+| Regular recipe | `AllwriteRecipe` | `allwrite ls --all` | Fully-qualified recipe name |
+| Scanning recipe | `AllwriteScanningRecipe` | `allwrite ls --all` | Fully-qualified recipe name |
+| User-facing CLI operation | `CliAllwriteRecipe` | `allwrite ls` | Friendly name |
 
-For example, the following set of tags [`group:workflows`, `action:introduceSetupGradle`] will result in a recipe that can be executed like that:
-```
-allwrite run workflows/introduceSetupGradle
-```
+`allwrite ls` lists recipes that define both `group` and `action` tags. Reserve those tags for recipes that need no OpenRewrite recipe
+options: friendly-name execution accepts only the recipe name and optional version range. Recipes that need options should omit the
+tags, appear in `allwrite ls --all`, and be invoked by their fully-qualified name.
 
-### Convenient base classes
+Use `AllwriteRecipe` for a focused transformation that is normally included in a larger migration or invoked by its fully-qualified name:
 
-For convenience, extend `CliAllwriteRecipe` for recipes launched by a friendly name, or `AllwriteRecipe` and `AllwriteScanningRecipe`
-for all other recipes:
 ```kotlin
-class SomeRecipe : CliAllwriteRecipe(
-    displayName = "Some recipe", // optional, defaults to class name
-    description = "Some description.", // optional, defaults to displayName + '.'
-    group = "some-group",
-    action = "some-action",
+class ReplaceDeprecatedApi : AllwriteRecipe(
+    displayName = "Replace deprecated API",
+    description = "Replaces the deprecated API with its supported alternative.",
 ) {
-    // your implementation
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> = TODO()
 }
 ```
 
+Use `AllwriteScanningRecipe` when the recipe needs to collect information before changing source files:
+
+```kotlin
+class ConsolidateConfiguration : AllwriteScanningRecipe<MutableSet<String>>(
+    displayName = "Consolidate configuration",
+    description = "Consolidates duplicate configuration entries.",
+) {
+    override fun getInitialValue(ctx: ExecutionContext): MutableSet<String> = mutableSetOf()
+}
+```
+
+### Creating a CLI recipe
+
+Use `CliAllwriteRecipe` for an intentional, user-facing operation such as a framework upgrade. It requires nonblank `group` and `action`
+arguments and generates the corresponding tags automatically. Use it only for recipes without OpenRewrite recipe options.
+
+```kotlin
+class UpgradeExampleLibrary : CliAllwriteRecipe(
+    group = "some-group",
+    action = "upgrade",
+    displayName = "Upgrade Example Library",
+    description = "Migrates a project to Example Library 2.",
+    from = "1",
+    to = "2",
+) {
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> = TODO()
+}
+```
+
+The example is listed as `some-group/upgrade 1 2` and can be run with:
+
+```shell
+allwrite run some-group/upgrade 1 2
+```
+
+The optional `from` and `to` values describe a migration range. They are included in listings and allow `allwrite run` to select a
+matching versioned recipe. Use them for upgrade or migration recipes; omit them for operations with no version range.
+
+### Declaring a CLI recipe in YAML
+
+Declarative YAML recipes do not extend Kotlin base classes. Add both `group` and `action` tags to a recipe without options to make one
+appear in `allwrite ls`:
+
+```yaml
+type: specs.openrewrite.org/v1beta/recipe
+name: com.example.UpgradeExampleLibrary
+displayName: Upgrade Example Library
+description: Migrates a project to Example Library 2.
+tags:
+  - group:some-group
+  - action:upgrade
+  - from:1
+  - to:2
+recipeList:
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.example.LegacyType
+      newFullyQualifiedTypeName: com.example.CurrentType
+```
+
+Omit either tag for a recipe with options so it appears only in `allwrite ls --all`.
+
 ### Dependabot integration
 
-If your recipe should be triggered automatically when Dependabot bumps a specific dependency, declare `dependabotArtifacts`:
+If a recipe should run automatically when Dependabot bumps a dependency, declare `dependabotArtifacts`. This is independent of CLI
+discovery: a recipe may have a friendly name, be available only by its fully-qualified name, or both.
 ```kotlin
 class SomeMigrationRecipe : CliAllwriteRecipe(
     group = "some-group",
@@ -49,7 +108,7 @@ class SomeMigrationRecipe : CliAllwriteRecipe(
 }
 ```
 
-For declarative YAML recipes, add `dependabot-artifact:<coordinates>` tags:
+For declarative YAML recipes, add `dependabot-artifact:<coordinates>`:
 ```yaml
 tags:
   - group:some-group
