@@ -1,5 +1,6 @@
 package pl.allegro.tech.allwrite.runtime
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
@@ -61,6 +62,48 @@ class RecipeMetadataSpec : FunSpec() {
                 "dependabot-artifact:org.example:lib-a",
                 "dependabot-artifact:org.example:lib-b",
             )
+        }
+
+        test("should require a group for public CLI recipes") {
+            // given
+            val metadata = {
+                RecipeMetadata(
+                    displayName = "Test",
+                    description = "Test.",
+                    visibility = RecipeVisibility.PUBLIC,
+                    group = null,
+                    action = "upgrade",
+                    from = "1",
+                    to = "2",
+                )
+            }
+
+            // when
+            val exception = shouldThrow<IllegalStateException> { metadata() }
+
+            // then
+            exception.message shouldBe "Public CLI recipes must specify a group."
+        }
+
+        test("should require an action for public CLI recipes") {
+            // given
+            val metadata = {
+                RecipeMetadata(
+                    displayName = "Test",
+                    description = "Test.",
+                    visibility = RecipeVisibility.PUBLIC,
+                    group = "test-group",
+                    action = null,
+                    from = "1",
+                    to = "2",
+                )
+            }
+
+            // when
+            val exception = shouldThrow<IllegalStateException> { metadata() }
+
+            // then
+            exception.message shouldBe "Public CLI recipes must specify an action."
         }
     }
 }

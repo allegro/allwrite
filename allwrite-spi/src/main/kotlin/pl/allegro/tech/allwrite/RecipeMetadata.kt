@@ -16,8 +16,8 @@ public class RecipeMetadata @JvmOverloads public constructor(
     public val tags: Set<String> = buildSet {
         add("visibility:$visibility")
         if (visibility == RecipeVisibility.PUBLIC) {
-            group?.let { add("group:$it") } ?: error("For public recipes, you must specify a 'group' tag!")
-            action?.let { add("action:$it") } ?: error("For public recipes, you must specify a 'action' tag!")
+            group?.let { add("group:$it") } ?: error("Public CLI recipes must specify a group.")
+            action?.let { add("action:$it") } ?: error("Public CLI recipes must specify an action.")
         }
         from?.let { add("from:$it") }
         to?.let { add("to:$it") }
