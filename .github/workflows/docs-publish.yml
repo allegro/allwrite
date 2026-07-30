@@ -29,11 +29,12 @@ jobs:
           python-version: '3.x'
           cache: 'pip'
       - run: pip install -r docs/requirements.txt
+      - name: Configure Git identity
+        run: |
+          git config user.name github-runner-no-reply
+          git config user.email github-runner-no-reply@allegro.pl
       - name: Publish versioned docs
         run: |
-          git config --global --add safe.directory $(pwd)
-          git config --global user.name github-runner-no-reply
-          git config --global user.email github-runner-no-reply@allegro.pl
           version="${RELEASE_VERSION#v}"
           major="${version%%.*}"
           mike deploy --push --update-aliases "$version" "$major" latest
