@@ -15,6 +15,5 @@ public abstract class CliAllwriteRecipe @JvmOverloads public constructor(
         require(action.isNotBlank()) { "CLI recipes must specify an action." }
     }
 
-    final override fun getTags(): Set<String> =
-        super.getTags() + setOf("group:$group", "action:$action")
+    final override fun getTags(): Set<String> = super.getTags() + setOf("group:$group", "action:$action")
 }

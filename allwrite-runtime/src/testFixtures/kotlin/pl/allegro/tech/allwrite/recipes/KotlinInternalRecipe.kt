@@ -7,5 +7,4 @@ class KotlinInternalRecipe : Recipe() {
     override fun getDisplayName() = "Internal Kotlin recipe"
 
     override fun getDescription() = "Internal Kotlin recipe description."
-
 }
