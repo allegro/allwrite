@@ -107,23 +107,24 @@ internal class GradleVersionCatalogUsageScanner(
         if (sourceFile.isBuildGradleFile()) {
             val text = PlainTextParser.convert(sourceFile).text
             LIBS_VERSIONS_PLAIN.findAll(text).forEach { usedVersionKeys.add(it.groupValues[1]) }
+            return tree
         }
-        if (sourceFile is Toml.Document && sourceFile.isTomlVersionCatalogFile()) {
-            val catalog = TomlVersionCatalog(sourceFile)
-            val targetExists = catalog.libraries.any {
-                it.library.group == newGroupId && it.library.name == newArtifactId
-            }
-            if (!targetExists) {
-                catalog.libraries
-                    .filter {
-                        it.keyValue.stringKey() == oldArtifactId &&
-                            StringUtils.matchesGlob(it.library.group, oldGroupId) &&
-                            StringUtils.matchesGlob(it.library.name, oldArtifactId)
-                    }
-                    .forEach {
-                        versionCatalogAccessorRenames[oldArtifactId.toVersionCatalogReference()] = newArtifactId.toVersionCatalogReference()
-                    }
-            }
+        val tomlDocument = sourceFile as? Toml.Document ?: return tree
+        if (!tomlDocument.isTomlVersionCatalogFile()) return tree
+        val catalog = TomlVersionCatalog(tomlDocument)
+        val targetExists = catalog.libraries.any {
+            it.library.group == newGroupId && it.library.name == newArtifactId
+        }
+        if (!targetExists) {
+            catalog.libraries
+                .filter {
+                    it.keyValue.stringKey() == oldArtifactId &&
+                        StringUtils.matchesGlob(it.library.group, oldGroupId) &&
+                        StringUtils.matchesGlob(it.library.name, oldArtifactId)
+                }
+                .forEach {
+                    versionCatalogAccessorRenames[oldArtifactId.toVersionCatalogReference()] = newArtifactId.toVersionCatalogReference()
+                }
         }
         return tree
     }

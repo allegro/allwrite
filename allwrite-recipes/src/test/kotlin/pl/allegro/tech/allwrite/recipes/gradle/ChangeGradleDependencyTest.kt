@@ -64,7 +64,7 @@ class ChangeGradleDependencyTest {
         }
 
         @Test
-        fun `should change version catalog entry and accessor in build gradle`() {
+        fun `should change version catalog entry and accessor in build gradle and toml`() {
             rewriteRun(
                 buildGradle(
                     before = """
@@ -670,7 +670,7 @@ class ChangeGradleDependencyTest {
         }
 
         @Test
-        fun `should change version catalog entry and accessor in build gradle kts`() {
+        fun `should change version catalog entry and accessor in build gradle kts and toml`() {
             rewriteRun(
                 buildGradleKts(
                     before = """

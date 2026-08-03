@@ -21,17 +21,23 @@ internal class GradleDependencyRewriter(
     private fun updateText(originalText: String): String {
         val interpolation = rewriteBuildGradleInterpolatedDependency(originalText)
         val versionedText = regexpDependencyChanger.update(interpolation.text)
-        val accessorText = versionCatalogAccessorRenames.entries.fold(versionedText) { text, (oldAccessor, newAccessor) ->
-            text.replace(
-                Regex("""(?<![A-Za-z0-9_.])libs\.${Regex.escape(oldAccessor)}(?![A-Za-z0-9_])"""),
-                "libs.$newAccessor",
-            )
-        }
+        val accessorText = replaceVersionCatalogAccessors(versionedText)
         return interpolation.existingVersionVariable?.let { existingVersionVariable ->
             val version = newVersion ?: return@let accessorText
             addBuildGradleVersionVariableDefinition(accessorText, existingVersionVariable, newArtifactId.toVersionVariableName(), version)
         } ?: accessorText
     }
+
+    private fun replaceVersionCatalogAccessors(text: String): String =
+        versionCatalogAccessorRenames.entries.fold(text) { currentText, (oldAccessor, newAccessor) ->
+            replaceVersionCatalogAccessor(currentText, oldAccessor, newAccessor)
+        }
+
+    private fun replaceVersionCatalogAccessor(text: String, oldAccessor: String, newAccessor: String): String =
+        text.replace(
+            Regex("""(?<![A-Za-z0-9_.])libs\.${Regex.escape(oldAccessor)}(?![A-Za-z0-9_.])"""),
+            "libs.$newAccessor",
+        )
 
     private fun rewriteBuildGradleInterpolatedDependency(originalText: String): BuildGradleInterpolatedDependencyRewrite {
         val versionVariable = newArtifactId.toVersionVariableName()
@@ -101,6 +107,7 @@ internal class GradleDependencyRewriter(
         val sanitized = replace(Regex("[^A-Za-z0-9_]"), "_")
         return if (sanitized.firstOrNull()?.isDigit() == true) "_$sanitized" else sanitized
     }
+
 }
 
 private data class BuildGradleInterpolatedDependencyRewrite(
