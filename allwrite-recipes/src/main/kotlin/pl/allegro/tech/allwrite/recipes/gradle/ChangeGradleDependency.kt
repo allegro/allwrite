@@ -5,10 +5,12 @@ import org.openrewrite.Option
 import org.openrewrite.SourceFile
 import org.openrewrite.Tree
 import org.openrewrite.TreeVisitor
+import org.openrewrite.internal.StringUtils
 import org.openrewrite.text.PlainTextParser
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
 import pl.allegro.tech.allwrite.RecipeVisibility
+import pl.allegro.tech.allwrite.recipes.toml.stringKey
 
 public class ChangeGradleDependency(
     @Option(description = "The old group ID to replace.", example = "org.openrewrite.recipe")
@@ -28,11 +30,20 @@ public class ChangeGradleDependency(
 ) {
     public data class GradleVersionsContext(
         val usedVersionKeys: MutableSet<String> = HashSet(),
+        val versionCatalogAccessorRenames: MutableMap<String, String> = HashMap(),
     )
 
     override fun getInitialValue(ctx: ExecutionContext): GradleVersionsContext = GradleVersionsContext()
 
-    override fun getScanner(acc: GradleVersionsContext): TreeVisitor<*, ExecutionContext> = GradleVersionCatalogUsageScanner(acc.usedVersionKeys)
+    override fun getScanner(acc: GradleVersionsContext): TreeVisitor<*, ExecutionContext> =
+        GradleVersionCatalogUsageScanner(
+            usedVersionKeys = acc.usedVersionKeys,
+            versionCatalogAccessorRenames = acc.versionCatalogAccessorRenames,
+            oldGroupId = oldGroupId,
+            oldArtifactId = oldArtifactId,
+            newGroupId = newGroupId.takeIf { it.isNotBlank() } ?: oldGroupId,
+            newArtifactId = newArtifactId.takeIf { it.isNotBlank() } ?: oldArtifactId,
+        )
 
     override fun getVisitor(acc: GradleVersionsContext): TreeVisitor<*, ExecutionContext> {
         if (oldGroupId.isBlank() || oldArtifactId.isBlank()) {
@@ -55,6 +66,7 @@ public class ChangeGradleDependency(
             newArtifactId = newArtifactId.takeIf { it.isNotBlank() } ?: oldArtifactId,
             newVersion = newVersion.takeIf { it.isNotBlank() },
             regexpDependencyChanger = regexpDependencyChanger,
+            versionCatalogAccessorRenames = acc.versionCatalogAccessorRenames,
         )
         val tomlDependencyRewriter = TomlVersionCatalogDependencyRewriter(
             oldGroupId = oldGroupId,
@@ -84,12 +96,35 @@ public class ChangeGradleDependency(
 
 internal class GradleVersionCatalogUsageScanner(
     private val usedVersionKeys: MutableSet<String>,
+    private val versionCatalogAccessorRenames: MutableMap<String, String>,
+    private val oldGroupId: String,
+    private val oldArtifactId: String,
+    private val newGroupId: String,
+    private val newArtifactId: String,
 ) : TreeVisitor<Tree, ExecutionContext>() {
     override fun visit(tree: Tree?, p: ExecutionContext): Tree? {
         val sourceFile = tree as? SourceFile ?: return tree
-        if (!sourceFile.isBuildGradleFile()) return tree
-        val text = PlainTextParser.convert(sourceFile).text
-        LIBS_VERSIONS_PLAIN.findAll(text).forEach { usedVersionKeys.add(it.groupValues[1]) }
+        if (sourceFile.isBuildGradleFile()) {
+            val text = PlainTextParser.convert(sourceFile).text
+            LIBS_VERSIONS_PLAIN.findAll(text).forEach { usedVersionKeys.add(it.groupValues[1]) }
+        }
+        if (sourceFile is Toml.Document && sourceFile.isTomlVersionCatalogFile()) {
+            val catalog = TomlVersionCatalog(sourceFile)
+            val targetExists = catalog.libraries.any {
+                it.library.group == newGroupId && it.library.name == newArtifactId
+            }
+            if (!targetExists) {
+                catalog.libraries
+                    .filter {
+                        it.keyValue.stringKey() == oldArtifactId &&
+                            StringUtils.matchesGlob(it.library.group, oldGroupId) &&
+                            StringUtils.matchesGlob(it.library.name, oldArtifactId)
+                    }
+                    .forEach {
+                        versionCatalogAccessorRenames[oldArtifactId.toVersionCatalogReference()] = newArtifactId.toVersionCatalogReference()
+                    }
+            }
+        }
         return tree
     }
 
