@@ -147,6 +147,92 @@ class SpringBoot4_0Test : RewriteTest {
     }
 
     @Test
+    fun `should upgrade Testcontainers module aliases in version catalog bundles`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [libraries]
+                    junit-jupiter = { group = "org.testcontainers", name = "junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "junit-jupiter"
+                    ]
+                """.trimIndent(),
+                after = """
+                    [libraries]
+                    testcontainers-junit-jupiter = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "testcontainers-junit-jupiter"
+                    ]
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
+    fun `should upgrade Testcontainers module aliases in every bundle`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [libraries]
+                    junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "junit-jupiter",
+                        "unrelated-library",
+                    ]
+                    integration = [
+                        "junit-jupiter",
+                    ]
+                """.trimIndent(),
+                after = """
+                    [libraries]
+                    testcontainers-junit-jupiter = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "testcontainers-junit-jupiter",
+                        "unrelated-library",
+                    ]
+                    integration = [
+                        "testcontainers-junit-jupiter",
+                    ]
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
+    fun `should preserve custom Testcontainers library aliases in bundles`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [libraries]
+                    testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "testcontainers-junit",
+                    ]
+                """.trimIndent(),
+                after = """
+                    [libraries]
+                    testcontainers-junit = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "testcontainers-junit",
+                    ]
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
     fun `should add Any bounds to Spring Data repository type parameters`() {
         rewriteRun(
             kotlin(
