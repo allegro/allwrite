@@ -38,6 +38,7 @@ internal data class TomlVersionCatalogRewritePlan(
     val versionRefOverrides: Map<String, String>,
     val versionRefUpdates: Map<String, String>,
     val versionEntriesToAdd: Map<String, String>,
+    val bundleAliasReplacements: Map<String, String>,
 )
 
 internal class TomlVersionCatalogRewritePlanner(
@@ -49,6 +50,7 @@ internal class TomlVersionCatalogRewritePlanner(
         val versionRefOverrides = mutableMapOf<String, String>()
         val versionRefUpdates = mutableMapOf<String, String>()
         val versionEntriesToAdd = mutableMapOf<String, String>()
+        val bundleAliasReplacements = mutableMapOf<String, String>()
 
         catalog.libraries
             .filter { entry ->
@@ -62,6 +64,9 @@ internal class TomlVersionCatalogRewritePlanner(
             .forEach { entry ->
                 val entryName = entry.keyValue.stringKey() ?: return@forEach
                 val library = entry.library
+                target.targetEntryName(entryName)
+                    .takeIf { it != entryName }
+                    ?.let { bundleAliasReplacements[entryName] = it }
                 val versionRef = (library.version as? VersionRef)?.ref ?: return@forEach
                 val version = target.newVersion ?: return@forEach
                 val targetRef = target.targetVersionRef(entryName)
@@ -100,6 +105,7 @@ internal class TomlVersionCatalogRewritePlanner(
             versionRefOverrides,
             versionRefUpdates,
             versionEntriesToAdd,
+            bundleAliasReplacements,
         )
     }
 }

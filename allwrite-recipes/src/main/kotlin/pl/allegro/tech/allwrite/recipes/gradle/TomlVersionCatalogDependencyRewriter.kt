@@ -6,6 +6,7 @@ import org.openrewrite.toml.tree.Space
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.recipes.toml.Builders.kv
 import pl.allegro.tech.allwrite.recipes.toml.Builders.literal
+import pl.allegro.tech.allwrite.recipes.toml.asString
 import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 import pl.allegro.tech.allwrite.recipes.toml.stringValue
@@ -33,8 +34,23 @@ internal class TomlVersionCatalogDependencyRewriter(
             VERSION_CATALOG_TABLE_LIBS -> rewriteLibraryEntry(table, keyValue)
             VERSION_CATALOG_TABLE_VERSIONS -> rewriteVersionEntry(keyValue)
             VERSION_CATALOG_TABLE_PLUGINS -> rewritePluginEntry(keyValue)
-            else -> keyValue
+            else -> super.visitKeyValue(keyValue, p)
         }
+    }
+
+    override fun visitLiteral(literal: Toml.Literal, p: ExecutionContext): Toml.Literal {
+        val visited = super.visitLiteral(literal, p)
+        val table = cursor.firstEnclosing(Toml.Table::class.java) ?: return visited
+        if (table.name() != VERSION_CATALOG_TABLE_BUNDLES) return visited
+        val replacement = plan.bundleAliasReplacements[visited.asString()] ?: return visited
+        return Toml.Literal(
+            visited.id,
+            visited.prefix,
+            visited.markers,
+            visited.type,
+            "\"$replacement\"",
+            replacement,
+        )
     }
 
     override fun visitTable(table: Toml.Table, p: ExecutionContext): Toml.Table {
