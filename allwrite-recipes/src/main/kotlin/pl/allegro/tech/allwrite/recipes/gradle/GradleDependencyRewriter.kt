@@ -107,7 +107,6 @@ internal class GradleDependencyRewriter(
         val sanitized = replace(Regex("[^A-Za-z0-9_]"), "_")
         return if (sanitized.firstOrNull()?.isDigit() == true) "_$sanitized" else sanitized
     }
-
 }
 
 private data class BuildGradleInterpolatedDependencyRewrite(
