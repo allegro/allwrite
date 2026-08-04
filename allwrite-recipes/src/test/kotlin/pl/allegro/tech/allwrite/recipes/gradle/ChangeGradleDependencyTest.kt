@@ -64,6 +64,38 @@ class ChangeGradleDependencyTest {
         }
 
         @Test
+        fun `should change version catalog entry and accessor in build gradle and toml`() {
+            rewriteRun(
+                buildGradle(
+                    before = """
+                    dependencies {
+                        implementation libs.jackson.module.afterburner
+                        testImplementation libs.junit.jupiter
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation libs.jackson.module.blackbird
+                        testImplementation libs.junit.jupiter
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle") },
+                toml(
+                    before = """
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner" }
+                    junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
+                    """.trimIndent(),
+                    after = """
+                    [libraries]
+                    jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird" }
+                    junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
+            )
+        }
+
+        @Test
         fun `should drop version when new version is null in build gradle`() {
             rewriteRun(
                 { spec ->
@@ -634,6 +666,38 @@ class ChangeGradleDependencyTest {
                     }
                     """.trimIndent(),
                 ) { path("build.gradle.kts") },
+            )
+        }
+
+        @Test
+        fun `should change version catalog entry and accessor in build gradle kts and toml`() {
+            rewriteRun(
+                buildGradleKts(
+                    before = """
+                    dependencies {
+                        implementation(libs.jackson.module.afterburner)
+                        testImplementation(libs.junit.jupiter)
+                    }
+                    """.trimIndent(),
+                    after = """
+                    dependencies {
+                        implementation(libs.jackson.module.blackbird)
+                        testImplementation(libs.junit.jupiter)
+                    }
+                    """.trimIndent(),
+                ) { path("build.gradle.kts") },
+                toml(
+                    before = """
+                    [libraries]
+                    jackson-module-afterburner = { group = "com.fasterxml.jackson.module", name = "jackson-module-afterburner" }
+                    junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
+                    """.trimIndent(),
+                    after = """
+                    [libraries]
+                    jackson-module-blackbird = { group = "tools.jackson.module", name = "jackson-module-blackbird" }
+                    junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
+                    """.trimIndent(),
+                ) { path("gradle/libs.versions.toml") },
             )
         }
 
