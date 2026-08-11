@@ -9,7 +9,6 @@ import pl.allegro.tech.allwrite.api.getFromVersion
 import pl.allegro.tech.allwrite.api.getToVersion
 import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.api.tagPropertyOrNull
-import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
 
 @Single
 internal class RecipeMatcher(
