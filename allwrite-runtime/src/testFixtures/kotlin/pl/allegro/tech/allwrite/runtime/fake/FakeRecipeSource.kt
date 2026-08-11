@@ -13,8 +13,7 @@ class FakeRecipeSource(
 
     constructor(vararg recipes: Recipe) : this(listOf(*recipes))
 
-    override fun findAll(): List<RecipeDescriptor> =
-        recipes.map(Recipe::getDescriptor)
+    override fun findAll(): List<RecipeDescriptor> = recipes.map(Recipe::getDescriptor)
 
     override fun get(recipe: String): Recipe =
         recipes
