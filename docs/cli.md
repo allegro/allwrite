@@ -44,18 +44,10 @@ List user-facing recipes by their friendly names:
 allwrite ls
 ```
 
-List every available recipe, including recipes that can be run only by fully-qualified name:
-
-```bash
-allwrite ls -a
-
-# or
-
-allwrite ls --all
-```
-
-Recipes are listed by default only when they declare both `group:<group>` and `action:<action>` tags. Those tags are reserved for
-recipes that need no recipe options; see [Writing recipes](contributing.md#creating-a-cli-recipe) for the authoring rule.
+`allwrite ls` lists only CLI recipes intended for direct user invocation. When creating your own recipes, use the documented recipe base
+classes and choose `CliAllwriteRecipe` only for recipes that should appear in this listing. CLI recipes must declare both
+`group:<group>` and `action:<action>` tags and must not require recipe options; see [Writing recipes](contributing.md#creating-a-cli-recipe)
+for the authoring rules.
 
 ## Built-in recipes
 

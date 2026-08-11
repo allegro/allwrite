@@ -14,13 +14,14 @@ Choose the base class according to how authors should invoke the recipe:
 
 | Recipe type | Base class | Discovery | Invocation |
 | --- | --- | --- | --- |
-| Regular recipe | `AllwriteRecipe` | `allwrite ls --all` | Fully-qualified recipe name |
-| Scanning recipe | `AllwriteScanningRecipe` | `allwrite ls --all` | Fully-qualified recipe name |
+| Regular recipe | `AllwriteRecipe` | Not listed | Fully-qualified recipe name |
+| Scanning recipe | `AllwriteScanningRecipe` | Not listed | Fully-qualified recipe name |
 | User-facing CLI operation | `CliAllwriteRecipe` | `allwrite ls` | Friendly name |
 
-`allwrite ls` lists recipes that define both `group` and `action` tags. Reserve those tags for recipes that need no OpenRewrite recipe
-options: friendly-name execution accepts only the recipe name and optional version range. Recipes that need options should omit the
-tags, appear in `allwrite ls --all`, and be invoked by their fully-qualified name.
+`allwrite ls` lists only CLI recipes that define both `group` and `action` tags. When creating your own recipes, use one of the documented
+base classes and reserve `CliAllwriteRecipe` for recipes that need no OpenRewrite recipe options: friendly-name execution accepts only
+the recipe name and optional version range. Recipes that need options should use `AllwriteRecipe` or `AllwriteScanningRecipe` and be invoked
+by their fully-qualified name.
 
 Use `AllwriteRecipe` for a focused transformation that is normally included in a larger migration or invoked by its fully-qualified name:
 
@@ -92,7 +93,7 @@ recipeList:
       newFullyQualifiedTypeName: com.example.CurrentType
 ```
 
-Omit either tag for a recipe with options so it appears only in `allwrite ls --all`.
+Omit either tag for a recipe with options so it is invoked by its fully-qualified name.
 
 ### Dependabot integration
 

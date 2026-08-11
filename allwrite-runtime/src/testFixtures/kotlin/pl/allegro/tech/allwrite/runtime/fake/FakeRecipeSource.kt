@@ -14,9 +14,9 @@ class FakeRecipeSource(
 
     constructor(vararg recipes: Recipe) : this(listOf(*recipes))
 
-    override fun findAll(includeNonCli: Boolean): List<RecipeDescriptor> =
+    override fun findAll(): List<RecipeDescriptor> =
         recipes.map(Recipe::getDescriptor)
-            .filter { includeNonCli || it.isCliRecipe() }
+            .filter { it.isCliRecipe() }
 
     override fun get(recipe: String): Recipe =
         recipes

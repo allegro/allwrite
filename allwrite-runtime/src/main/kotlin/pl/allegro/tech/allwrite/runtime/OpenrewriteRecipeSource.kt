@@ -18,11 +18,11 @@ internal class OpenrewriteRecipeSource(
 
     private val environment: Environment = buildEnvironment()
 
-    override fun findAll(includeNonCli: Boolean): List<RecipeDescriptor> =
+    override fun findAll(): List<RecipeDescriptor> =
         environment
             .listRecipeDescriptors()
             .distinctBy(RecipeDescriptor::getName)
-            .filter { includeNonCli || it.isCliRecipe() }
+            .filter { it.isCliRecipe() }
 
     override fun get(recipe: String): Recipe = environment.activateRecipes(recipe)
 
