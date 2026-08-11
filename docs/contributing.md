@@ -12,11 +12,11 @@ However, `allwrite` has some custom features that you can use.
 
 Choose the base class according to how authors should invoke the recipe:
 
-| Recipe type | Base class | Discovery | Invocation |
-| --- | --- | --- | --- |
-| Regular recipe | `AllwriteRecipe` | Not listed | Fully-qualified recipe name |
-| Scanning recipe | `AllwriteScanningRecipe` | Not listed | Fully-qualified recipe name |
-| User-facing CLI operation | `CliAllwriteRecipe` | `allwrite ls` | Friendly name |
+| Recipe type               | Base class               | Discovery     | Invocation                  |
+|---------------------------|--------------------------|---------------|-----------------------------|
+| Regular recipe            | `AllwriteRecipe`         | Not listed    | Fully-qualified recipe name |
+| Scanning recipe           | `AllwriteScanningRecipe` | Not listed    | Fully-qualified recipe name |
+| User-facing CLI operation | `CliAllwriteRecipe`      | `allwrite ls` | Friendly name               |
 
 `allwrite ls` lists only CLI recipes that define both `group` and `action` tags. When creating your own recipes, use one of the documented
 base classes and reserve `CliAllwriteRecipe` for recipes that need no OpenRewrite recipe options: friendly-name execution accepts only

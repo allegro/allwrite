@@ -13,20 +13,20 @@
 
 # Tech Stack
 
-| Category | Technology |
-|---|---|
-| Primary language | Kotlin |
-| Secondary language | Java (minimal, in `allwrite-recipes`) |
-| Core framework | OpenRewrite |
-| Dependency injection | Koin (with KSP annotation processing) |
-| CLI framework | Clikt |
-| Logging | SLF4J + Logback + kotlin-logging |
-| Serialization | kotlinx-serialization |
-| HTTP client | Ktor |
-| Markdown rendering | Markout, clikt-markdown, Mordant |
-| Build system | Gradle (Kotlin DSL) with composite build |
-| Release management | JReleaser + Axion Release Plugin |
-| Testing | Kotest (FunSpec), JUnit 5, MockK, OpenRewrite RewriteTest |
+| Category             | Technology                                                |
+|----------------------|-----------------------------------------------------------|
+| Primary language     | Kotlin                                                    |
+| Secondary language   | Java (minimal, in `allwrite-recipes`)                     |
+| Core framework       | OpenRewrite                                               |
+| Dependency injection | Koin (with KSP annotation processing)                     |
+| CLI framework        | Clikt                                                     |
+| Logging              | SLF4J + Logback + kotlin-logging                          |
+| Serialization        | kotlinx-serialization                                     |
+| HTTP client          | Ktor                                                      |
+| Markdown rendering   | Markout, clikt-markdown, Mordant                          |
+| Build system         | Gradle (Kotlin DSL) with composite build                  |
+| Release management   | JReleaser + Axion Release Plugin                          |
+| Testing              | Kotest (FunSpec), JUnit 5, MockK, OpenRewrite RewriteTest |
 
 ## Documentation
 
@@ -62,15 +62,15 @@ allwrite-cli  -->  allwrite-runtime  -->  allwrite-api
 
 ## Module Responsibilities
 
-| Module | Role |
-|---|---|
-| `allwrite-api` | Public API layer. Incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`). Published as a Maven artifact. |
-| `allwrite-spi` | Published SPI for recipe authors. Base classes (`AllwriteRecipe`, `CliAllwriteRecipe`, `AllwriteScanningRecipe`), `RecipeMetadata`, tag generation (including `dependabot-artifact`). |
-| `allwrite-recipes` | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`. |
-| `allwrite-runtime` | Domain layer. Outgoing port interfaces and OpenRewrite-backed implementations. Depends on `allwrite-api`. |
-| `allwrite-cli` | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring. |
-| `allwrite-completions` | Build-time annotation processor for shell completion generation. |
-| `build-logic` | Gradle composite build with convention plugins and custom tasks. |
+| Module                 | Role                                                                                                                                                                                  |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `allwrite-api`         | Public API layer. Incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`). Published as a Maven artifact.                                                    |
+| `allwrite-spi`         | Published SPI for recipe authors. Base classes (`AllwriteRecipe`, `CliAllwriteRecipe`, `AllwriteScanningRecipe`), `RecipeMetadata`, tag generation (including `dependabot-artifact`). |
+| `allwrite-recipes`     | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`.                                                                 |
+| `allwrite-runtime`     | Domain layer. Outgoing port interfaces and OpenRewrite-backed implementations. Depends on `allwrite-api`.                                                                             |
+| `allwrite-cli`         | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring.                                                                                                   |
+| `allwrite-completions` | Build-time annotation processor for shell completion generation.                                                                                                                      |
+| `build-logic`          | Gradle composite build with convention plugins and custom tasks.                                                                                                                      |
 
 # Directory Structure
 
@@ -169,12 +169,12 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 
 # Testing
 
-| Module | Location | Framework | Naming |
-|---|---|---|---|
-| `allwrite-cli` | `src/test/kotlin/` | Kotest FunSpec | `*Spec.kt` |
-| `allwrite-cli` | `src/e2e/kotlin/` | Kotest FunSpec | `*IntegrationSpec.kt` |
-| `allwrite-runtime` | `src/test/kotlin/` | Kotest FunSpec | `*Spec.kt` |
-| `allwrite-recipes` | `src/test/kotlin/` | JUnit 5 + RewriteTest | `*Test.kt` |
+| Module             | Location           | Framework             | Naming                |
+|--------------------|--------------------|-----------------------|-----------------------|
+| `allwrite-cli`     | `src/test/kotlin/` | Kotest FunSpec        | `*Spec.kt`            |
+| `allwrite-cli`     | `src/e2e/kotlin/`  | Kotest FunSpec        | `*IntegrationSpec.kt` |
+| `allwrite-runtime` | `src/test/kotlin/` | Kotest FunSpec        | `*Spec.kt`            |
+| `allwrite-recipes` | `src/test/kotlin/` | JUnit 5 + RewriteTest | `*Test.kt`            |
 
 - `BaseRunnerSpec` — abstract base for runner tests, sets up Koin DI with faked modules
 - `BaseRuntimeSpec` — abstract base for runtime tests
@@ -183,13 +183,13 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 
 # Commands
 
-| Command | Description |
-|---|---|
-| `./gradlew test` | Run unit tests across all modules |
-| `./gradlew build` | Full build including JReleaser assembly |
-| `./gradlew :allwrite-cli:run --args "<args>"` | Run the CLI locally |
-| `./gradlew :allwrite-cli:e2e` | Run end-to-end tests |
-| `./gradlew check` | Run tests + e2e |
+| Command                                       | Description                             |
+|-----------------------------------------------|-----------------------------------------|
+| `./gradlew test`                              | Run unit tests across all modules       |
+| `./gradlew build`                             | Full build including JReleaser assembly |
+| `./gradlew :allwrite-cli:run --args "<args>"` | Run the CLI locally                     |
+| `./gradlew :allwrite-cli:e2e`                 | Run end-to-end tests                    |
+| `./gradlew check`                             | Run tests + e2e                         |
 
 # Key Dependencies
 
