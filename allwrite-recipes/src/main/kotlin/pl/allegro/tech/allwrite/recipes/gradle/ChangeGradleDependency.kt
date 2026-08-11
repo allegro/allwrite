@@ -9,7 +9,6 @@ import org.openrewrite.internal.StringUtils
 import org.openrewrite.text.PlainTextParser
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 
 public class ChangeGradleDependency(
