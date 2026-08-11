@@ -7,7 +7,6 @@ import org.openrewrite.config.ClasspathScanningLoader
 import org.openrewrite.config.Environment
 import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.api.RecipeSource
-import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.runtime.port.outgoing.ExternalRecipeProvider
 import java.net.URLClassLoader
 
@@ -22,7 +21,6 @@ internal class OpenrewriteRecipeSource(
         environment
             .listRecipeDescriptors()
             .distinctBy(RecipeDescriptor::getName)
-            .filter { it.isCliRecipe() }
 
     override fun get(recipe: String): Recipe = environment.activateRecipes(recipe)
 

@@ -5,6 +5,7 @@ import io.koalaql.markout.md.markdown
 import org.koin.core.annotation.Single
 import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.api.toCompactString
 import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
 import pl.allegro.tech.allwrite.cli.application.CommandExecutionResult.ExecutionResult
@@ -16,7 +17,7 @@ internal class ListRecipesCommand(
 ) : SubCommand(name = COMMAND_NAME, help = "Lists all recipes") {
 
     override fun runSubCommand(): ExecutionResult {
-        val recipes = recipeSource.findAll().sortedBy { it.name }
+        val recipes = recipeSource.findAll().filter { it.isCliRecipe() }.sortedBy { it.name }
 
         if (!verbose) {
             echo(renderRecipesListing(recipes))

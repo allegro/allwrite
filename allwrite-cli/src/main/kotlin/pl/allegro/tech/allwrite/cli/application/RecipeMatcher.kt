@@ -7,6 +7,7 @@ import pl.allegro.tech.allwrite.api.RecipeCoordinates
 import pl.allegro.tech.allwrite.api.RecipeSource
 import pl.allegro.tech.allwrite.api.getFromVersion
 import pl.allegro.tech.allwrite.api.getToVersion
+import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.api.tagPropertyOrNull
 
 @Single
@@ -17,7 +18,7 @@ internal class RecipeMatcher(
     fun findMatching(coordinates: RecipeCoordinates): List<RecipeDescriptor> {
         val (group, recipe, from, to) = coordinates
 
-        val descriptors = recipeSource.findAll()
+        val descriptors = recipeSource.findAll().filter { it.isCliRecipe() }
         val groupRecipes = descriptors
             .filter { group == it.tagPropertyOrNull("group") }
             .filter { recipe == it.tagPropertyOrNull("action") }
@@ -27,7 +28,7 @@ internal class RecipeMatcher(
     }
 
     fun findMatchingByTargetVersion(group: String, recipe: String, to: Version): List<RecipeDescriptor> {
-        val descriptors = recipeSource.findAll()
+        val descriptors = recipeSource.findAll().filter { it.isCliRecipe() }
         val groupRecipes = descriptors
             .filter { group == it.tagPropertyOrNull("group") }
             .filter { recipe == it.tagPropertyOrNull("action") }

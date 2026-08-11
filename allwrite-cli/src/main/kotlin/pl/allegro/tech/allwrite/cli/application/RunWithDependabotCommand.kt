@@ -10,6 +10,7 @@ import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
 import pl.allegro.tech.allwrite.api.RecipeExecutor
 import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.cli.application.CommandExecutionResult.ExecutionResult
 import pl.allegro.tech.allwrite.cli.application.port.outgoing.InputFilesProvider
 import pl.allegro.tech.allwrite.cli.util.JSON
@@ -63,7 +64,7 @@ internal class RunWithDependabotCommand(
 
     private fun getRecipesFromDependabotMetadata(): List<String> {
         val dependabotMetadata = JSON.decodeFromString<PullRequestManagerExtras>(pullRequestManagerExtraParams).dependabot
-        val recipes = recipeSource.findAll()
+        val recipes = recipeSource.findAll().filter { it.isCliRecipe() }
         return dependabotMetadata.mapNotNull { it.toRecipeCoordinates(recipes) }
             .flatMap { recipeMatcher.findMatching(it) }
             .map { it.name }
