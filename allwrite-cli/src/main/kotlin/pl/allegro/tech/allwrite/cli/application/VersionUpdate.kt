@@ -17,8 +17,11 @@ internal data class VersionUpdate(
     val from: Version,
     val to: Version,
 ) {
+    fun findMatchingRecipe(recipes: List<RecipeDescriptor>): RecipeDescriptor? =
+        recipes.firstOrNull { it.tags.contains("dependabot-artifact:$artifact") }
+
     fun toRecipeCoordinates(recipes: List<RecipeDescriptor>): RecipeCoordinates? {
-        val matched = recipes.firstOrNull { it.tags.contains("dependabot-artifact:$artifact") } ?: return null
+        val matched = findMatchingRecipe(recipes) ?: return null
         return RecipeCoordinates(
             group = matched.tagPropertyOrNull("group") ?: return null,
             action = matched.tagPropertyOrNull("action") ?: return null,

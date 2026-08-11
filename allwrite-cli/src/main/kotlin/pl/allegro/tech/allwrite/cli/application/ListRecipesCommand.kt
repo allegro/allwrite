@@ -14,7 +14,7 @@ import com.github.ajalt.mordant.markdown.Markdown as MdWidget
 @Single
 internal class ListRecipesCommand(
     private val recipeSource: RecipeSource,
-) : SubCommand(name = COMMAND_NAME, help = "Lists all recipes") {
+) : SubCommand(name = COMMAND_NAME, help = "Lists all CLI recipes") {
 
     override fun runSubCommand(): ExecutionResult {
         val recipes = recipeSource.findAll().filter { it.isCliRecipe() }.sortedBy { it.name }

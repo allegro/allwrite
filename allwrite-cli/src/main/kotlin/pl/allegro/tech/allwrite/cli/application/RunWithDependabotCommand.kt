@@ -64,10 +64,19 @@ internal class RunWithDependabotCommand(
 
     private fun getRecipesFromDependabotMetadata(): List<String> {
         val dependabotMetadata = JSON.decodeFromString<PullRequestManagerExtras>(pullRequestManagerExtraParams).dependabot
-        val recipes = recipeSource.findAll().filter { it.isCliRecipe() }
-        return dependabotMetadata.mapNotNull { it.toRecipeCoordinates(recipes) }
-            .flatMap { recipeMatcher.findMatching(it) }
-            .map { it.name }
+        val recipes = recipeSource.findAll()
+        return dependabotMetadata
+            .flatMap { update ->
+                val matchingRecipe = update.findMatchingRecipe(recipes)
+                if (matchingRecipe != null && !matchingRecipe.isCliRecipe()) {
+                    listOf(matchingRecipe.name)
+                } else {
+                    update.toRecipeCoordinates(recipes)
+                        ?.let(recipeMatcher::findMatching)
+                        ?.map { it.name }
+                        .orEmpty()
+                }
+            }
             .distinct()
     }
 

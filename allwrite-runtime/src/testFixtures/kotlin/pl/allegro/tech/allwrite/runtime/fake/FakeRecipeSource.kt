@@ -5,7 +5,6 @@ import org.openrewrite.Recipe
 import org.openrewrite.RecipeException
 import org.openrewrite.config.RecipeDescriptor
 import pl.allegro.tech.allwrite.api.RecipeSource
-import pl.allegro.tech.allwrite.api.isCliRecipe
 
 @Single
 class FakeRecipeSource(
@@ -16,7 +15,6 @@ class FakeRecipeSource(
 
     override fun findAll(): List<RecipeDescriptor> =
         recipes.map(Recipe::getDescriptor)
-            .filter { it.isCliRecipe() }
 
     override fun get(recipe: String): Recipe =
         recipes
@@ -91,6 +89,12 @@ class FakeRecipeSource(
                 "dependabot-artifact:com.fasterxml.jackson.core:jackson-databind",
             ),
         )
+        val DEPENDABOT_SCANNING_TEST_RECIPE = FakeRecipe(
+            id = "pl.allegro.tech.allwrite.recipes.dependabot-scanning",
+            displayName = "Dependabot scanning recipe",
+            description = "Dependabot-triggered scanning recipe.",
+            tags = setOf("dependabot-artifact:com.example:scanning"),
+        )
         val TEST_RECIPES = listOf(
             SPRING_BOOT_3_TEST_RECIPE,
             SPRING_BOOT_4_TEST_RECIPE,
@@ -101,6 +105,7 @@ class FakeRecipeSource(
             PICNIC_TEST_RECIPE,
             DEPENDABOT_SPRING_BOOT_3_TEST_RECIPE,
             DEPENDABOT_JACKSON_TEST_RECIPE,
+            DEPENDABOT_SCANNING_TEST_RECIPE,
         )
     }
 }
