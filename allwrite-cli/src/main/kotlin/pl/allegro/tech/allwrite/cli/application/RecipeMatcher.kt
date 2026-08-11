@@ -9,6 +9,7 @@ import pl.allegro.tech.allwrite.api.getFromVersion
 import pl.allegro.tech.allwrite.api.getToVersion
 import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.api.tagPropertyOrNull
+import pl.allegro.tech.allwrite.api.toRecipeCoordinatesOrNull
 
 @Single
 internal class RecipeMatcher(
@@ -34,9 +35,7 @@ internal class RecipeMatcher(
             .filter { recipe == it.tagPropertyOrNull("action") }
             .filter { it.getFromVersion() != null && it.getToVersion() != null }
 
-        val lowestFrom = groupRecipes
-            .map { it.getFromVersion()!! }
-            .minOrNull() ?: return emptyList()
+        val lowestFrom = groupRecipes.minOfOrNull { it.getFromVersion()!! } ?: return emptyList()
 
         val directRecipe = groupRecipes
             .filter { lowestFrom.isSameMinorVersionAs(it.getFromVersion()) }

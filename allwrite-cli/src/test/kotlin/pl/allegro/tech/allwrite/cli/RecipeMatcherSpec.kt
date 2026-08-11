@@ -2,6 +2,7 @@ package pl.allegro.tech.allwrite.cli
 
 import com.github.zafarkhaja.semver.Version
 import io.kotest.matchers.equals.shouldBeEqual
+import org.koin.core.module.Module
 import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.api.RecipeCoordinates
 import pl.allegro.tech.allwrite.cli.application.RecipeMatcher
@@ -13,7 +14,7 @@ import pl.allegro.tech.allwrite.runtime.util.injectEagerly
 
 class RecipeMatcherSpec : BaseCliSpec() {
 
-    override fun additionalModules() =
+    override fun additionalModules(): List<Module> =
         listOf(
             FakeRuntimeModule().module,
         )
@@ -40,6 +41,32 @@ class RecipeMatcherSpec : BaseCliSpec() {
             // then
             recipeDescriptors shouldBeEqual
                 listOf(FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE.descriptor, FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE.descriptor)
+        }
+
+        test("should ignore recipes without CLI coordinates") {
+            // given
+            val nonCliRecipe = FakeRecipe(
+                id = "pl.allegro.tech.allwrite.recipes.internal-helper",
+                tags = setOf("visibility:PUBLIC"),
+            )
+            val matcher = RecipeMatcher(
+                FakeRecipeSource(
+                    FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE,
+                    FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE,
+                    nonCliRecipe,
+                ),
+            )
+
+            // when
+            val recipeDescriptors = matcher.findMatching(
+                RecipeCoordinates("spring-boot", "upgrade", null, null),
+            )
+
+            // then
+            recipeDescriptors shouldBeEqual listOf(
+                FakeRecipeSource.Companion.SPRING_BOOT_3_TEST_RECIPE.descriptor,
+                FakeRecipeSource.Companion.SPRING_BOOT_4_TEST_RECIPE.descriptor,
+            )
         }
 
         test("should return empty list when no exact match and versions are specified") {
