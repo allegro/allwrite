@@ -10,6 +10,7 @@ internal class GradleDependencyRewriter(
     private val newArtifactId: String,
     private val newVersion: String?,
     private val regexpDependencyChanger: RegexpDependencyChanger,
+    private val versionCatalogAccessorRenames: Map<String, String>,
 ) {
     fun update(sourceFile: SourceFile): SourceFile {
         val plainText = PlainTextParser.convert(sourceFile)
@@ -20,11 +21,23 @@ internal class GradleDependencyRewriter(
     private fun updateText(originalText: String): String {
         val interpolation = rewriteBuildGradleInterpolatedDependency(originalText)
         val versionedText = regexpDependencyChanger.update(interpolation.text)
+        val accessorText = replaceVersionCatalogAccessors(versionedText)
         return interpolation.existingVersionVariable?.let { existingVersionVariable ->
-            val version = newVersion ?: return@let versionedText
-            addBuildGradleVersionVariableDefinition(versionedText, existingVersionVariable, newArtifactId.toVersionVariableName(), version)
-        } ?: versionedText
+            val version = newVersion ?: return@let accessorText
+            addBuildGradleVersionVariableDefinition(accessorText, existingVersionVariable, newArtifactId.toVersionVariableName(), version)
+        } ?: accessorText
     }
+
+    private fun replaceVersionCatalogAccessors(text: String): String =
+        versionCatalogAccessorRenames.entries.fold(text) { currentText, (oldAccessor, newAccessor) ->
+            replaceVersionCatalogAccessor(currentText, oldAccessor, newAccessor)
+        }
+
+    private fun replaceVersionCatalogAccessor(text: String, oldAccessor: String, newAccessor: String): String =
+        text.replace(
+            Regex("""(?<![A-Za-z0-9_.])libs\.${Regex.escape(oldAccessor)}(?![A-Za-z0-9_.])"""),
+            "libs.$newAccessor",
+        )
 
     private fun rewriteBuildGradleInterpolatedDependency(originalText: String): BuildGradleInterpolatedDependencyRewrite {
         val versionVariable = newArtifactId.toVersionVariableName()

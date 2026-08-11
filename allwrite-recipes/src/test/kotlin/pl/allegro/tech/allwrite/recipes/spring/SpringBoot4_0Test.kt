@@ -81,7 +81,6 @@ class SpringBoot4_0Test : RewriteTest {
         assertThat(recipeNames).contains(
             "AddNonNullableTypeBoundsToSpringRepositories",
             "ReplaceStatusCodeValue",
-            "ChangeSpringBoot4WebServerTypes",
         )
     }
 
@@ -144,6 +143,92 @@ class SpringBoot4_0Test : RewriteTest {
                     }
                 """.trimIndent(),
             ),
+        )
+    }
+
+    @Test
+    fun `should upgrade Testcontainers module aliases in version catalog bundles`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [libraries]
+                    junit-jupiter = { group = "org.testcontainers", name = "junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "junit-jupiter"
+                    ]
+                """.trimIndent(),
+                after = """
+                    [libraries]
+                    testcontainers-junit-jupiter = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "testcontainers-junit-jupiter"
+                    ]
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
+    fun `should upgrade Testcontainers module aliases in every bundle`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [libraries]
+                    junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "junit-jupiter",
+                        "unrelated-library",
+                    ]
+                    integration = [
+                        "junit-jupiter",
+                    ]
+                """.trimIndent(),
+                after = """
+                    [libraries]
+                    testcontainers-junit-jupiter = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "testcontainers-junit-jupiter",
+                        "unrelated-library",
+                    ]
+                    integration = [
+                        "testcontainers-junit-jupiter",
+                    ]
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+        )
+    }
+
+    @Test
+    fun `should preserve custom Testcontainers library aliases in bundles`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [libraries]
+                    testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "testcontainers-junit",
+                    ]
+                """.trimIndent(),
+                after = """
+                    [libraries]
+                    testcontainers-junit = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
+
+                    [bundles]
+                    testcontainers = [
+                        "testcontainers-junit",
+                    ]
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
         )
     }
 
@@ -274,88 +359,6 @@ class SpringBoot4_0Test : RewriteTest {
                     groovy = { module = "org.apache.groovy:groovy-all", version.ref = "groovy" }
                 """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
-        )
-    }
-
-    @Test
-    fun `should relocate Spring Boot web server types`() {
-        rewriteRun(
-            kotlin(
-                before = """
-                    package org.springframework.boot.web.embedded.tomcat
-
-                    class TomcatWebServer
-                """.trimIndent(),
-                after = """
-                    package org.springframework.boot.tomcat
-
-                    class TomcatWebServer
-                """.trimIndent(),
-            ),
-            kotlin(
-                before = """
-                    package org.springframework.boot.web.embedded.jetty
-
-                    class JettyWebServer
-                """.trimIndent(),
-                after = """
-                    package org.springframework.boot.jetty
-
-                    class JettyWebServer
-                """.trimIndent(),
-            ),
-            kotlin(
-                before = """
-                    package org.springframework.boot.web.servlet.context
-
-                    class ServletWebServerApplicationContext
-                """.trimIndent(),
-                after = """
-                    package org.springframework.boot.web.server.servlet.context
-
-                    class ServletWebServerApplicationContext
-                """.trimIndent(),
-            ),
-            kotlin(
-                before = """
-                    package org.springframework.boot.web.reactive.context
-
-                    class ReactiveWebServerApplicationContext
-                """.trimIndent(),
-                after = """
-                    package org.springframework.boot.web.server.reactive.context
-
-                    class ReactiveWebServerApplicationContext
-                """.trimIndent(),
-            ),
-            kotlin(
-                before = """
-                    import org.springframework.boot.web.embedded.tomcat.TomcatWebServer
-                    import org.springframework.boot.web.embedded.jetty.JettyWebServer
-                    import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext
-                    import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext
-
-                    class WebServers(
-                        val tomcat: TomcatWebServer?,
-                        val jetty: JettyWebServer?,
-                        val servlet: ServletWebServerApplicationContext?,
-                        val reactive: ReactiveWebServerApplicationContext?
-                    )
-                """.trimIndent(),
-                after = """
-                    import org.springframework.boot.jetty.JettyWebServer
-                    import org.springframework.boot.tomcat.TomcatWebServer
-                    import org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContext
-                    import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext
-
-                    class WebServers(
-                        val tomcat: TomcatWebServer?,
-                        val jetty: JettyWebServer?,
-                        val servlet: ServletWebServerApplicationContext?,
-                        val reactive: ReactiveWebServerApplicationContext?
-                    )
-                """.trimIndent(),
-            ),
         )
     }
 

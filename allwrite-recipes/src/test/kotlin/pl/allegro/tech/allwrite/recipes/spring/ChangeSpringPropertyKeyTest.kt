@@ -40,7 +40,10 @@ class ChangeSpringPropertyKeyTest : RewriteTest {
                                  enabled: true
                         """.trimIndent(),
                         after = """
-                            myapp.i18n.$LANGUAGE_BUNDLE_KEBAB.enabled: true
+                            myapp:
+                              i18n:
+                                $LANGUAGE_BUNDLE_KEBAB:
+                                  enabled: true
                         """.trimIndent(),
                         spec = { path("application.yml") },
                     ),
