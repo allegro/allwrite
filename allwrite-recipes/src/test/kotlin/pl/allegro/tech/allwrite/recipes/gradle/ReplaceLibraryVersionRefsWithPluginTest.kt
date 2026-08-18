@@ -5,11 +5,11 @@ import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
 import pl.allegro.tech.allwrite.recipes.toml
 
-class AddTomlVersionCatalogPluginTest : RewriteTest {
+class ReplaceLibraryVersionRefsWithPluginTest : RewriteTest {
     override fun defaults(spec: RecipeSpec) {
         spec
             .recipe(
-                AddTomlVersionCatalogPlugin(
+                ReplaceLibraryVersionRefsWithPlugin(
                     pluginName = "example",
                     pluginId = "com.example.plugin",
                     pluginVersion = "1.2.3",

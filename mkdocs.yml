@@ -52,6 +52,7 @@ nav:
           - AddGradleDependency: recipes/gradle/add-gradle-dependency.md
           - ChangeGradleDependency: recipes/gradle/change-gradle-dependency.md
           - UpdateGradleDependency: recipes/gradle/update-gradle-dependency.md
+          - ReplaceLibraryVersionRefsWithPlugin: recipes/gradle/replace-library-version-refs-with-plugin.md
       - Java / Kotlin:
           - Java upgrades: recipes/java/java-upgrades.md
           - ChangeType: recipes/java/change-type.md

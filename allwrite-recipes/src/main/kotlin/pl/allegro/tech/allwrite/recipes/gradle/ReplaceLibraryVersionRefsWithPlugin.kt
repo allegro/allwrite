@@ -17,13 +17,13 @@ import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 import pl.allegro.tech.allwrite.recipes.toml.table
 
-internal class AddTomlVersionCatalogPlugin(
+internal class ReplaceLibraryVersionRefsWithPlugin(
     private val pluginName: String,
     private val pluginId: String,
     private val pluginVersion: String,
 ) : AllwriteRecipe(
-    displayName = "Add a plugin to the version catalog",
-    description = "Adds or updates a plugin in gradle/libs.versions.toml.",
+    displayName = "Replace library version references with a plugin",
+    description = "Replaces matching library version.ref entries with a plugin in gradle/libs.versions.toml.",
     visibility = INTERNAL,
 ) {
 
