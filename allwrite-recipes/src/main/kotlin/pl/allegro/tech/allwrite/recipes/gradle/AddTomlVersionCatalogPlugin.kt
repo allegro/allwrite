@@ -49,13 +49,12 @@ internal class AddTomlVersionCatalogPlugin(
             return super.visitDocument(documentWithPlugins, p)
         }
 
-        override fun visitKeyValue(keyValue: Toml.KeyValue, p: ExecutionContext): Toml.KeyValue {
-            return when (cursor.firstEnclosing(Toml.Table::class.java)?.name()) {
+        override fun visitKeyValue(keyValue: Toml.KeyValue, p: ExecutionContext): Toml.KeyValue =
+            when (cursor.firstEnclosing(Toml.Table::class.java)?.name()) {
                 VERSION_CATALOG_TABLE_LIBS -> visitLibrary(keyValue, p)
                 VERSION_CATALOG_TABLE_PLUGINS -> visitPlugin(keyValue, p)
                 else -> super.visitKeyValue(keyValue, p)
             }
-        }
 
         private fun visitLibrary(keyValue: Toml.KeyValue, p: ExecutionContext): Toml.KeyValue {
             val entryName = keyValue.stringKey()
@@ -106,8 +105,7 @@ internal class AddTomlVersionCatalogPlugin(
                 keyValue.stringKey()?.matchesPluginLibraryName() == true && keyValue.valueToLibrary() != null
             } == true
 
-    private fun String.matchesPluginLibraryName(): Boolean =
-        this == pluginName || StringUtils.matchesGlob(this, "$pluginName-*")
+    private fun String.matchesPluginLibraryName(): Boolean = this == pluginName || StringUtils.matchesGlob(this, "$pluginName-*")
 
     private fun requestedPlugin(): Plugin = Plugin(pluginId, PlainVersion(pluginVersion))
 }
