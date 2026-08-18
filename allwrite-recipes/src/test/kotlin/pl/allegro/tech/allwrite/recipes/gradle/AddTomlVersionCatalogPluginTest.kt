@@ -13,8 +13,6 @@ class AddTomlVersionCatalogPluginTest : RewriteTest {
                     pluginName = "example",
                     pluginId = "com.example.plugin",
                     pluginVersion = "1.2.3",
-                    requiredLibraryGroup = "com.example",
-                    requiredLibraryName = "example-*",
                 ),
             )
             .expectedCyclesThatMakeChanges(2)
@@ -49,7 +47,7 @@ class AddTomlVersionCatalogPluginTest : RewriteTest {
     }
 
     @Test
-    fun `should not add a plugin when the required library is missing`() {
+    fun `should not add a plugin when no library uses the plugin name`() {
         rewriteRun(
             { spec -> spec.expectedCyclesThatMakeChanges(0) },
             toml(
@@ -113,7 +111,7 @@ class AddTomlVersionCatalogPluginTest : RewriteTest {
     }
 
     @Test
-    fun `should remove references from all matching libraries and preserve unrelated references`() {
+    fun `should remove references from libraries using the plugin name and preserve unrelated libraries`() {
         rewriteRun(
             toml(
                 before = """

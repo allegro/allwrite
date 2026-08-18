@@ -1,8 +1,11 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
 import org.openrewrite.ExecutionContext
+import org.openrewrite.FindSourceFiles
+import org.openrewrite.Preconditions
 import org.openrewrite.TreeVisitor
 import org.openrewrite.internal.StringUtils
+import org.openrewrite.marker.SearchResult
 import org.openrewrite.toml.TomlIsoVisitor
 import org.openrewrite.toml.tree.Space
 import org.openrewrite.toml.tree.Toml
@@ -18,20 +21,23 @@ internal class AddTomlVersionCatalogPlugin(
     private val pluginName: String,
     private val pluginId: String,
     private val pluginVersion: String,
-    private val requiredLibraryGroup: String? = null,
-    private val requiredLibraryName: String? = null,
 ) : AllwriteRecipe(
     displayName = "Add a plugin to the version catalog",
     description = "Adds or updates a plugin in gradle/libs.versions.toml.",
     visibility = INTERNAL,
 ) {
 
-    override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor()
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> =
+        Preconditions.check(
+            Preconditions.and(
+                FindSourceFiles("gradle/libs.versions.toml").visitor,
+                PluginLibraryPrecondition(),
+            ),
+            Visitor(),
+        )
 
     private inner class Visitor : TomlIsoVisitor<ExecutionContext>() {
         override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document {
-            if (!document.isTomlVersionCatalogFile() || !document.hasRequiredLibrary()) return document
-
             val documentWithPlugins =
                 if (document.table(VERSION_CATALOG_TABLE_PLUGINS) == null) {
                     val prefix = if (document.values.isEmpty()) Space.EMPTY else Space.format("\n\n")
@@ -52,8 +58,11 @@ internal class AddTomlVersionCatalogPlugin(
         }
 
         private fun visitLibrary(keyValue: Toml.KeyValue, p: ExecutionContext): Toml.KeyValue {
+            val entryName = keyValue.stringKey()
+            if (entryName == null || !entryName.matchesPluginLibraryName()) return super.visitKeyValue(keyValue, p)
+
             val library = keyValue.valueToLibrary()
-            if (library?.version !is VersionRef || !library.matchesRequiredLibrary()) return super.visitKeyValue(keyValue, p)
+            if (library?.version !is VersionRef) return super.visitKeyValue(keyValue, p)
 
             val value = keyValue.value as? Toml.Table ?: return keyValue
             val values = value.padding.values.filter { nestedValue ->
@@ -83,21 +92,22 @@ internal class AddTomlVersionCatalogPlugin(
             val newPlugin = requestedPlugin().toTomlEntry(pluginName).withPrefix(Space.format("\n"))
             return visited.withValues(visited.values + newPlugin)
         }
-
-        private fun Toml.Document.hasRequiredLibrary(): Boolean {
-            if (requiredLibraryGroup == null && requiredLibraryName == null) return true
-
-            return table(VERSION_CATALOG_TABLE_LIBS)
-                ?.keyValues()
-                ?.any { keyValue -> keyValue.valueToLibrary()?.matchesRequiredLibrary() == true } == true
-        }
-
-        private fun Library.matchesRequiredLibrary(): Boolean {
-            val group = requiredLibraryGroup ?: return false
-            val name = requiredLibraryName ?: return false
-            return StringUtils.matchesGlob(this.group, group) && StringUtils.matchesGlob(this.name, name)
-        }
-
-        private fun requestedPlugin(): Plugin = Plugin(pluginId, PlainVersion(pluginVersion))
     }
+
+    private inner class PluginLibraryPrecondition : TomlIsoVisitor<ExecutionContext>() {
+        override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document =
+            if (document.hasPluginLibraries()) SearchResult.found(document)!! else document
+    }
+
+    private fun Toml.Document.hasPluginLibraries(): Boolean =
+        table(VERSION_CATALOG_TABLE_LIBS)
+            ?.keyValues()
+            ?.any { keyValue ->
+                keyValue.stringKey()?.matchesPluginLibraryName() == true && keyValue.valueToLibrary() != null
+            } == true
+
+    private fun String.matchesPluginLibraryName(): Boolean =
+        this == pluginName || StringUtils.matchesGlob(this, "$pluginName-*")
+
+    private fun requestedPlugin(): Plugin = Plugin(pluginId, PlainVersion(pluginVersion))
 }
