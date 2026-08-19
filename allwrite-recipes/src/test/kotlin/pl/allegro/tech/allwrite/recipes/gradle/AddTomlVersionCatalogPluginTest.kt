@@ -1,6 +1,8 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
 import pl.allegro.tech.allwrite.recipes.buildGradle
@@ -17,7 +19,7 @@ class AddTomlVersionCatalogPluginTest : RewriteTest {
                     pluginVersion = "1.2.3",
                 ),
             )
-            .expectedCyclesThatMakeChanges(2)
+            .expectedCyclesThatMakeChanges(1)
             .validateRecipeSerialization(false)
     }
 
@@ -212,6 +214,57 @@ class AddTomlVersionCatalogPluginTest : RewriteTest {
     }
 
     @Test
+    fun `should reuse an existing alias for the requested plugin ID`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [plugins]
+                    existing-example = { id = "com.example.plugin", version.ref = "example" }
+                """.trimIndent(),
+                after = """
+                    [plugins]
+                    existing-example = { id = "com.example.plugin", version = "1.2.3" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                before = """
+                    plugins {
+                        id("java")
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        id("java")
+                        alias(libs.plugins.existing.example)
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
+
+    @Test
+    fun `should reject a plugin alias that belongs to another plugin`() {
+        // given
+        val versionCatalog = toml(
+            beforeAndAfter = """
+                [plugins]
+                example = { id = "com.other.plugin", version = "4.5.6" }
+            """.trimIndent(),
+        ) { path("gradle/libs.versions.toml") }
+
+        // when
+        val failure = assertThrows<AssertionError> {
+            rewriteRun(
+                { spec -> spec.expectedCyclesThatMakeChanges(0) },
+                versionCatalog,
+            )
+        }
+
+        // then
+        assertTrue(failure.cause is IllegalArgumentException)
+    }
+
+    @Test
     fun `should not change a version catalog outside the expected path`() {
         rewriteRun(
             { spec -> spec.expectedCyclesThatMakeChanges(0) },
@@ -234,7 +287,7 @@ class AddTomlVersionCatalogPluginTest : RewriteTest {
                     example-bom = { group = "com.example", name = "example-bom", version.ref = "example" }
 
                     [plugins]
-                    example = { id = "com.other.plugin", version = "4.5.6" }
+                    example = { id = "com.example.plugin", version = "1.2.3" }
                 """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
             buildGradleKts(

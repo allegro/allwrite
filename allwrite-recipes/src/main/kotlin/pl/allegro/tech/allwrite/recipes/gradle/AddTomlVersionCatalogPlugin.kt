@@ -1,6 +1,7 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
 import org.openrewrite.ExecutionContext
+import org.openrewrite.Parser
 import org.openrewrite.SourceFile
 import org.openrewrite.Tree
 import org.openrewrite.TreeVisitor
@@ -24,14 +25,28 @@ import pl.allegro.tech.allwrite.recipes.toml.stringKey
 import pl.allegro.tech.allwrite.recipes.toml.table
 import pl.allegro.tech.allwrite.recipes.util.DelegatingJVisitor
 import java.io.ByteArrayInputStream
-import java.nio.charset.StandardCharsets
+import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.Paths
 import kotlin.jvm.optionals.getOrNull
 
 private const val PLUGINS_BLOCK: String = "plugins"
 private const val ALIAS_METHOD: String = "alias"
+private const val KOTLIN_GRADLE_PATH: String = "build.gradle.kts"
 private val PLUGIN_ALIAS_MESSAGE: String = "${AddTomlVersionCatalogPlugin::class.java.name}_target"
 private val GRADLE_PARSER: GradleParser = GradleParser.builder().build()
+
+private fun pluginsBlockSource(pluginReference: String): String =
+    """
+    plugins {
+        alias(libs.plugins.$pluginReference)
+    }
+    """.trimIndent()
+
+private fun J.MethodInvocation.pluginAliasStatement(): Statement? {
+    val lambda = arguments.singleOrNull() as? J.Lambda ?: return null
+    val body = lambda.body as? J.Block ?: return null
+    return body.statements.singleOrNull()
+}
 
 internal class AddTomlVersionCatalogPlugin(
     private val pluginName: String,
@@ -44,7 +59,7 @@ internal class AddTomlVersionCatalogPlugin(
 ) {
 
     internal data class Context(
-        var hasVersionCatalog: Boolean = false,
+        var pluginAlias: String? = null,
     )
 
     override fun getInitialValue(ctx: ExecutionContext): Context = Context()
@@ -54,17 +69,17 @@ internal class AddTomlVersionCatalogPlugin(
             override fun visit(tree: Tree?, p: ExecutionContext): Tree? {
                 val document = tree as? Toml.Document ?: return tree
                 if (document.isTomlVersionCatalogFile()) {
-                    acc.hasVersionCatalog = true
+                    acc.pluginAlias = document.resolvePluginAlias()
                 }
                 return tree
             }
         }
 
     override fun getVisitor(context: Context): TreeVisitor<*, ExecutionContext> {
-        if (!context.hasVersionCatalog) return TreeVisitor.noop<Tree, ExecutionContext>()
+        val pluginAlias = context.pluginAlias ?: return TreeVisitor.noop<Tree, ExecutionContext>()
 
-        val versionCatalogVisitor = Visitor()
-        val buildFileVisitor = AddVersionCatalogPluginReference(pluginName)
+        val versionCatalogVisitor = VersionCatalogVisitor(pluginAlias)
+        val buildFileVisitor = AddVersionCatalogPluginReference(pluginAlias)
         return object : TreeVisitor<Tree, ExecutionContext>() {
             override fun isAcceptable(sourceFile: SourceFile, ctx: ExecutionContext): Boolean =
                 sourceFile.isTomlVersionCatalogFile() || sourceFile.isBuildGradleFile()
@@ -81,7 +96,9 @@ internal class AddTomlVersionCatalogPlugin(
         }
     }
 
-    private inner class Visitor : TomlIsoVisitor<ExecutionContext>() {
+    private inner class VersionCatalogVisitor(
+        private val pluginAlias: String,
+    ) : TomlIsoVisitor<ExecutionContext>() {
         override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document {
             val documentWithPlugins =
                 if (document.table(VERSION_CATALOG_TABLE_PLUGINS) == null) {
@@ -102,9 +119,10 @@ internal class AddTomlVersionCatalogPlugin(
 
         private fun visitPlugin(keyValue: Toml.KeyValue, p: ExecutionContext): Toml.KeyValue {
             val plugin = keyValue.valueToPlugin() ?: return super.visitKeyValue(keyValue, p)
-            if (plugin.id != pluginId) return super.visitKeyValue(keyValue, p)
+            if (plugin.id != pluginId || plugin.version == PlainVersion(pluginVersion)) return super.visitKeyValue(keyValue, p)
 
             val entryName = keyValue.stringKey() ?: return super.visitKeyValue(keyValue, p)
+            if (entryName != pluginAlias) return super.visitKeyValue(keyValue, p)
             return requestedPlugin().toTomlEntry(entryName).withPrefix(keyValue.prefix)
         }
 
@@ -112,12 +130,27 @@ internal class AddTomlVersionCatalogPlugin(
             val visited = super.visitTable(table, p)
             if (visited.name() != VERSION_CATALOG_TABLE_PLUGINS) return visited
 
-            val hasPlugin = visited.keyValues().any { it.valueToPlugin()?.id == pluginId }
-            if (hasPlugin || visited.keyValues().any { it.stringKey() == pluginName }) return visited
+            if (visited.keyValues().any { it.stringKey() == pluginAlias }) return visited
 
-            val newPlugin = requestedPlugin().toTomlEntry(pluginName).withPrefix(Space.format("\n"))
+            val newPlugin = requestedPlugin().toTomlEntry(pluginAlias).withPrefix(Space.format("\n"))
             return visited.withValues(visited.values + newPlugin)
         }
+    }
+
+    private fun Toml.Document.resolvePluginAlias(): String {
+        val pluginEntries = table(VERSION_CATALOG_TABLE_PLUGINS)?.keyValues().orEmpty()
+        val requestedAliasEntry = pluginEntries.firstOrNull { it.stringKey() == pluginName }
+        val requestedAliasPlugin = requestedAliasEntry?.valueToPlugin()
+        require(requestedAliasEntry == null || requestedAliasPlugin?.id == pluginId) {
+            "Plugin alias '$pluginName' already refers to another plugin."
+        }
+
+        val matchingPluginEntries = TomlVersionCatalog(this).plugins.filter { it.plugin.id == pluginId }
+        require(matchingPluginEntries.size <= 1) {
+            "Plugin ID '$pluginId' is declared by multiple version catalog aliases."
+        }
+
+        return requestedAliasEntry?.stringKey() ?: matchingPluginEntries.singleOrNull()?.keyValue?.stringKey() ?: pluginName
     }
 
     private fun requestedPlugin(): Plugin = Plugin(pluginId, PlainVersion(pluginVersion))
@@ -138,56 +171,49 @@ private class KotlinAddVersionCatalogPluginReference(
 
     override fun visitCompilationUnit(cu: K.CompilationUnit, p: ExecutionContext): K.CompilationUnit {
         if (!cu.sourcePath.toString().endsWith(".gradle.kts")) return cu
-        return super.visitCompilationUnit(withPlugins(cu, p), p)
+        return super.visitCompilationUnit(addPluginsBlockIfMissing(cu, p), p)
     }
 
-    private fun withPlugins(cu: K.CompilationUnit, ctx: ExecutionContext): K.CompilationUnit {
-        val block = cu.statements.firstOrNull() as? J.Block ?: return cu
-        val target = block.statements.filterIsInstance<J.MethodInvocation>().firstOrNull { it.simpleName == PLUGINS_BLOCK }
-        if (target != null) {
-            cursor.putMessage(PLUGIN_ALIAS_MESSAGE, target)
+    private fun addPluginsBlockIfMissing(cu: K.CompilationUnit, ctx: ExecutionContext): K.CompilationUnit {
+        val compilationUnitBody = cu.statements.firstOrNull() as? J.Block ?: return cu
+        val existingPluginsBlock = compilationUnitBody.statements
+            .filterIsInstance<J.MethodInvocation>()
+            .firstOrNull { it.simpleName == PLUGINS_BLOCK }
+        if (existingPluginsBlock != null) {
+            cursor.putMessage(PLUGIN_ALIAS_MESSAGE, existingPluginsBlock)
             return cu
         }
 
-        val plugins = parsePlugins(ctx) ?: return cu
-        val statements =
-            if (block.statements.isEmpty()) {
-                listOf(plugins)
+        val pluginsBlock = parsePluginsBlock(ctx) ?: return cu
+        val statementsWithPluginsBlock =
+            if (compilationUnitBody.statements.isEmpty()) {
+                listOf(pluginsBlock)
             } else {
-                val first = block.statements.first()
-                listOf(plugins, first.withPrefix(first.prefix.withWhitespace("\n\n" + first.prefix.whitespace))) + block.statements.drop(1)
+                val firstStatement = compilationUnitBody.statements.first()
+                listOf(pluginsBlock, firstStatement.withPrefix(firstStatement.prefix.withWhitespace("\n\n" + firstStatement.prefix.whitespace))) +
+                    compilationUnitBody.statements.drop(1)
             }
-        cursor.putMessage(PLUGIN_ALIAS_MESSAGE, plugins)
-        return cu.withStatements(mutableListOf<Statement>(block.withStatements(statements)))
+        cursor.putMessage(PLUGIN_ALIAS_MESSAGE, pluginsBlock)
+        return cu.withStatements(mutableListOf<Statement>(compilationUnitBody.withStatements(statementsWithPluginsBlock)))
     }
 
-    private fun parsePlugins(ctx: ExecutionContext): J.MethodInvocation? =
-        GRADLE_PARSER.parseInputs(
-            listOf(
-                org.openrewrite.Parser.Input(Paths.get("build.gradle.kts")) {
-                    ByteArrayInputStream(
-                        "plugins {\n    alias(libs.plugins.$pluginReference)\n}\n".toByteArray(StandardCharsets.UTF_8),
-                    )
-                },
-            ),
+    private fun parsePluginsBlock(ctx: ExecutionContext): J.MethodInvocation? {
+        val input = Parser.Input(Paths.get(KOTLIN_GRADLE_PATH)) {
+            ByteArrayInputStream(pluginsBlockSource(pluginReference).toByteArray(UTF_8))
+        }
+        val parsed = GRADLE_PARSER.parseInputs(
+            listOf(input),
             null,
             ctx,
-        )
-            .findFirst()
-            .getOrNull()
-            ?.let { it as? K.CompilationUnit }
-            ?.statements
-            ?.firstOrNull()
-            ?.let { it as? J.Block }
-            ?.statements
-            ?.firstOrNull()
-            ?.let { it as? J.MethodInvocation }
+        ).findFirst().getOrNull() ?: return null
+        val compilationUnit = parsed as? K.CompilationUnit ?: return null
+        val block = compilationUnit.statements.firstOrNull() as? J.Block ?: return null
+        return block.statements.firstOrNull() as? J.MethodInvocation
+    }
 
     private fun parsePluginAlias(ctx: ExecutionContext): Statement? {
-        val plugins = parsePlugins(ctx) ?: return null
-        val lambda = plugins.arguments.filterIsInstance<J.Lambda>().firstOrNull() ?: return null
-        val body = lambda.body as? J.Block ?: return null
-        return body.statements.firstOrNull()
+        val pluginsBlock = parsePluginsBlock(ctx) ?: return null
+        return pluginsBlock.pluginAliasStatement()
     }
 
     override fun visitMethodInvocation(method: J.MethodInvocation, p: ExecutionContext): J.MethodInvocation =
@@ -205,43 +231,40 @@ private class GroovyAddVersionCatalogPluginReference(
 
     override fun visitCompilationUnit(cu: G.CompilationUnit, p: ExecutionContext): G.CompilationUnit {
         if (!cu.sourcePath.toString().endsWith(".gradle")) return cu
-        return super.visitCompilationUnit(withPlugins(cu), p)
+        return super.visitCompilationUnit(addPluginsBlockIfMissing(cu), p)
     }
 
-    private fun withPlugins(cu: G.CompilationUnit): G.CompilationUnit {
-        val target = cu.statements.filterIsInstance<J.MethodInvocation>().firstOrNull { it.simpleName == PLUGINS_BLOCK }
-        if (target != null) {
-            cursor.putMessage(PLUGIN_ALIAS_MESSAGE, target)
+    private fun addPluginsBlockIfMissing(cu: G.CompilationUnit): G.CompilationUnit {
+        val existingPluginsBlock = cu.statements
+            .filterIsInstance<J.MethodInvocation>()
+            .firstOrNull { it.simpleName == PLUGINS_BLOCK }
+        if (existingPluginsBlock != null) {
+            cursor.putMessage(PLUGIN_ALIAS_MESSAGE, existingPluginsBlock)
             return cu
         }
 
-        val plugins = parsePlugins() ?: return cu
-        val statements =
+        val pluginsBlock = parsePluginsBlock() ?: return cu
+        val statementsWithPluginsBlock =
             if (cu.statements.isEmpty()) {
-                listOf(plugins)
+                listOf(pluginsBlock)
             } else {
-                val first = cu.statements.first()
-                listOf(plugins, first.withPrefix(first.prefix.withWhitespace("\n\n" + first.prefix.whitespace))) + cu.statements.drop(1)
+                val firstStatement = cu.statements.first()
+                listOf(pluginsBlock, firstStatement.withPrefix(firstStatement.prefix.withWhitespace("\n\n" + firstStatement.prefix.whitespace))) +
+                    cu.statements.drop(1)
             }
-        cursor.putMessage(PLUGIN_ALIAS_MESSAGE, plugins)
-        return cu.withStatements(statements)
+        cursor.putMessage(PLUGIN_ALIAS_MESSAGE, pluginsBlock)
+        return cu.withStatements(statementsWithPluginsBlock)
     }
 
-    private fun parsePlugins(): J.MethodInvocation? =
-        GRADLE_PARSER
-            .parse("plugins {\n    alias(libs.plugins.$pluginReference)\n}\n")
-            .findFirst()
-            .getOrNull()
-            ?.let { it as? G.CompilationUnit }
-            ?.statements
-            ?.firstOrNull()
-            ?.let { it as? J.MethodInvocation }
+    private fun parsePluginsBlock(): J.MethodInvocation? {
+        val parsed = GRADLE_PARSER.parse(pluginsBlockSource(pluginReference)).findFirst().getOrNull() ?: return null
+        val compilationUnit = parsed as? G.CompilationUnit ?: return null
+        return compilationUnit.statements.firstOrNull() as? J.MethodInvocation
+    }
 
     private fun parsePluginAlias(): Statement? {
-        val plugins = parsePlugins() ?: return null
-        val lambda = plugins.arguments.filterIsInstance<J.Lambda>().firstOrNull() ?: return null
-        val body = lambda.body as? J.Block ?: return null
-        return body.statements.firstOrNull()
+        val pluginsBlock = parsePluginsBlock() ?: return null
+        return pluginsBlock.pluginAliasStatement()
     }
 
     override fun visitStatement(statement: Statement, p: ExecutionContext): Statement =
@@ -257,21 +280,27 @@ private class PluginBlockVisitor(
     private val parsePluginAlias: (ExecutionContext) -> Statement?,
 ) : JavaIsoVisitor<ExecutionContext>() {
     override fun visitBlock(block: J.Block, p: ExecutionContext): J.Block {
-        val result = super.visitBlock(block, p)
-        val methodInvocation = cursor.firstEnclosing(J.MethodInvocation::class.java)
-        val lambda = cursor.firstEnclosing(J.Lambda::class.java)
-        if (methodInvocation?.simpleName != PLUGINS_BLOCK || lambda?.body != block || methodInvocation.arguments.none { it == lambda }) return result
-        if (result.statements.any { statement -> PluginAliasDetector(pluginReference).containsAlias(statement, p) }) return result
+        val visitedBlock = super.visitBlock(block, p)
+        if (!isPluginsBlock(block)) return visitedBlock
+        if (visitedBlock.statements.any { PluginAliasDetector(pluginReference).containsAlias(it, p) }) return visitedBlock
 
-        val pluginAlias = parsePluginAlias(p) ?: return result
+        val pluginAlias = parsePluginAlias(p) ?: return visitedBlock
         val formattedPluginAlias =
-            if (result.statements.isEmpty()) {
+            if (visitedBlock.statements.isEmpty()) {
                 pluginAlias
             } else {
-                val indent = result.statements.last().prefix.whitespace.substringAfterLast('\n')
+                val indent = visitedBlock.statements.last().prefix.whitespace.substringAfterLast('\n')
                 pluginAlias.withPrefix(pluginAlias.prefix.withWhitespace("\n$indent"))
             }
-        return result.withStatements(result.statements.toMutableList() + formattedPluginAlias)
+        return visitedBlock.withStatements(visitedBlock.statements.toMutableList() + formattedPluginAlias)
+    }
+
+    private fun isPluginsBlock(block: J.Block): Boolean {
+        val pluginsMethod = cursor.firstEnclosing(J.MethodInvocation::class.java)
+        val pluginsLambda = cursor.firstEnclosing(J.Lambda::class.java)
+        return pluginsMethod?.simpleName == PLUGINS_BLOCK &&
+            pluginsLambda?.body == block &&
+            pluginsMethod.arguments.any { it == pluginsLambda }
     }
 }
 

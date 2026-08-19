@@ -2,6 +2,8 @@
 
 Adds or updates a plugin entry in `gradle/libs.versions.toml` and applies the corresponding catalog alias to `build.gradle` and `build.gradle.kts` plugin blocks. Library entries and their `version.ref` values are not changed.
 
+When the plugin ID is already present under another alias, the recipe reuses that alias. It fails rather than overwriting an alias that belongs to a different plugin or guessing which alias to use when the same plugin ID appears more than once.
+
 Options:
 
 | Name            | Type     | Required | Description                                      |

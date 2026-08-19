@@ -4,9 +4,9 @@ Removes `version.ref` from library aliases equal to `pluginName` or matching `pl
 
 Options:
 
-| Name         | Type     | Required | Description                                                   |
-|--------------|----------|----------|---------------------------------------------------------------|
-| `pluginName` | `String` | Yes      | Alias and prefix of the library entries whose references are removed. |
+| Name         | Type     | Required | Description                                             |
+|--------------|----------|----------|---------------------------------------------------------|
+| `pluginName` | `String` | Yes      | Alias and prefix of entries whose references are removed. |
 
 Before (with `pluginName = "example"`):
 
