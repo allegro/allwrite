@@ -103,7 +103,8 @@ allwrite/
 │   │   ├── recipes/java/            Java refactoring recipes
 │   │   ├── recipes/gradle/          Gradle dependency recipes
 │   │   │   ├── *DependencyRewriter.kt  Dedicated helpers for Gradle dependency transforms
-│   │   │   └── ReplaceLibraryVersionRefsWithPlugin.kt  Version catalog library version-ref migration
+│   │   │   ├── AddTomlVersionCatalogPlugin.kt  Add and apply version catalog plugins
+│   │   │   └── RemoveLibraryVersionRefs.kt  Remove version references from matching libraries
 │   │   ├── recipes/properties/      Properties file recipes
 │   │   ├── recipes/toml/            TOML utilities
 │   │   └── recipes/util/            Shared recipe utilities

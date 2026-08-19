@@ -3,13 +3,15 @@ package pl.allegro.tech.allwrite.recipes.gradle
 import org.junit.jupiter.api.Test
 import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
+import pl.allegro.tech.allwrite.recipes.buildGradle
+import pl.allegro.tech.allwrite.recipes.buildGradleKts
 import pl.allegro.tech.allwrite.recipes.toml
 
-class ReplaceLibraryVersionRefsWithPluginTest : RewriteTest {
+class AddTomlVersionCatalogPluginTest : RewriteTest {
     override fun defaults(spec: RecipeSpec) {
         spec
             .recipe(
-                ReplaceLibraryVersionRefsWithPlugin(
+                AddTomlVersionCatalogPlugin(
                     pluginName = "example",
                     pluginId = "com.example.plugin",
                     pluginVersion = "1.2.3",
@@ -20,7 +22,7 @@ class ReplaceLibraryVersionRefsWithPluginTest : RewriteTest {
     }
 
     @Test
-    fun `should add a plugin and remove the required library version reference`() {
+    fun `should add a plugin and preserve library version references`() {
         rewriteRun(
             toml(
                 before = """
@@ -36,26 +38,125 @@ class ReplaceLibraryVersionRefsWithPluginTest : RewriteTest {
                     example = "1.2.3"
 
                     [libraries]
-                    example-bom = { group = "com.example", name = "example-bom" }
+                    example-bom = { group = "com.example", name = "example-bom", version.ref = "example" }
                     example-webmvc = { group = "com.example", name = "example-webmvc" }
 
                     [plugins]
                     example = { id = "com.example.plugin", version = "1.2.3" }
                 """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                before = """
+                    plugins {
+                        id("java")
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        id("java")
+                        alias(libs.plugins.example)
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
         )
     }
 
     @Test
-    fun `should not add a plugin when no library uses the plugin name`() {
+    fun `should add a plugin independently of matching library aliases`() {
         rewriteRun(
-            { spec -> spec.expectedCyclesThatMakeChanges(0) },
             toml(
-                beforeAndAfter = """
+                before = """
                     [libraries]
                     other = { group = "com.other", name = "other" }
                 """.trimIndent(),
+                after = """
+                    [libraries]
+                    other = { group = "com.other", name = "other" }
+
+                    [plugins]
+                    example = { id = "com.example.plugin", version = "1.2.3" }
+                """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                before = """
+                    plugins {
+                        id("java")
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        id("java")
+                        alias(libs.plugins.example)
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
+
+    @Test
+    fun `should apply a plugin alias when the plugins block is missing`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [libraries]
+                    example-bom = { group = "com.example", name = "example-bom" }
+                """.trimIndent(),
+                after = """
+                    [libraries]
+                    example-bom = { group = "com.example", name = "example-bom" }
+
+                    [plugins]
+                    example = { id = "com.example.plugin", version = "1.2.3" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                before = """
+                    repositories {
+                        mavenCentral()
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        alias(libs.plugins.example)
+                    }
+
+                    repositories {
+                        mavenCentral()
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
+
+    @Test
+    fun `should apply a plugin alias to a Groovy build script`() {
+        rewriteRun(
+            toml(
+                before = """
+                    [libraries]
+                    example-bom = { group = "com.example", name = "example-bom" }
+                """.trimIndent(),
+                after = """
+                    [libraries]
+                    example-bom = { group = "com.example", name = "example-bom" }
+
+                    [plugins]
+                    example = { id = "com.example.plugin", version = "1.2.3" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+            buildGradle(
+                before = """
+                    plugins {
+                        id 'java'
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        id 'java'
+                        alias(libs.plugins.example)
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle") },
         )
     }
 
@@ -83,7 +184,7 @@ class ReplaceLibraryVersionRefsWithPluginTest : RewriteTest {
     }
 
     @Test
-    fun `should update an existing plugin and remove the required library version reference`() {
+    fun `should update an existing plugin and preserve library version references`() {
         rewriteRun(
             toml(
                 before = """
@@ -101,38 +202,7 @@ class ReplaceLibraryVersionRefsWithPluginTest : RewriteTest {
                     example = "0.9.0"
 
                     [libraries]
-                    example-bom = { group = "com.example", name = "example-bom" }
-
-                    [plugins]
-                    example = { id = "com.example.plugin", version = "1.2.3" }
-                """.trimIndent(),
-            ) { path("gradle/libs.versions.toml") },
-        )
-    }
-
-    @Test
-    fun `should remove references from libraries using the plugin name and preserve unrelated libraries`() {
-        rewriteRun(
-            toml(
-                before = """
-                    [versions]
-                    example = "1.2.3"
-                    other = "4.5.6"
-
-                    [libraries]
                     example-bom = { group = "com.example", name = "example-bom", version.ref = "example" }
-                    example-core = { group = "com.example", name = "example-core", version.ref = "example" }
-                    other = { group = "com.other", name = "other", version.ref = "other" }
-                """.trimIndent(),
-                after = """
-                    [versions]
-                    example = "1.2.3"
-                    other = "4.5.6"
-
-                    [libraries]
-                    example-bom = { group = "com.example", name = "example-bom" }
-                    example-core = { group = "com.example", name = "example-core" }
-                    other = { group = "com.other", name = "other", version.ref = "other" }
 
                     [plugins]
                     example = { id = "com.example.plugin", version = "1.2.3" }
@@ -157,23 +227,23 @@ class ReplaceLibraryVersionRefsWithPluginTest : RewriteTest {
     @Test
     fun `should not duplicate a plugin when its name is already used`() {
         rewriteRun(
-            { spec -> spec.expectedCyclesThatMakeChanges(1) },
+            { spec -> spec.expectedCyclesThatMakeChanges(0) },
             toml(
-                before = """
+                beforeAndAfter = """
                     [libraries]
                     example-bom = { group = "com.example", name = "example-bom", version.ref = "example" }
 
                     [plugins]
                     example = { id = "com.other.plugin", version = "4.5.6" }
                 """.trimIndent(),
-                after = """
-                    [libraries]
-                    example-bom = { group = "com.example", name = "example-bom" }
-
-                    [plugins]
-                    example = { id = "com.other.plugin", version = "4.5.6" }
-                """.trimIndent(),
             ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                beforeAndAfter = """
+                    plugins {
+                        alias(libs.plugins.example)
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
         )
     }
 }
