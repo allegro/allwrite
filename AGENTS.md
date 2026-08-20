@@ -37,6 +37,7 @@ The documentation site is built with MkDocs from `mkdocs.yml`, `docs/requirement
 - `docs/contributing.md` — recipe authoring guide
 - `docs/recipes/index.md` — built-in recipes overview and authoring helpers
 - `docs/recipes/{yaml,gradle,java,spring}/` — individual built-in recipe pages grouped by category
+- Every new recipe gets a dedicated page under `docs/recipes/` and a matching entry in `mkdocs.yml` navigation.
 - `docs/extra.css` — documentation layout overrides
 
 # Architecture
@@ -101,7 +102,9 @@ allwrite/
 │   │   ├── recipes/spring/          Spring property/annotation and migration recipes, including conditional dependency and custom Spring Boot 4 migration helpers
 │   │   ├── recipes/java/            Java refactoring recipes
 │   │   ├── recipes/gradle/          Gradle dependency recipes
-│   │   │   └── *DependencyRewriter.kt  Dedicated helpers for Gradle dependency transforms
+│   │   │   ├── *DependencyRewriter.kt  Dedicated helpers for Gradle dependency transforms
+│   │   │   ├── AddTomlVersionCatalogPlugin.kt  Add and apply version catalog plugins
+│   │   │   └── RemoveLibraryVersionRefs.kt  Remove version references from matching libraries
 │   │   ├── recipes/properties/      Properties file recipes
 │   │   ├── recipes/toml/            TOML utilities
 │   │   └── recipes/util/            Shared recipe utilities
