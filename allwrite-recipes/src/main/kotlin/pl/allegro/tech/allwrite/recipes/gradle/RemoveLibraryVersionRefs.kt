@@ -9,7 +9,6 @@ import org.openrewrite.toml.TomlIsoVisitor
 import org.openrewrite.toml.tree.Space
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 
@@ -18,7 +17,6 @@ internal class RemoveLibraryVersionRefs(
 ) : AllwriteRecipe(
     displayName = "Remove library version references",
     description = "Removes version.ref from library aliases equal to pluginName or matching pluginName-* in gradle/libs.versions.toml.",
-    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> =
         Preconditions.check(

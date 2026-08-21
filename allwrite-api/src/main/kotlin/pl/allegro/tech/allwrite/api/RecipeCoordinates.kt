@@ -37,7 +37,11 @@ public fun RecipeDescriptor.toRecipeCoordinatesOrNull(): RecipeCoordinates? =
         )
     }.getOrNull()
 
-public fun RecipeDescriptor.tagPropertyOrNull(key: String): String? = tags.find { it.startsWith(key) }?.substringAfter(":")
+public fun RecipeDescriptor.isCliRecipe(): Boolean =
+    tagPropertyOrNull("group")?.isNotBlank() == true &&
+        tagPropertyOrNull("action")?.isNotBlank() == true
+
+public fun RecipeDescriptor.tagPropertyOrNull(key: String): String? = tags.find { it.startsWith("$key:") }?.substringAfter(":")
 
 public fun RecipeDescriptor.tagProperty(key: String): String = tagPropertyOrNull(key) ?: error("Tag property '$key' is missing for recipe $name")
 

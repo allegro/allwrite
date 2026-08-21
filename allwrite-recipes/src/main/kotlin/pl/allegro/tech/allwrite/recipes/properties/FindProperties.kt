@@ -9,7 +9,6 @@ import org.openrewrite.marker.SearchResult
 import org.openrewrite.properties.PropertiesVisitor
 import org.openrewrite.properties.tree.Properties
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 
 public class FindProperties(
     @Option(
@@ -28,7 +27,6 @@ public class FindProperties(
 ) : AllwriteRecipe(
     displayName = "Find property",
     description = "Finds occurrences of a property with given key and value.",
-    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> = Visitor()
 

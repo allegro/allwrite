@@ -17,7 +17,6 @@ import org.openrewrite.toml.TomlIsoVisitor
 import org.openrewrite.toml.tree.Space
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.toml.Builders
 import pl.allegro.tech.allwrite.recipes.toml.keyValues
 import pl.allegro.tech.allwrite.recipes.toml.name
@@ -55,7 +54,6 @@ internal class AddTomlVersionCatalogPlugin(
 ) : AllwriteScanningRecipe<AddTomlVersionCatalogPlugin.Context>(
     displayName = "Add a plugin to a version catalog",
     description = "Adds or updates a plugin in gradle/libs.versions.toml and applies its catalog alias to Gradle build files.",
-    visibility = INTERNAL,
 ) {
 
     internal data class Context(

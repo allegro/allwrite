@@ -12,7 +12,6 @@ import org.openrewrite.kotlin.marker.TypeReferencePrefix
 import org.openrewrite.marker.Markers
 import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.util.isKotlin
 import java.util.*
 
@@ -25,7 +24,6 @@ internal class AddNonNullableTypeBoundsToSpringRepositories :
             "Example:\n" +
             "  Before: `interface UserRepository<T, ID> : CrudRepository<T, ID>`\n" +
             "  After:  `interface UserRepository<T : Any, ID : Any> : CrudRepository<T, ID>`.",
-        visibility = RecipeVisibility.INTERNAL,
     ),
     ClasspathAwareRecipe {
 

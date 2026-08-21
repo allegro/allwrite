@@ -5,6 +5,7 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotContainAnyOf
 import org.koin.test.inject
 import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.runtime.base.BaseRuntimeSpec
 import pl.allegro.tech.allwrite.runtime.fake.FakeExternalRecipeProvider
 import java.nio.charset.StandardCharsets.UTF_8
@@ -17,9 +18,26 @@ class RecipeSourceSpec : BaseRuntimeSpec() {
     init {
         val recipeSource: RecipeSource by inject()
 
-        test("should find all allegro recipes with public visibility") {
+        test("should find all recipes") {
             // when
             val recipes = recipeSource.findAll()
+
+            // then
+            val recipeIds = recipes.map { it.name }
+            recipeIds shouldContainAll listOf(
+                "pl.allegro.tech.allwrite.recipes.KotlinPublicRecipe",
+                "pl.allegro.tech.allwrite.recipes.JavaPublicRecipe",
+                "pl.allegro.tech.allwrite.recipes.YamlPublicRecipe",
+                "pl.allegro.tech.allwrite.recipes.KotlinInternalRecipe",
+                "pl.allegro.tech.allwrite.recipes.JavaInternalRecipe",
+                "pl.allegro.tech.allwrite.recipes.YamlInternalRecipe",
+                "pl.allegro.tech.allwrite.recipes.Java3rdPartyRecipe",
+            )
+        }
+
+        test("should find all CLI recipes") {
+            // when
+            val recipes = recipeSource.findAll().filter { it.isCliRecipe() }
 
             // then
             val recipeIds = recipes.map { it.name }

@@ -8,7 +8,6 @@ import org.openrewrite.TreeVisitor
 import org.openrewrite.toml.tree.Toml
 import org.slf4j.LoggerFactory
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -26,7 +25,6 @@ public class AddGradleDependency(
 ) : AllwriteScanningRecipe<AddGradleDependency.GradleContext>(
     displayName = "Adds dependency to gradle",
     description = "Adds a dependency to gradle with support of TOML version catalog and build.kts.",
-    visibility = RecipeVisibility.INTERNAL,
 ) {
 
     public data class GradleContext(

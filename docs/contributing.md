@@ -8,44 +8,113 @@ In general, you should follow the official [Authoring Recipes](https://docs.open
 
 However, `allwrite` has some custom features that you can use.
 
-### Visibility
+### Choosing a recipe base class
 
-Every recipe within `allwrite-recipes` must provide the `visibility:[internal/public]` tag. Public recipes will be presented to the user via
-`allwrite ls` command.
+Choose the base class according to how authors should invoke the recipe:
 
-### Friendly names
+| Recipe type                         | Base class                     | Discovery     | Invocation                  |
+|-------------------------------------|--------------------------------|---------------|-----------------------------|
+| Regular recipe                     | `AllwriteRecipe`               | Not listed    | Fully-qualified recipe name |
+| Scanning recipe                    | `AllwriteScanningRecipe`       | Not listed    | Fully-qualified recipe name |
+| User-facing CLI operation          | `CliAllwriteRecipe`            | `allwrite ls` | Friendly name               |
+| User-facing CLI scanning operation | `CliAllwriteScanningRecipe`    | `allwrite ls` | Friendly name               |
 
-Every public recipe must provide a friendly name in the form of 2 tags:
+`allwrite ls` lists only CLI recipes that define both `group` and `action` tags. When creating your own recipes, use one of the documented
+base classes and reserve `CliAllwriteRecipe` or `CliAllwriteScanningRecipe` for recipes that need no OpenRewrite recipe options:
+friendly-name execution accepts only the recipe name and optional version range. Recipes that need options should use `AllwriteRecipe` or
+`AllwriteScanningRecipe` and be invoked by their fully-qualified name.
 
-- `group:<someGroup>`
-- `action:<someAction>`
+Use `AllwriteRecipe` for a focused transformation that is normally included in a larger migration or invoked by its fully-qualified name:
 
-For example, the following set of tags [`group:workflows`, `action:introduceSetupGradle`] will result in a recipe that can be executed like that:
-```
-allwrite run workflows/introduceSetupGradle
-```
-
-### Convenient base classes
-
-For convenience, you can extend either `AllwriteRecipe` or `AllwriteScanningRecipe` (from the `allwrite-spi` module). They will build all required tags for you:
 ```kotlin
-class SomeRecipe : AllwriteRecipe(
-    displayName = "Some recipe", // optional, defaults to class name
-    description = "Some description.", // optional, defaults to displayName + '.'
-    visibility = PUBLIC, // optional, defaults to INTERNAL
-    group = "some-group", // required if the visibility is PUBLIC
-    action = "some-action" // required if the visibility is PUBLIC
+class ReplaceDeprecatedApi : AllwriteRecipe(
+    displayName = "Replace deprecated API",
+    description = "Replaces the deprecated API with its supported alternative.",
 ) {
-    // your implementation
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> = TODO()
 }
 ```
 
+Use `AllwriteScanningRecipe` when the recipe needs to collect information before changing source files:
+
+```kotlin
+class ConsolidateConfiguration : AllwriteScanningRecipe<MutableSet<String>>(
+    displayName = "Consolidate configuration",
+    description = "Consolidates duplicate configuration entries.",
+) {
+    override fun getInitialValue(ctx: ExecutionContext): MutableSet<String> = mutableSetOf()
+}
+```
+
+Use `CliAllwriteScanningRecipe` when the scanning recipe is an intentional, user-facing operation without recipe options:
+
+```kotlin
+class CliConsolidateConfiguration : CliAllwriteScanningRecipe<MutableSet<String>>(
+    group = "configuration",
+    action = "consolidate",
+    displayName = "Consolidate configuration",
+    description = "Consolidates duplicate configuration entries.",
+) {
+    override fun getInitialValue(ctx: ExecutionContext): MutableSet<String> = mutableSetOf()
+}
+```
+
+### Creating a CLI recipe
+
+Use `CliAllwriteRecipe` for an intentional, user-facing operation such as a framework upgrade. It requires nonblank `group` and `action`
+arguments and generates the corresponding tags automatically. Use it only for recipes without OpenRewrite recipe options.
+
+```kotlin
+class UpgradeExampleLibrary : CliAllwriteRecipe(
+    group = "some-group",
+    action = "upgrade",
+    displayName = "Upgrade Example Library",
+    description = "Migrates a project to Example Library 2.",
+    from = "1",
+    to = "2",
+) {
+    override fun getVisitor(): TreeVisitor<*, ExecutionContext> = TODO()
+}
+```
+
+The example is listed as `some-group/upgrade 1 2` and can be run with:
+
+```shell
+allwrite run some-group/upgrade 1 2
+```
+
+The optional `from` and `to` values describe a migration range. They are included in listings and allow `allwrite run` to select a
+matching versioned recipe. Use them for upgrade or migration recipes; omit them for operations with no version range.
+
+### Declaring a CLI recipe in YAML
+
+Declarative YAML recipes do not extend Kotlin base classes. Add both `group` and `action` tags to a recipe without options to make one
+appear in `allwrite ls`:
+
+```yaml
+type: specs.openrewrite.org/v1beta/recipe
+name: com.example.UpgradeExampleLibrary
+displayName: Upgrade Example Library
+description: Migrates a project to Example Library 2.
+tags:
+  - group:some-group
+  - action:upgrade
+  - from:1
+  - to:2
+recipeList:
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.example.LegacyType
+      newFullyQualifiedTypeName: com.example.CurrentType
+```
+
+Omit either tag for a recipe with options so it is invoked by its fully-qualified name.
+
 ### Dependabot integration
 
-If your recipe should be triggered automatically when Dependabot bumps a specific dependency, declare `dependabotArtifacts`:
+If a recipe should run automatically when Dependabot bumps a dependency, declare `dependabotArtifacts`. This is independent of CLI
+discovery: a recipe may have a friendly name, be available only by its fully-qualified name, or both.
 ```kotlin
-class SomeMigrationRecipe : AllwriteRecipe(
-    visibility = PUBLIC,
+class SomeMigrationRecipe : CliAllwriteRecipe(
     group = "some-group",
     action = "upgrade",
     dependabotArtifacts = listOf("com.example:some-library"),
@@ -54,10 +123,9 @@ class SomeMigrationRecipe : AllwriteRecipe(
 }
 ```
 
-For declarative YAML recipes, add `dependabot-artifact:<coordinates>` tags:
+For declarative YAML recipes, add `dependabot-artifact:<coordinates>`:
 ```yaml
 tags:
-  - visibility:public
   - group:some-group
   - action:upgrade
   - dependabot-artifact:com.example:some-library
@@ -73,7 +141,7 @@ When `allwrite run-dependabot` processes a Dependabot PR that bumps `com.example
 If your recipe is only interested in very specific files (for example it only modifies the `tycho.yaml` file) you can implement the `ParsingAwareRecipe`
 interface:
 ```kotlin
-class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ParsingAwareRecipe {
+class SomeRecipe : AllwriteRecipe(), ParsingAwareRecipe {
 
     override fun selectFilesToParse(inputFiles: List<Path>): List<Path> {
         // return the files to be parsed
@@ -86,7 +154,7 @@ class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ParsingAwareRecipe {
 Implement `ClasspathAwareRecipe` when a recipe needs additional artifacts on the parser classpath:
 
 ```kotlin
-class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), ClasspathAwareRecipe {
+class SomeRecipe : AllwriteRecipe(), ClasspathAwareRecipe {
 
     override fun requireOnClasspath(): List<String> =
         listOf("spring-web-6", "spring-core-6")
@@ -100,7 +168,7 @@ allwrite resolves the requested classpath entries before parsing. Classpath-awar
 Implement `PostprocessingRecipe` when work must run after OpenRewrite changes have been applied:
 
 ```kotlin
-class SomeRecipe : AllwriteRecipe(visibility = INTERNAL), PostprocessingRecipe {
+class SomeRecipe : AllwriteRecipe(), PostprocessingRecipe {
 
     override fun postprocess(): PostprocessingResult =
         PostprocessingResult.Success

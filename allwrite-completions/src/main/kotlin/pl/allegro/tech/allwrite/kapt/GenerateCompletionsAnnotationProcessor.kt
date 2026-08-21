@@ -7,6 +7,7 @@ import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.ksp.generated.module
 import pl.allegro.tech.allwrite.api.RecipeSource
+import pl.allegro.tech.allwrite.api.isCliRecipe
 import pl.allegro.tech.allwrite.kapt.generators.CompletionGenerator
 import pl.allegro.tech.allwrite.kapt.util.injectAll
 import java.io.File
@@ -62,7 +63,7 @@ public class GenerateCompletionsAnnotationProcessor :
     }
 
     private fun generateFileContent(fileSpec: FileSpec.Builder) {
-        val recipeDescriptors = recipeSource.findAll()
+        val recipeDescriptors = recipeSource.findAll().filter { it.isCliRecipe() }
 
         completionGenerators
             .map { generator -> generator.generate(recipeDescriptors) }

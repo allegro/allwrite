@@ -6,7 +6,6 @@ import org.openrewrite.TreeVisitor
 import org.openrewrite.yaml.YamlIsoVisitor
 import org.openrewrite.yaml.tree.Yaml
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.yaml.YamlPath.Companion.toYamlPath
 import pl.allegro.tech.allwrite.recipes.yaml.visitor.AutoFormatVisitor
 
@@ -20,7 +19,6 @@ public class UnnestProperties(
 ) : AllwriteRecipe(
     displayName = "Unnest properties",
     description = "Remove one level of nesting from mapping.",
-    visibility = RecipeVisibility.INTERNAL,
 ) {
     private val targetMappingPath = targetPath.substringBeforeLast('.')
     private val targetMappingEntryKey = targetPath.substringAfterLast('.')

@@ -11,7 +11,6 @@ import org.openrewrite.java.tree.JavaType
 import org.openrewrite.java.tree.TypeUtils
 import pl.allegro.tech.allwrite.AllwriteRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.kotlin.KotlinPropertyMatcher
 import pl.allegro.tech.allwrite.recipes.util.DelegatingJVisitor
 import pl.allegro.tech.allwrite.recipes.util.isKotlin
@@ -21,7 +20,6 @@ internal class ReplaceStatusCodeValue :
         displayName = "Replace ResponseEntity.getStatusCodeValue() with getStatusCode().value()",
         description = "Replaces deprecated `ResponseEntity.getStatusCodeValue()` / `.statusCodeValue` " +
             "with `getStatusCode().value()` / `.statusCode.value()` as required by Spring Framework 7 / Spring Boot 4.",
-        visibility = RecipeVisibility.INTERNAL,
     ),
     ClasspathAwareRecipe {
 

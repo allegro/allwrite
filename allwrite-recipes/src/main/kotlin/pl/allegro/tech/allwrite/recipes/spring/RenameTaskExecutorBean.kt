@@ -10,7 +10,6 @@ import org.openrewrite.java.tree.Statement
 import org.openrewrite.java.tree.TypeUtils
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.spring.util.ANNOTATION_QUALIFIER
 import pl.allegro.tech.allwrite.recipes.spring.util.Variable
 import pl.allegro.tech.allwrite.recipes.spring.util.findArguments
@@ -25,7 +24,6 @@ internal class RenameTaskExecutorBean :
         displayName = "Rename task executor bean",
         description = "Rename task executor bean, as required by [Spring Boot 3.5](https://github.com/spring-projects/spring-boot/wiki/" +
             "Spring-Boot-3.5-Release-Notes#auto-configured-taskexecutor-names).",
-        visibility = RecipeVisibility.INTERNAL,
     ),
     ClasspathAwareRecipe {
 

@@ -4,9 +4,7 @@ import org.koin.core.annotation.Single
 import org.openrewrite.Recipe
 import org.openrewrite.RecipeException
 import org.openrewrite.config.RecipeDescriptor
-import pl.allegro.tech.allwrite.RecipeVisibility.PUBLIC
 import pl.allegro.tech.allwrite.api.RecipeSource
-import pl.allegro.tech.allwrite.api.tagPropertyOrNull
 
 @Single
 class FakeRecipeSource(
@@ -15,9 +13,7 @@ class FakeRecipeSource(
 
     constructor(vararg recipes: Recipe) : this(listOf(*recipes))
 
-    override fun findAll(includeInternal: Boolean): List<RecipeDescriptor> =
-        recipes.map(Recipe::getDescriptor)
-            .filter { includeInternal || PUBLIC.name.equals(it.tagPropertyOrNull("visibility"), ignoreCase = true) }
+    override fun findAll(): List<RecipeDescriptor> = recipes.map(Recipe::getDescriptor)
 
     override fun get(recipe: String): Recipe =
         recipes
@@ -30,31 +26,31 @@ class FakeRecipeSource(
             id = "pl.allegro.tech.allwrite.recipes.spring-boot-3",
             displayName = "This recipe upgrades Spring Boot\n2 to 3",
             description = "Longer first description\nline break",
-            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:spring-boot", "action:upgrade"),
+            tags = setOf("from:2", "to:3", "group:spring-boot", "action:upgrade"),
         )
         val SPRING_BOOT_4_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.spring-boot-4",
             displayName = "Upgrade Spring Boot from 3 to 4",
             description = "This recipe upgrades Spring Boot\n3 to 4",
-            tags = setOf("visibility:PUBLIC", "from:3", "to:4", "group:spring-boot", "action:upgrade"),
+            tags = setOf("from:3", "to:4", "group:spring-boot", "action:upgrade"),
         )
         val JACKSON_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.jackson",
             displayName = "Move from Jackson to kotlinx-serialization",
             description = "Move from Jackson to kotlinx-serialization.",
-            tags = setOf("visibility:PUBLIC", "from:2", "to:3", "group:jackson", "action:upgrade"),
+            tags = setOf("from:2", "to:3", "group:jackson", "action:upgrade"),
         )
         val SETUP_CI_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.setup-ci",
             displayName = "Setup CI",
             description = "Introduce CI setup action",
-            tags = setOf("visibility:PUBLIC", "group:workflows", "action:introduceSetupCi"),
+            tags = setOf("group:workflows", "action:introduceSetupCi"),
         )
         val EXPAND_MAPPINGS_TEST_RECIPE = FakeRecipe(
             id = "pl.allegro.tech.allwrite.recipes.yaml.ExpandMappings",
             displayName = "Expand YAML Mappings",
             description = "Expands YAML mappings",
-            tags = setOf("visibility:INTERNAL"),
+            tags = emptySet(),
         )
         val OPENREWRITE_TEST_RECIPE = FakeRecipe(
             id = "org.openrewrite.java.format.AutoFormat",
@@ -73,7 +69,6 @@ class FakeRecipeSource(
             displayName = "Dependabot Spring Boot 2 to 3",
             description = "Dependabot-triggered Spring Boot upgrade.",
             tags = setOf(
-                "visibility:PUBLIC",
                 "from:2",
                 "to:3",
                 "group:external-spring-boot",
@@ -86,13 +81,18 @@ class FakeRecipeSource(
             displayName = "Dependabot Jackson upgrade",
             description = "Dependabot-triggered Jackson upgrade.",
             tags = setOf(
-                "visibility:PUBLIC",
                 "from:2",
                 "to:3",
                 "group:external-jackson",
                 "action:upgrade",
                 "dependabot-artifact:com.fasterxml.jackson.core:jackson-databind",
             ),
+        )
+        val DEPENDABOT_SCANNING_TEST_RECIPE = FakeRecipe(
+            id = "pl.allegro.tech.allwrite.recipes.dependabot-scanning",
+            displayName = "Dependabot scanning recipe",
+            description = "Dependabot-triggered scanning recipe.",
+            tags = setOf("dependabot-artifact:com.example:scanning"),
         )
         val TEST_RECIPES = listOf(
             SPRING_BOOT_3_TEST_RECIPE,
@@ -104,6 +104,7 @@ class FakeRecipeSource(
             PICNIC_TEST_RECIPE,
             DEPENDABOT_SPRING_BOOT_3_TEST_RECIPE,
             DEPENDABOT_JACKSON_TEST_RECIPE,
+            DEPENDABOT_SCANNING_TEST_RECIPE,
         )
     }
 }

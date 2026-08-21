@@ -98,6 +98,31 @@ class RunWithDependabotCommandSpec : BaseCliSpec() {
             )
         }
 
+        test("should match non-CLI recipe when dependabot artifact tag is present") {
+            // when
+            val result = runWithDependabotCommand.test(
+                envvars = mapOf(
+                    RunWithDependabotCommand.ENV_VAR_RUN_DEPENDABOT_PAYLOAD_NAME to """
+                        {
+                          "dependabot": [
+                             {
+                               "artifact":"com.example:scanning",
+                               "from":{"normalVersion": "1.0.0", "major": "1"},
+                               "to": {"normalVersion": "2.0.0", "major": "2"}
+                             }
+                          ]
+                        }
+                    """.trimIndent(),
+                ),
+            )
+
+            // then
+            result.statusCode shouldBe 0
+            fakeRecipeExecutor.executedRecipes.map { it.name } shouldContainExactlyInAnyOrder listOf(
+                FakeRecipeSource.DEPENDABOT_SCANNING_TEST_RECIPE.name,
+            )
+        }
+
         test("should not match recipe when dependabot artifact tag does not match") {
             // when
             val result = runWithDependabotCommand.test(

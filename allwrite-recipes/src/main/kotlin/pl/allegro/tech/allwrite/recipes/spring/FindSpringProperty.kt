@@ -7,7 +7,6 @@ import org.openrewrite.Preconditions
 import org.openrewrite.TreeVisitor
 import org.openrewrite.yaml.search.FindProperty
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility.INTERNAL
 import pl.allegro.tech.allwrite.recipes.properties.FindProperties
 
 public class FindSpringProperty(
@@ -35,7 +34,6 @@ public class FindSpringProperty(
 ) : AllwriteRecipe(
     displayName = "Find spring property",
     description = "Find spring property with the given key and value, with respect to profile.",
-    visibility = INTERNAL,
 ) {
     override fun getVisitor(): TreeVisitor<*, ExecutionContext> {
         val fileNameSuffix = fileNameSuffix ?: ""

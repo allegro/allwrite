@@ -9,7 +9,6 @@ import org.openrewrite.internal.StringUtils
 import org.openrewrite.text.PlainTextParser
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 
 public class ChangeGradleDependency(
@@ -26,7 +25,6 @@ public class ChangeGradleDependency(
 ) : AllwriteScanningRecipe<ChangeGradleDependency.GradleVersionsContext>(
     displayName = "Change Gradle dependency with TOML support",
     description = "Changes Gradle dependencies and also updates matching entries in gradle/libs.versions.toml.",
-    visibility = RecipeVisibility.INTERNAL,
 ) {
     public data class GradleVersionsContext(
         val usedVersionKeys: MutableSet<String> = HashSet(),

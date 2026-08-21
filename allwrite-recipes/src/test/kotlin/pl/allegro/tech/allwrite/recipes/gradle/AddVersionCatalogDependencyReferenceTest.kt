@@ -6,7 +6,6 @@ import org.openrewrite.test.RecipeSpec
 import org.openrewrite.test.RewriteTest
 import org.openrewrite.test.RewriteTest.toRecipe
 import pl.allegro.tech.allwrite.AllwriteRecipe
-import pl.allegro.tech.allwrite.RecipeVisibility
 import pl.allegro.tech.allwrite.recipes.buildGradle
 import pl.allegro.tech.allwrite.recipes.buildGradleKts
 import java.util.function.Supplier
@@ -393,7 +392,7 @@ class AddVersionCatalogDependencyReferenceTest : RewriteTest {
         )
     }
 
-    private class ListRecipe : AllwriteRecipe(null, null, RecipeVisibility.INTERNAL, null, null) {
+    private class ListRecipe : AllwriteRecipe() {
 
         override fun getRecipeList(): List<Recipe> =
             listOf(

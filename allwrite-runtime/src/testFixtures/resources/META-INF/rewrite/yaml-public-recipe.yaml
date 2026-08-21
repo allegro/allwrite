@@ -2,7 +2,8 @@ type: specs.openrewrite.org/v1beta/recipe
 name: pl.allegro.tech.allwrite.recipes.YamlPublicRecipe
 displayName: Public YAML recipe
 tags:
-  - visibility:public
+  - group:yaml
+  - action:upgrade
 description: Public YAML recipe description.
 recipeList:
   - pl.allegro.tech.allwrite.recipes.KotlinRecipe
