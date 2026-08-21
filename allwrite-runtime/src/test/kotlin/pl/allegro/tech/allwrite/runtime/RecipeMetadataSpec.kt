@@ -5,7 +5,11 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
+import org.openrewrite.ExecutionContext
+import org.openrewrite.Tree
+import org.openrewrite.TreeVisitor
 import pl.allegro.tech.allwrite.CliAllwriteRecipe
+import pl.allegro.tech.allwrite.CliAllwriteScanningRecipe
 import pl.allegro.tech.allwrite.RecipeMetadata
 
 class RecipeMetadataSpec : FunSpec() {
@@ -49,6 +53,17 @@ class RecipeMetadataSpec : FunSpec() {
             recipe.tags shouldContainAll listOf("group:test-group", "action:upgrade")
         }
 
+        test("should produce CLI tags for scanning recipes") {
+            // given
+            val recipe = TestCliScanningRecipe(
+                group = "test-group",
+                action = "scan",
+            )
+
+            // expect
+            recipe.tags shouldContainAll listOf("group:test-group", "action:scan")
+        }
+
         test("should produce multiple dependabot-artifact tags for multiple artifacts") {
             // given
             val metadata = RecipeMetadata(
@@ -87,10 +102,43 @@ class RecipeMetadataSpec : FunSpec() {
             // then
             exception.message shouldBe "CLI recipes must specify an action."
         }
+
+        test("should require a group for CLI scanning recipes") {
+            // given
+            val recipe = { TestCliScanningRecipe(group = "", action = "scan") }
+
+            // when
+            val exception = shouldThrow<IllegalArgumentException> { recipe() }
+
+            // then
+            exception.message shouldBe "CLI recipes must specify a group."
+        }
+
+        test("should require an action for CLI scanning recipes") {
+            // given
+            val recipe = { TestCliScanningRecipe(group = "test-group", action = "") }
+
+            // when
+            val exception = shouldThrow<IllegalArgumentException> { recipe() }
+
+            // then
+            exception.message shouldBe "CLI recipes must specify an action."
+        }
     }
 
     private class TestCliRecipe(
         group: String,
         action: String,
     ) : CliAllwriteRecipe(group, action)
+
+    private class TestCliScanningRecipe(
+        group: String,
+        action: String,
+    ) : CliAllwriteScanningRecipe<MutableSet<String>>(group, action) {
+        override fun getInitialValue(ctx: ExecutionContext): MutableSet<String> = mutableSetOf()
+
+        override fun getScanner(acc: MutableSet<String>): TreeVisitor<*, ExecutionContext> = TreeVisitor.noop<Tree, ExecutionContext>()
+
+        override fun getVisitor(acc: MutableSet<String>): TreeVisitor<*, ExecutionContext> = TreeVisitor.noop<Tree, ExecutionContext>()
+    }
 }

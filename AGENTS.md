@@ -63,15 +63,15 @@ allwrite-cli  -->  allwrite-runtime  -->  allwrite-api
 
 ## Module Responsibilities
 
-| Module                 | Role                                                                                                                                                                                  |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `allwrite-api`         | Public API layer. Incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`). Published as a Maven artifact.                                                    |
-| `allwrite-spi`         | Published SPI for recipe authors. Base classes (`AllwriteRecipe`, `CliAllwriteRecipe`, `AllwriteScanningRecipe`), `RecipeMetadata`, tag generation (including `dependabot-artifact`). |
-| `allwrite-recipes`     | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`.                                                                 |
-| `allwrite-runtime`     | Domain layer. Outgoing port interfaces and OpenRewrite-backed implementations. Depends on `allwrite-api`.                                                                             |
-| `allwrite-cli`         | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring.                                                                                                   |
-| `allwrite-completions` | Build-time annotation processor for shell completion generation.                                                                                                                      |
-| `build-logic`          | Gradle composite build with convention plugins and custom tasks.                                                                                                                      |
+| Module                 | Role                                                                                                                                              |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `allwrite-api`         | Public API layer. Incoming port interfaces (`RecipeExecutor`, `RecipeSource`, `RecipeCoordinates`). Published as a Maven artifact.              |
+| `allwrite-spi`         | Published SPI for recipe authors. Base classes (`AllwriteRecipe`, `CliAllwriteRecipe`, `AllwriteScanningRecipe`, `CliAllwriteScanningRecipe`), `RecipeMetadata`, tag generation (including `dependabot-artifact`). |
+| `allwrite-recipes`     | Pure OpenRewrite recipe implementations. Published as a Maven artifact. Depends on `allwrite-api` and `allwrite-spi`.                            |
+| `allwrite-runtime`     | Domain layer. Outgoing port interfaces and OpenRewrite-backed implementations. Depends on `allwrite-api`.                                         |
+| `allwrite-cli`         | Application + Infrastructure layer. CLI commands, OS/GitHub integration, DI wiring.                                                               |
+| `allwrite-completions` | Build-time annotation processor for shell completion generation.                                                                                  |
+| `build-logic`          | Gradle composite build with convention plugins and custom tasks.                                                                                   |
 
 # Directory Structure
 
@@ -113,7 +113,7 @@ allwrite/
 │   └── src/testFixtures/kotlin/      Test fixture classes
 │
 ├── allwrite-spi/
-│   └── src/main/kotlin/              Recipe base classes (AllwriteRecipe, CliAllwriteRecipe, AllwriteScanningRecipe, RecipeMetadata)
+│   └── src/main/kotlin/              Recipe base classes (AllwriteRecipe, CliAllwriteRecipe, AllwriteScanningRecipe, CliAllwriteScanningRecipe, RecipeMetadata)
 │
 ├── allwrite-completions/
 │   └── src/main/kotlin/              kapt processors + generators
@@ -165,7 +165,7 @@ The `main()` function bootstraps Koin DI, conditionally loads `GithubModule` whe
 - **Convention Plugins:** Shared build logic in `build-logic/` (`conventions.kotlin`, `conventions.koin`, `conventions.recipe-classpaths`, etc.)
 - **Template Method:** `SubCommand` abstract class defines `run()` lifecycle; subclasses implement `runSubCommand()`. `ExternalSubCommand` extends `SubCommand` as a marker for commands nested under the `external` group. `ExternalCommand` is a Clikt group command that collects `ExternalSubCommand` instances as subcommands.
 - **Observer/Listener:** `CommandListener` instances notified after each command execution (telemetry)
-- **Recipe Strategy:** Recipes can implement `ParsingAwareRecipe` or `PostprocessingRecipe`. Base classes: `AllwriteRecipe`, `CliAllwriteRecipe`, `AllwriteScanningRecipe`
+- **Recipe Strategy:** Recipes can implement `ParsingAwareRecipe` or `PostprocessingRecipe`. Base classes: `AllwriteRecipe`, `CliAllwriteRecipe`, `AllwriteScanningRecipe`, `CliAllwriteScanningRecipe`
 - **Test Fakes over Mocks:** Heavy use of `Fake*` implementations for test isolation
 - **Tag-based Recipe Metadata:** Custom tag system (`group:*`, `action:*`, `from:*`, `to:*`, `dependabot-artifact:*`) for CLI recipe discovery, version matching, and Dependabot integration
 - **Declarative Recipes:** Recipes defined programmatically (Kotlin) or declaratively (YAML under `META-INF/rewrite/`)

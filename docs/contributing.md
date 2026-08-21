@@ -12,16 +12,17 @@ However, `allwrite` has some custom features that you can use.
 
 Choose the base class according to how authors should invoke the recipe:
 
-| Recipe type               | Base class               | Discovery     | Invocation                  |
-|---------------------------|--------------------------|---------------|-----------------------------|
-| Regular recipe            | `AllwriteRecipe`         | Not listed    | Fully-qualified recipe name |
-| Scanning recipe           | `AllwriteScanningRecipe` | Not listed    | Fully-qualified recipe name |
-| User-facing CLI operation | `CliAllwriteRecipe`      | `allwrite ls` | Friendly name               |
+| Recipe type                         | Base class                     | Discovery     | Invocation                  |
+|-------------------------------------|--------------------------------|---------------|-----------------------------|
+| Regular recipe                     | `AllwriteRecipe`               | Not listed    | Fully-qualified recipe name |
+| Scanning recipe                    | `AllwriteScanningRecipe`       | Not listed    | Fully-qualified recipe name |
+| User-facing CLI operation          | `CliAllwriteRecipe`            | `allwrite ls` | Friendly name               |
+| User-facing CLI scanning operation | `CliAllwriteScanningRecipe`    | `allwrite ls` | Friendly name               |
 
 `allwrite ls` lists only CLI recipes that define both `group` and `action` tags. When creating your own recipes, use one of the documented
-base classes and reserve `CliAllwriteRecipe` for recipes that need no OpenRewrite recipe options: friendly-name execution accepts only
-the recipe name and optional version range. Recipes that need options should use `AllwriteRecipe` or `AllwriteScanningRecipe` and be invoked
-by their fully-qualified name.
+base classes and reserve `CliAllwriteRecipe` or `CliAllwriteScanningRecipe` for recipes that need no OpenRewrite recipe options:
+friendly-name execution accepts only the recipe name and optional version range. Recipes that need options should use `AllwriteRecipe` or
+`AllwriteScanningRecipe` and be invoked by their fully-qualified name.
 
 Use `AllwriteRecipe` for a focused transformation that is normally included in a larger migration or invoked by its fully-qualified name:
 
@@ -38,6 +39,19 @@ Use `AllwriteScanningRecipe` when the recipe needs to collect information before
 
 ```kotlin
 class ConsolidateConfiguration : AllwriteScanningRecipe<MutableSet<String>>(
+    displayName = "Consolidate configuration",
+    description = "Consolidates duplicate configuration entries.",
+) {
+    override fun getInitialValue(ctx: ExecutionContext): MutableSet<String> = mutableSetOf()
+}
+```
+
+Use `CliAllwriteScanningRecipe` when the scanning recipe is an intentional, user-facing operation without recipe options:
+
+```kotlin
+class CliConsolidateConfiguration : CliAllwriteScanningRecipe<MutableSet<String>>(
+    group = "configuration",
+    action = "consolidate",
     displayName = "Consolidate configuration",
     description = "Consolidates duplicate configuration entries.",
 ) {

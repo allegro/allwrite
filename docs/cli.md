@@ -45,7 +45,7 @@ allwrite ls
 ```
 
 `allwrite ls` lists only CLI recipes intended for direct user invocation. When creating your own recipes, use the documented recipe base
-classes and choose `CliAllwriteRecipe` only for recipes that should appear in this listing. CLI recipes must declare both
+classes and choose `CliAllwriteRecipe` or `CliAllwriteScanningRecipe` only for recipes that should appear in this listing. CLI recipes must declare both
 `group:<group>` and `action:<action>` tags and must not require recipe options; see [Writing recipes](contributing.md#creating-a-cli-recipe)
 for the authoring rules.
 

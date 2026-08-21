@@ -15,5 +15,5 @@ public abstract class AllwriteScanningRecipe<T : Any> @JvmOverloads public const
 
     override fun getDisplayName(): String = metadata.displayName
     override fun getDescription(): String = metadata.description
-    override fun getTags(): Set<String> = metadata.tags
+    public override fun getTags(): Set<String> = metadata.tags
 }
