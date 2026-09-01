@@ -4,9 +4,9 @@ Adds a configured Maven repository and `gradlePluginPortal()` to the `pluginMana
 
 Options:
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `url` | `String` | Yes | URL of the Maven repository to add. |
+| Name  | Type     | Required | Description                         |
+|-------|----------|----------|-------------------------------------|
+| `url` | `String` | Yes      | URL of the Maven repository to add. |
 
 Configure the recipe in a composite recipe:
 
