@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.recipes.spring
+package pl.allegro.tech.allwrite.recipes.gradle
 
 import org.openrewrite.ExecutionContext
 import org.openrewrite.Option
@@ -11,13 +11,6 @@ import org.openrewrite.java.search.UsesType
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
 import pl.allegro.tech.allwrite.ClasspathAwareRecipe
-import pl.allegro.tech.allwrite.recipes.gradle.AddGradleDependency
-import pl.allegro.tech.allwrite.recipes.gradle.LibsToml
-import pl.allegro.tech.allwrite.recipes.gradle.ParseTomlVersionCatalog
-import pl.allegro.tech.allwrite.recipes.gradle.VersionCatalog
-import pl.allegro.tech.allwrite.recipes.gradle.VersionCatalogType
-import pl.allegro.tech.allwrite.recipes.gradle.isBuildGradleFile
-import pl.allegro.tech.allwrite.recipes.gradle.isTomlVersionCatalogFile
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -25,14 +18,19 @@ public open class PreconditionsAwareAddDependency(
     displayName: String = "Add dependency when types are used",
     description: String = "Adds a Gradle dependency when one of the configured types is used.",
     @Option(description = "Classpath entries required to parse the configured types.", required = false)
-    public val requiredClasspath: List<String> = emptyList(),
-    @Option(description = "Fully qualified types whose usage triggers dependency insertion.", example = "com.example.MyType")
-    public val requiredTypes: List<String> = emptyList(),
+    public val requiredClasspath: List<String>? = null,
+    @Option(
+        description = "Fully qualified types whose usage triggers dependency insertion.",
+        example = "com.example.MyType",
+        required = false,
+    )
+    public val requiredTypes: List<String>? = null,
     @Option(
         description = "Gradle dependencies whose presence triggers dependency insertion, in groupId:artifactId format.",
         example = "io.rest-assured:rest-assured",
+        required = false,
     )
-    public val requiredDependencies: List<String> = emptyList(),
+    public val requiredDependencies: List<String>? = null,
     @Option(description = "Gradle configuration to add the dependency to.", example = "testImplementation")
     public val configuration: String = "",
     @Option(description = "Group ID of the dependency to add.", example = "org.springframework.boot")
@@ -56,10 +54,11 @@ public open class PreconditionsAwareAddDependency(
 
     override fun getInitialValue(ctx: ExecutionContext): Context = Context()
 
-    override fun requireOnClasspath(): List<String> = requiredClasspath
+    override fun requireOnClasspath(): List<String> = requiredClasspath.orEmpty()
 
     override fun getScanner(acc: Context): TreeVisitor<*, ExecutionContext> {
         val dependencyCoordinates = dependencyCoordinates()
+        val requiredTypes = requiredTypes.orEmpty()
         require(requiredTypes.isNotEmpty() || dependencyCoordinates.isNotEmpty()) {
             "At least one type or dependency must be configured."
         }
@@ -117,7 +116,7 @@ public open class PreconditionsAwareAddDependency(
     }
 
     private fun dependencyCoordinates(): List<DependencyCoordinates> =
-        requiredDependencies.map { dependency ->
+        requiredDependencies.orEmpty().map { dependency ->
             val (groupId, artifactId) = dependency.split(":").also { parts ->
                 require(parts.size == 2 && parts.all { it.isNotBlank() }) {
                     "Detected dependencies must use the groupId:artifactId format."
