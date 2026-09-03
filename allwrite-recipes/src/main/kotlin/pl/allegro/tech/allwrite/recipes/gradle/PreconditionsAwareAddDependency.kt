@@ -28,8 +28,9 @@ public open class PreconditionsAwareAddDependency(
     @Option(
         description = "Gradle dependencies whose presence triggers dependency insertion, in groupId:artifactId format.",
         example = "io.rest-assured:rest-assured",
+        required = false,
     )
-    public val requiredDependencies: List<String> = emptyList(),
+    public val requiredDependencies: List<String>? = null,
     @Option(description = "Gradle configuration to add the dependency to.", example = "testImplementation")
     public val configuration: String = "",
     @Option(description = "Group ID of the dependency to add.", example = "org.springframework.boot")
@@ -115,7 +116,7 @@ public open class PreconditionsAwareAddDependency(
     }
 
     private fun dependencyCoordinates(): List<DependencyCoordinates> =
-        requiredDependencies.map { dependency ->
+        requiredDependencies.orEmpty().map { dependency ->
             val (groupId, artifactId) = dependency.split(":").also { parts ->
                 require(parts.size == 2 && parts.all { it.isNotBlank() }) {
                     "Detected dependencies must use the groupId:artifactId format."
