@@ -1,4 +1,4 @@
-package pl.allegro.tech.allwrite.recipes.spring
+package pl.allegro.tech.allwrite.recipes.gradle
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -53,6 +53,38 @@ internal class PreconditionsAwareAddDependencyTest : RewriteTest {
                 buildGradle(
                     beforeAndAfter = """
                         dependencies {
+                        }
+                    """.trimIndent(),
+                ),
+            )
+        }
+
+        @Test
+        fun `should add dependency when a required dependency is present and type conditions are null`() {
+            // given
+            rewriteRun(
+                { spec ->
+                    spec.recipe(
+                        PreconditionsAwareAddDependency(
+                            requiredClasspath = null,
+                            requiredTypes = null,
+                            requiredDependencies = listOf("com.example:trigger"),
+                            configuration = "testImplementation",
+                            groupId = "com.example",
+                            artifactId = "example-dependency",
+                        ),
+                    )
+                },
+                buildGradle(
+                    before = """
+                        dependencies {
+                            implementation("com.example:trigger")
+                        }
+                    """.trimIndent(),
+                    after = """
+                        dependencies {
+                            implementation("com.example:trigger")
+                            testImplementation("com.example:example-dependency")
                         }
                     """.trimIndent(),
                 ),

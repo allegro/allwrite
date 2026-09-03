@@ -3,6 +3,7 @@ package pl.allegro.tech.allwrite.recipes.spring
 import org.openrewrite.Recipe
 import org.openrewrite.text.FindAndReplace
 import pl.allegro.tech.allwrite.recipes.gradle.ChangeGradleDependency
+import pl.allegro.tech.allwrite.recipes.gradle.PreconditionsAwareAddDependency
 import pl.allegro.tech.allwrite.recipes.java.ChangeType
 
 public class SpringBoot4_0 : IsolatedSpringRecipe(from = "3.5", to = "4.0") {
