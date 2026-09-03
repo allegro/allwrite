@@ -6,7 +6,7 @@ kotlinx-serialization = "1.11.0"
 openrewrite = "8.90.4"
 openrewrite-spring = "6.37.1"
 openrewrite-static-analysis = "2.41.1"
-openrewrite-build-plugins = "2.23.1"
+openrewrite-build-plugins = "2.23.3"
 test-logger = "4.0.0"
 slf4j = { strictly = "2.0.17" }
 logback = "1.6.3"
