@@ -10,7 +10,9 @@ Options:
 |-----------------|----------|----------|--------------------------------------------------|
 | `pluginName`    | `String` | Yes      | Version catalog alias for the plugin.            |
 | `pluginId`      | `String` | Yes      | Gradle plugin ID.                                |
-| `pluginVersion` | `String` | Yes      | Plugin version to add or set.                    |
+| `pluginVersion` | `String` | No       | Literal fallback version for a missing `[versions].pluginName` entry. |
+
+`pluginVersion` is only used when the version catalog does not already define `[versions].pluginName`; existing version values are preserved. The plugin entry always uses `pluginName` as its `version.ref`.
 
 Before (with `pluginName = "example"`, `pluginId = "com.example.plugin"`, and `pluginVersion = "1.2.3"`):
 
@@ -25,8 +27,11 @@ After:
 [libraries]
 example-bom = { group = "com.example", name = "example-bom", version.ref = "example" }
 
+[versions]
+example = "1.2.3"
+
 [plugins]
-example = { id = "com.example.plugin", version = "1.2.3" }
+example = { id = "com.example.plugin", version.ref = "example" }
 ```
 
 ```kotlin

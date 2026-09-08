@@ -50,7 +50,7 @@ private fun J.MethodInvocation.pluginAliasStatement(): Statement? {
 internal class AddTomlVersionCatalogPlugin(
     private val pluginName: String,
     private val pluginId: String,
-    private val pluginVersion: String,
+    private val pluginVersion: String? = null,
 ) : AllwriteScanningRecipe<AddTomlVersionCatalogPlugin.Context>(
     displayName = "Add a plugin to a version catalog",
     description = "Adds or updates a plugin in gradle/libs.versions.toml and applies its catalog alias to Gradle build files.",
@@ -98,12 +98,19 @@ internal class AddTomlVersionCatalogPlugin(
         private val pluginAlias: String,
     ) : TomlIsoVisitor<ExecutionContext>() {
         override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document {
-            val documentWithPlugins =
-                if (document.table(VERSION_CATALOG_TABLE_PLUGINS) == null) {
+            val documentWithVersions =
+                if (pluginVersion != null && document.table(VERSION_CATALOG_TABLE_VERSIONS) == null) {
                     val prefix = if (document.values.isEmpty()) Space.EMPTY else Space.format("\n\n")
-                    document.withValues(document.values + Builders.emptyTable().withPrefix(prefix).withName(Builders.id(VERSION_CATALOG_TABLE_PLUGINS)))
+                    document.withValues(document.values + Builders.emptyTable().withPrefix(prefix).withName(Builders.id(VERSION_CATALOG_TABLE_VERSIONS)))
                 } else {
                     document
+                }
+            val documentWithPlugins =
+                if (documentWithVersions.table(VERSION_CATALOG_TABLE_PLUGINS) == null) {
+                    val prefix = if (documentWithVersions.values.isEmpty()) Space.EMPTY else Space.format("\n\n")
+                    documentWithVersions.withValues(documentWithVersions.values + Builders.emptyTable().withPrefix(prefix).withName(Builders.id(VERSION_CATALOG_TABLE_PLUGINS)))
+                } else {
+                    documentWithVersions
                 }
 
             return super.visitDocument(documentWithPlugins, p)
@@ -117,7 +124,7 @@ internal class AddTomlVersionCatalogPlugin(
 
         private fun visitPlugin(keyValue: Toml.KeyValue, p: ExecutionContext): Toml.KeyValue {
             val plugin = keyValue.valueToPlugin() ?: return super.visitKeyValue(keyValue, p)
-            if (plugin.id != pluginId || plugin.version == PlainVersion(pluginVersion)) return super.visitKeyValue(keyValue, p)
+            if (plugin.id != pluginId || plugin.version == requestedPlugin().version) return super.visitKeyValue(keyValue, p)
 
             val entryName = keyValue.stringKey() ?: return super.visitKeyValue(keyValue, p)
             if (entryName != pluginAlias) return super.visitKeyValue(keyValue, p)
@@ -126,6 +133,11 @@ internal class AddTomlVersionCatalogPlugin(
 
         override fun visitTable(table: Toml.Table, p: ExecutionContext): Toml.Table {
             val visited = super.visitTable(table, p)
+            if (visited.name() == VERSION_CATALOG_TABLE_VERSIONS && pluginVersion != null) {
+                if (visited.keyValues().any { it.stringKey() == pluginName }) return visited
+                val newVersion = Builders.kv(pluginName, pluginVersion).withPrefix(Space.format("\n"))
+                return visited.withValues(visited.values + newVersion)
+            }
             if (visited.name() != VERSION_CATALOG_TABLE_PLUGINS) return visited
 
             if (visited.keyValues().any { it.stringKey() == pluginAlias }) return visited
@@ -143,7 +155,12 @@ internal class AddTomlVersionCatalogPlugin(
             "Plugin alias '$pluginName' already refers to another plugin."
         }
 
-        val matchingPluginEntries = TomlVersionCatalog(this).plugins.filter { it.plugin.id == pluginId }
+        val catalog = TomlVersionCatalog(this)
+        require(pluginVersion != null || catalog.hasVersion(pluginName)) {
+            "Version '$pluginName' is missing from the version catalog and no pluginVersion fallback was configured."
+        }
+
+        val matchingPluginEntries = catalog.plugins.filter { it.plugin.id == pluginId }
         require(matchingPluginEntries.size <= 1) {
             "Plugin ID '$pluginId' is declared by multiple version catalog aliases."
         }
@@ -151,7 +168,11 @@ internal class AddTomlVersionCatalogPlugin(
         return requestedAliasEntry?.stringKey() ?: matchingPluginEntries.singleOrNull()?.keyValue?.stringKey() ?: pluginName
     }
 
-    private fun requestedPlugin(): Plugin = Plugin(pluginId, PlainVersion(pluginVersion))
+    private fun requestedPlugin(): Plugin =
+        Plugin(
+            pluginId,
+            VersionRef(pluginName),
+        )
 }
 
 private class AddVersionCatalogPluginReference(
