@@ -108,7 +108,12 @@ internal class AddTomlVersionCatalogPlugin(
             val documentWithPlugins =
                 if (documentWithVersions.table(VERSION_CATALOG_TABLE_PLUGINS) == null) {
                     val prefix = if (documentWithVersions.values.isEmpty()) Space.EMPTY else Space.format("\n\n")
-                    documentWithVersions.withValues(documentWithVersions.values + Builders.emptyTable().withPrefix(prefix).withName(Builders.id(VERSION_CATALOG_TABLE_PLUGINS)))
+                    documentWithVersions.withValues(
+                        documentWithVersions.values +
+                            Builders.emptyTable()
+                                .withPrefix(prefix)
+                                .withName(Builders.id(VERSION_CATALOG_TABLE_PLUGINS)),
+                    )
                 } else {
                     documentWithVersions
                 }
