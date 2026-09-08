@@ -6,10 +6,10 @@ When the plugin ID is already present under another alias, the recipe reuses tha
 
 Options:
 
-| Name            | Type     | Required | Description                                      |
-|-----------------|----------|----------|--------------------------------------------------|
-| `pluginName`    | `String` | Yes      | Version catalog alias for the plugin.            |
-| `pluginId`      | `String` | Yes      | Gradle plugin ID.                                |
+| Name            | Type     | Required | Description                                                           |
+|-----------------|----------|----------|-----------------------------------------------------------------------|
+| `pluginName`    | `String` | Yes      | Version catalog alias for the plugin.                                 |
+| `pluginId`      | `String` | Yes      | Gradle plugin ID.                                                     |
 | `pluginVersion` | `String` | No       | Literal fallback version for a missing `[versions].pluginName` entry. |
 
 `pluginVersion` is only used when the version catalog does not already define `[versions].pluginName`; existing version values are preserved. The plugin entry always uses `pluginName` as its `version.ref`.
