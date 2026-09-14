@@ -25,6 +25,7 @@ import pl.allegro.tech.allwrite.recipes.toml.table
 import pl.allegro.tech.allwrite.recipes.util.DelegatingJVisitor
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets.UTF_8
+import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.jvm.optionals.getOrNull
 
@@ -51,6 +52,7 @@ internal class AddTomlVersionCatalogPlugin(
     private val pluginName: String,
     private val pluginId: String,
     private val pluginVersion: String? = null,
+    private val applyToModulesWithPluginId: String? = null,
 ) : AllwriteScanningRecipe<AddTomlVersionCatalogPlugin.Context>(
     displayName = "Add a plugin to a version catalog",
     description = "Adds or updates a plugin in gradle/libs.versions.toml and applies its catalog alias to Gradle build files.",
@@ -58,26 +60,48 @@ internal class AddTomlVersionCatalogPlugin(
 
     internal data class Context(
         var pluginAlias: String? = null,
+        var versionCatalog: Toml.Document? = null,
+        val appliedPluginBuildFiles: MutableSet<Path> = HashSet(),
+        val appliedPluginBuildFilesWithPluginsBlock: MutableSet<Path> = HashSet(),
     )
 
     override fun getInitialValue(ctx: ExecutionContext): Context = Context()
 
     override fun getScanner(acc: Context): TreeVisitor<*, ExecutionContext> =
         object : TreeVisitor<Tree, ExecutionContext>() {
+            private val appliedPluginDetector = applyToModulesWithPluginId?.let(::AppliedPluginDetector)
+
             override fun visit(tree: Tree?, p: ExecutionContext): Tree? {
-                val document = tree as? Toml.Document ?: return tree
-                if (document.isTomlVersionCatalogFile()) {
-                    acc.pluginAlias = document.resolvePluginAlias()
+                val sourceFile = tree as? SourceFile ?: return tree
+                if (sourceFile is Toml.Document && sourceFile.isTomlVersionCatalogFile()) {
+                    if (applyToModulesWithPluginId == null) {
+                        acc.pluginAlias = sourceFile.resolvePluginAlias()
+                    } else {
+                        acc.versionCatalog = sourceFile
+                    }
+                }
+                val detection = appliedPluginDetector?.detectIn(sourceFile, p)
+                if (detection?.applied == true) {
+                    acc.appliedPluginBuildFiles.add(sourceFile.sourcePath)
+                    if (detection.hasPluginsBlock) {
+                        acc.appliedPluginBuildFilesWithPluginsBlock.add(sourceFile.sourcePath)
+                    }
                 }
                 return tree
             }
         }
 
     override fun getVisitor(context: Context): TreeVisitor<*, ExecutionContext> {
-        val pluginAlias = context.pluginAlias ?: return TreeVisitor.noop<Tree, ExecutionContext>()
+        if (applyToModulesWithPluginId != null && context.appliedPluginBuildFilesWithPluginsBlock.isEmpty()) {
+            return TreeVisitor.noop<Tree, ExecutionContext>()
+        }
+        val pluginAlias = context.pluginAlias ?: context.versionCatalog?.resolvePluginAlias() ?: return TreeVisitor.noop<Tree, ExecutionContext>()
 
         val versionCatalogVisitor = VersionCatalogVisitor(pluginAlias)
-        val buildFileVisitor = AddVersionCatalogPluginReference(pluginAlias)
+        val buildFileVisitor = AddVersionCatalogPluginReference(
+            pluginName = pluginAlias,
+            addPluginsBlockIfMissing = applyToModulesWithPluginId == null,
+        )
         return object : TreeVisitor<Tree, ExecutionContext>() {
             override fun isAcceptable(sourceFile: SourceFile, ctx: ExecutionContext): Boolean =
                 sourceFile.isTomlVersionCatalogFile() || sourceFile.isBuildGradleFile()
@@ -86,7 +110,10 @@ internal class AddTomlVersionCatalogPlugin(
                 if (tree is Toml.Document && tree.isTomlVersionCatalogFile()) {
                     return versionCatalogVisitor.visitNonNull(tree, p)
                 }
-                if (tree is SourceFile && tree.isBuildGradleFile()) {
+                if (tree is SourceFile &&
+                    tree.isBuildGradleFile() &&
+                    (applyToModulesWithPluginId == null || tree.sourcePath in context.appliedPluginBuildFiles)
+                ) {
                     return buildFileVisitor.visit(tree, p)
                 }
                 return tree
@@ -182,14 +209,16 @@ internal class AddTomlVersionCatalogPlugin(
 
 private class AddVersionCatalogPluginReference(
     pluginName: String,
+    addPluginsBlockIfMissing: Boolean,
 ) : DelegatingJVisitor(
     javaVisitor = JavaIsoVisitor(),
-    kotlinVisitor = KotlinAddVersionCatalogPluginReference(pluginName),
-    groovyVisitor = GroovyAddVersionCatalogPluginReference(pluginName),
+    kotlinVisitor = KotlinAddVersionCatalogPluginReference(pluginName, addPluginsBlockIfMissing),
+    groovyVisitor = GroovyAddVersionCatalogPluginReference(pluginName, addPluginsBlockIfMissing),
 )
 
 private class KotlinAddVersionCatalogPluginReference(
     pluginName: String,
+    private val addPluginsBlockIfMissing: Boolean,
 ) : KotlinIsoVisitor<ExecutionContext>() {
     private val pluginReference = pluginName.toVersionCatalogReference()
 
@@ -207,6 +236,7 @@ private class KotlinAddVersionCatalogPluginReference(
             cursor.putMessage(PLUGIN_ALIAS_MESSAGE, existingPluginsBlock)
             return cu
         }
+        if (!addPluginsBlockIfMissing) return cu
 
         val pluginsBlock = parsePluginsBlock(ctx) ?: return cu
         val statementsWithPluginsBlock =
@@ -250,6 +280,7 @@ private class KotlinAddVersionCatalogPluginReference(
 
 private class GroovyAddVersionCatalogPluginReference(
     pluginName: String,
+    private val addPluginsBlockIfMissing: Boolean,
 ) : GroovyIsoVisitor<ExecutionContext>() {
     private val pluginReference = pluginName.toVersionCatalogReference()
 
@@ -266,6 +297,7 @@ private class GroovyAddVersionCatalogPluginReference(
             cursor.putMessage(PLUGIN_ALIAS_MESSAGE, existingPluginsBlock)
             return cu
         }
+        if (!addPluginsBlockIfMissing) return cu
 
         val pluginsBlock = parsePluginsBlock() ?: return cu
         val statementsWithPluginsBlock =
@@ -305,7 +337,7 @@ private class PluginBlockVisitor(
 ) : JavaIsoVisitor<ExecutionContext>() {
     override fun visitBlock(block: J.Block, p: ExecutionContext): J.Block {
         val visitedBlock = super.visitBlock(block, p)
-        if (!isPluginsBlock(block)) return visitedBlock
+        if (!cursor.isPluginsBlock(block)) return visitedBlock
         if (visitedBlock.statements.any { PluginAliasDetector(pluginReference).containsAlias(it, p) }) return visitedBlock
 
         val pluginAlias = parsePluginAlias(p) ?: return visitedBlock
@@ -317,14 +349,6 @@ private class PluginBlockVisitor(
                 pluginAlias.withPrefix(pluginAlias.prefix.withWhitespace("\n$indent"))
             }
         return visitedBlock.withStatements(visitedBlock.statements.toMutableList() + formattedPluginAlias)
-    }
-
-    private fun isPluginsBlock(block: J.Block): Boolean {
-        val pluginsMethod = cursor.firstEnclosing(J.MethodInvocation::class.java)
-        val pluginsLambda = cursor.firstEnclosing(J.Lambda::class.java)
-        return pluginsMethod?.simpleName == PLUGINS_BLOCK &&
-            pluginsLambda?.body == block &&
-            pluginsMethod.arguments.any { it == pluginsLambda }
     }
 }
 

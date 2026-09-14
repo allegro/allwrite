@@ -104,6 +104,7 @@ allwrite/
 │   │   ├── recipes/gradle/          Gradle dependency recipes
 │   │   │   ├── *DependencyRewriter.kt  Dedicated helpers for Gradle dependency transforms
 │   │   │   ├── AddTomlVersionCatalogPlugin.kt  Add and apply version catalog plugins
+│   │   │   ├── AppliedPluginDetector.kt  Detect applied Gradle plugins
 │   │   │   └── RemoveLibraryVersionRefs.kt  Remove version references from matching libraries
 │   │   ├── recipes/properties/      Properties file recipes
 │   │   ├── recipes/toml/            TOML utilities
