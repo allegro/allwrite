@@ -25,7 +25,7 @@ internal class TomlVersionCatalogDependencyRewriter(
 
     override fun visitDocument(document: Toml.Document, p: ExecutionContext): Toml.Document {
         plan = planner.plan(document)
-        return removeUnusedVersionEntries(super.visitDocument(document, p))
+        return super.visitDocument(document, p).removeUnusedVersionEntries(gradleUsedVersionKeys)
     }
 
     override fun visitKeyValue(keyValue: Toml.KeyValue, p: ExecutionContext): Toml.KeyValue {
@@ -74,20 +74,6 @@ internal class TomlVersionCatalogDependencyRewriter(
             .filterKeys { it !in existingKeys }
             .map { (name, value) -> kv(name, value).withPrefix(Space.format("\n")) }
         return visited.withValues(updatedValues + missingEntries)
-    }
-
-    private fun removeUnusedVersionEntries(document: Toml.Document): Toml.Document {
-        val usedVersionRefs = TomlVersionCatalog(document).usedVersionRefs()
-        val values = document.values.map { value ->
-            val table = value as? Toml.Table
-            if (table?.name() != VERSION_CATALOG_TABLE_VERSIONS) return@map value
-            val entries = table.values.filter { versionEntry ->
-                val key = (versionEntry as? Toml.KeyValue)?.stringKey()
-                key in usedVersionRefs || key in gradleUsedVersionKeys
-            }
-            if (entries.size == table.values.size) value else table.withValues(entries)
-        }
-        return if (values.indices.all { values[it] === document.values[it] }) document else document.withValues(values)
     }
 
     private fun rewriteLibraryEntry(table: Toml.Table, keyValue: Toml.KeyValue): Toml.KeyValue {
