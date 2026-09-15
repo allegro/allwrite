@@ -1,6 +1,5 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
-import org.openrewrite.Cursor
 import org.openrewrite.ExecutionContext
 import org.openrewrite.SourceFile
 import org.openrewrite.Tree
@@ -12,7 +11,6 @@ import org.openrewrite.text.PlainTextParser
 import org.openrewrite.toml.TomlIsoVisitor
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.AllwriteScanningRecipe
-import pl.allegro.tech.allwrite.recipes.toml.asString
 import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 import pl.allegro.tech.allwrite.recipes.util.DelegatingJVisitor
@@ -60,7 +58,7 @@ internal class RemoveTomlVersionCatalogLibrary(
                         .mapNotNull { (it.library.version as? VersionRef)?.ref }
                         .toSet()
                     acc.versionCatalogVersionKeys = catalog.versionKeys
-                    acc.targetAliasIsUsedInBundle = BundleAliasDetector(aliases).containsAlias(sourceFile, p)
+                    acc.targetAliasIsUsedInBundle = sourceFile.containsBundleAlias(aliases, p)
                 }
                 if (sourceFile.isBuildGradleFile()) {
                     acc.buildFiles[sourceFile.sourcePath] = sourceFile
@@ -126,26 +124,6 @@ internal class RemoveTomlVersionCatalogLibrary(
     }
 }
 
-private class BundleAliasDetector(
-    private val aliases: Set<String>,
-) : TomlIsoVisitor<ExecutionContext>() {
-    private var found = false
-
-    fun containsAlias(document: Toml.Document, ctx: ExecutionContext): Boolean {
-        visit(document, ctx)
-        return found
-    }
-
-    override fun visitLiteral(literal: Toml.Literal, p: ExecutionContext): Toml.Literal {
-        if (cursor.firstEnclosing(Toml.Table::class.java)?.name() == VERSION_CATALOG_TABLE_BUNDLES &&
-            literal.asString() in aliases
-        ) {
-            found = true
-        }
-        return super.visitLiteral(literal, p)
-    }
-}
-
 private class TomlVersionCatalogLibraryRemover(
     private val aliases: Set<String>,
 ) : TomlIsoVisitor<ExecutionContext>() {
@@ -161,9 +139,11 @@ private class TomlVersionCatalogLibraryRemover(
 
 private class GradleDependencyReferenceMatcher(
     private val aliases: Set<String>,
-    private val groupId: String,
-    private val artifactId: String,
+    groupId: String,
+    artifactId: String,
 ) {
+    private val coordinates = setOf(groupId to artifactId)
+
     fun isReferencedIn(sourceFile: SourceFile, ctx: ExecutionContext): Boolean {
         val detection = DependencyReferenceDetection()
         dependencyVisitor(detection, remove = false).visit(sourceFile, ctx)
@@ -177,8 +157,7 @@ private class GradleDependencyReferenceMatcher(
         DelegatingJVisitor(
             javaVisitor = GradleDependencyReferenceVisitor(
                 aliases = aliases,
-                groupId = groupId,
-                artifactId = artifactId,
+                targetCoordinates = coordinates,
                 detection = detection,
                 remove = remove,
             ),
@@ -191,8 +170,7 @@ private class DependencyReferenceDetection(
 
 private class GradleDependencyReferenceVisitor(
     private val aliases: Set<String>,
-    private val groupId: String,
-    private val artifactId: String,
+    private val targetCoordinates: Set<Pair<String, String>>,
     private val detection: DependencyReferenceDetection,
     private val remove: Boolean,
 ) : JavaIsoVisitor<ExecutionContext>() {
@@ -219,34 +197,8 @@ private class GradleDependencyReferenceVisitor(
             is J.Return -> expression as? J.MethodInvocation
             else -> null
         } ?: return false
-        return invocation.arguments.firstOrNull()?.matchesTarget() == true
+        return invocation.arguments.firstOrNull()?.matchesGradleDependencyReference(aliases, targetCoordinates) == true
     }
-
-    private fun J.matchesTarget(): Boolean =
-        when (this) {
-            is J.FieldAccess -> aliases.any { toString() == "libs.${it.toVersionCatalogReference()}" }
-            is J.Literal -> (value as? String)?.let(::matchesCoordinates) == true
-            is J.MethodInvocation ->
-                if (simpleName == "platform" || simpleName == "enforcedPlatform") {
-                    arguments.firstOrNull()?.matchesTarget() == true
-                } else {
-                    select?.matchesTarget() == true && arguments.isEmpty()
-                }
-            else -> false
-        }
-
-    private fun matchesCoordinates(coordinates: String): Boolean {
-        val parts = coordinates.split(":")
-        return parts.size >= 2 && parts[0] == groupId && parts[1] == artifactId
-    }
-}
-
-private fun Cursor.isDependenciesBlock(block: J.Block): Boolean {
-    val dependenciesMethod = firstEnclosing(J.MethodInvocation::class.java)
-    val dependenciesLambda = firstEnclosing(J.Lambda::class.java)
-    return dependenciesMethod?.simpleName == "dependencies" &&
-        dependenciesLambda?.body == block &&
-        dependenciesMethod.arguments.any { it == dependenciesLambda }
 }
 
 private fun String.toVersionCatalogVersionKey(versionKeys: Set<String>): String? =

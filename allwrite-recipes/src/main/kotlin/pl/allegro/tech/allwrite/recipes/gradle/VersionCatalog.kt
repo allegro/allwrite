@@ -1,10 +1,13 @@
 package pl.allegro.tech.allwrite.recipes.gradle
 
+import org.openrewrite.ExecutionContext
+import org.openrewrite.toml.TomlIsoVisitor
 import org.openrewrite.toml.tree.Toml
 import pl.allegro.tech.allwrite.recipes.toml.Builders.kv
 import pl.allegro.tech.allwrite.recipes.toml.asString
 import pl.allegro.tech.allwrite.recipes.toml.findLiteralValue
 import pl.allegro.tech.allwrite.recipes.toml.keyValues
+import pl.allegro.tech.allwrite.recipes.toml.name
 import pl.allegro.tech.allwrite.recipes.toml.stringKey
 import pl.allegro.tech.allwrite.recipes.toml.table
 
@@ -118,6 +121,28 @@ internal fun Toml.Document.removeUnusedVersionEntries(
         if (entries.size == table.values.size) value else table.withValues(entries)
     }
     return if (values.indices.all { values[it] === this.values[it] }) this else withValues(values)
+}
+
+internal fun Toml.Document.containsBundleAlias(aliases: Set<String>, ctx: ExecutionContext): Boolean = BundleAliasDetector(aliases).containsAlias(this, ctx)
+
+private class BundleAliasDetector(
+    private val aliases: Set<String>,
+) : TomlIsoVisitor<ExecutionContext>() {
+    private var found = false
+
+    fun containsAlias(document: Toml.Document, ctx: ExecutionContext): Boolean {
+        visit(document, ctx)
+        return found
+    }
+
+    override fun visitLiteral(literal: Toml.Literal, p: ExecutionContext): Toml.Literal {
+        if (cursor.firstEnclosing(Toml.Table::class.java)?.name() == VERSION_CATALOG_TABLE_BUNDLES &&
+            literal.asString() in aliases
+        ) {
+            found = true
+        }
+        return super.visitLiteral(literal, p)
+    }
 }
 
 internal const val VERSION_CATALOG_TABLE_VERSIONS: String = "versions"
