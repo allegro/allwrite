@@ -12,8 +12,10 @@ import org.openrewrite.text.PlainText
 import org.openrewrite.toml.tree.Toml
 import org.openrewrite.yaml.Assertions.yaml
 import org.openrewrite.yaml.tree.Yaml
+import org.openrewrite.gradle.Assertions as OpenRewriteGradleAssertions
 import org.openrewrite.groovy.tree.G.CompilationUnit as GroovyCompilationUnit
 import org.openrewrite.kotlin.tree.K.CompilationUnit as KotlinCompilationUnit
+import org.openrewrite.toml.Assertions as OpenRewriteTomlAssertions
 
 fun properties(beforeAndAfter: String, spec: SourceSpec<Properties.File>.() -> Unit = {}) = properties(beforeAndAfter, spec)
 
@@ -40,17 +42,28 @@ fun text(before: String, after: String?, spec: SourceSpec<PlainText>.() -> Unit 
 fun text(beforeAndAfter: String, spec: SourceSpec<PlainText>.() -> Unit = {}) = text(beforeAndAfter, spec)
 
 fun buildGradle(before: String, after: String?, spec: SourceSpec<GroovyCompilationUnit>.() -> Unit = {}) =
-    org.openrewrite.gradle.Assertions.buildGradle(before, after, spec)
+    OpenRewriteGradleAssertions.buildGradle(before, after, spec)
 
-fun buildGradle(beforeAndAfter: String, spec: SourceSpec<GroovyCompilationUnit>.() -> Unit = {}) =
-    org.openrewrite.gradle.Assertions.buildGradle(beforeAndAfter, spec)
+fun buildGradle(beforeAndAfter: String, spec: SourceSpec<GroovyCompilationUnit>.() -> Unit = {}) = OpenRewriteGradleAssertions.buildGradle(beforeAndAfter, spec)
 
 fun buildGradleKts(before: String, after: String?, spec: SourceSpec<KotlinCompilationUnit>.() -> Unit = {}) =
-    org.openrewrite.gradle.Assertions.buildGradleKts(before, after, spec)
+    OpenRewriteGradleAssertions.buildGradleKts(before, after, spec)
 
 fun buildGradleKts(beforeAndAfter: String, spec: SourceSpec<KotlinCompilationUnit>.() -> Unit = {}) =
-    org.openrewrite.gradle.Assertions.buildGradleKts(beforeAndAfter, spec)
+    OpenRewriteGradleAssertions.buildGradleKts(beforeAndAfter, spec)
 
-fun toml(before: String, after: String?, spec: SourceSpec<Toml.Document>.() -> Unit = {}) = org.openrewrite.toml.Assertions.toml(before, after, spec)
+fun settingsGradle(before: String, after: String?, spec: SourceSpec<GroovyCompilationUnit>.() -> Unit = {}) =
+    OpenRewriteGradleAssertions.settingsGradle(before, after, spec)
 
-fun toml(beforeAndAfter: String?, spec: SourceSpec<Toml.Document>.() -> Unit = {}) = org.openrewrite.toml.Assertions.toml(beforeAndAfter, spec)
+fun settingsGradle(beforeAndAfter: String, spec: SourceSpec<GroovyCompilationUnit>.() -> Unit = {}) =
+    OpenRewriteGradleAssertions.settingsGradle(beforeAndAfter, spec)
+
+fun settingsGradleKts(before: String, after: String?, spec: SourceSpec<KotlinCompilationUnit>.() -> Unit = {}) =
+    OpenRewriteGradleAssertions.settingsGradleKts(before, after, spec)
+
+fun settingsGradleKts(beforeAndAfter: String, spec: SourceSpec<KotlinCompilationUnit>.() -> Unit = {}) =
+    OpenRewriteGradleAssertions.settingsGradleKts(beforeAndAfter, spec)
+
+fun toml(before: String, after: String?, spec: SourceSpec<Toml.Document>.() -> Unit = {}) = OpenRewriteTomlAssertions.toml(before, after, spec)
+
+fun toml(beforeAndAfter: String?, spec: SourceSpec<Toml.Document>.() -> Unit = {}) = OpenRewriteTomlAssertions.toml(beforeAndAfter, spec)
