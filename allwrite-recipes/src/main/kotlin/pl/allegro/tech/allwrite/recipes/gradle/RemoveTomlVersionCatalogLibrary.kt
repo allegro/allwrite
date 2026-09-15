@@ -24,7 +24,9 @@ internal class RemoveTomlVersionCatalogLibrary(
     private val applyToModulesWithPluginId: String? = null,
 ) : AllwriteScanningRecipe<RemoveTomlVersionCatalogLibrary.Context>(
     displayName = "Remove a library from Gradle build files and its TOML version catalog entry",
-    description = "Removes matching library usages from Gradle build files and, when present, the corresponding library alias and unused version from gradle/libs.versions.toml.",
+    description =
+    "Removes matching library usages from Gradle build files and, when present, the corresponding library alias " +
+        "and unused version from gradle/libs.versions.toml.",
 ) {
 
     internal data class Context(
