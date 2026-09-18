@@ -1,0 +1,13 @@
+:root {
+  --md-grid-width: 90rem;
+  --md-sidebar-width: 15rem;
+  --md-typeset-max-width: 70rem;
+}
+
+.md-grid {
+  max-width: var(--md-grid-width);
+}
+
+.md-content {
+  max-width: none;
+}
