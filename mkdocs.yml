@@ -54,6 +54,7 @@ nav:
           - ChangeGradleDependency: recipes/gradle/change-gradle-dependency.md
           - UpdateGradleDependency: recipes/gradle/update-gradle-dependency.md
           - AddTomlVersionCatalogPlugin: recipes/gradle/add-toml-version-catalog-plugin.md
+          - AddSettingsPluginRepository: recipes/gradle/add-settings-plugin-repository.md
           - RemoveLibraryVersionRefs: recipes/gradle/remove-library-version-refs.md
           - RemoveTomlVersionCatalogLibrary: recipes/gradle/remove-toml-version-catalog-library.md
       - Java / Kotlin:
