@@ -63,6 +63,13 @@ internal class TomlVersionCatalog(
             ?.toList()
             ?: emptyList()
 
+    val versionKeys: Set<String> =
+        document.table(VERSION_CATALOG_TABLE_VERSIONS)
+            ?.keyValues()
+            ?.mapNotNull { it.stringKey() }
+            ?.toSet()
+            ?: emptySet()
+
     fun hasVersion(versionName: String): Boolean = document.table(VERSION_CATALOG_TABLE_VERSIONS)?.keyValues()?.any { it.stringKey() == versionName } == true
 
     fun hasOtherConsumer(versionRef: String, currentEntry: Toml.KeyValue, matches: (Library) -> Boolean): Boolean =
@@ -92,6 +99,25 @@ internal class TomlVersionCatalog(
             libraries.mapNotNull { (it.library.version as? VersionRef)?.ref } +
                 plugins.mapNotNull { (it.plugin.version as? VersionRef)?.ref }
             ).toSet()
+}
+
+internal fun Toml.Document.removeUnusedVersionEntries(
+    gradleUsedVersionKeys: Set<String> = emptySet(),
+    versionKeysToCleanUp: Set<String>? = null,
+): Toml.Document {
+    val catalog = TomlVersionCatalog(this)
+    val usedVersionRefs = catalog.usedVersionRefs()
+    val values = values.map { value ->
+        val table = value as? Toml.Table
+        if (table?.name?.name != VERSION_CATALOG_TABLE_VERSIONS) return@map value
+        val entries = table.values.filter { versionEntry ->
+            val key = (versionEntry as? Toml.KeyValue)?.stringKey()
+            val isCandidate = versionKeysToCleanUp?.let { key in it } ?: true
+            !isCandidate || key in usedVersionRefs || key in gradleUsedVersionKeys
+        }
+        if (entries.size == table.values.size) value else table.withValues(entries)
+    }
+    return if (values.indices.all { values[it] === this.values[it] }) this else withValues(values)
 }
 
 internal const val VERSION_CATALOG_TABLE_VERSIONS: String = "versions"
