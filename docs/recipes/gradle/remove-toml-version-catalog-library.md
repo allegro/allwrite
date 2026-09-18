@@ -57,6 +57,90 @@ modules. If another module references the library without applying the configure
 its version entries are kept so that module remains valid. Build files that do not apply the configured plugin are left
 unchanged.
 
+For example, with `applyToModulesWithPluginId = "application"`:
+
+Before:
+
+`gradle/libs.versions.toml`
+
+```toml
+[versions]
+example = "1.2.3"
+other = "4.5.6"
+
+[libraries]
+example-bom = { group = "com.example", name = "example-bom", version.ref = "example" }
+other = { group = "com.other", name = "other", version.ref = "other" }
+```
+
+`app/build.gradle.kts`
+
+```kotlin
+plugins {
+    application
+}
+
+dependencies {
+    implementation(platform(libs.example.bom))
+    implementation(libs.other)
+}
+```
+
+`lib/build.gradle.kts`
+
+```kotlin
+plugins {
+    id("java-library")
+}
+
+dependencies {
+    implementation(platform(libs.example.bom))
+    implementation(libs.other)
+}
+```
+
+After:
+
+`gradle/libs.versions.toml`
+
+```toml
+[versions]
+example = "1.2.3"
+other = "4.5.6"
+
+[libraries]
+example-bom = { group = "com.example", name = "example-bom", version.ref = "example" }
+other = { group = "com.other", name = "other", version.ref = "other" }
+```
+
+`app/build.gradle.kts`
+
+```kotlin
+plugins {
+    application
+}
+
+dependencies {
+    implementation(libs.other)
+}
+```
+
+`lib/build.gradle.kts`
+
+```kotlin
+plugins {
+    id("java-library")
+}
+
+dependencies {
+    implementation(platform(libs.example.bom))
+    implementation(libs.other)
+}
+```
+
+The dependency is removed from the application module, while the library module remains unchanged. Because the library
+module still references `libs.example.bom`, the shared catalog alias and its version entry are retained.
+
 The `[versions]` entry used by a removed alias is removed only when no other library, plugin, or direct `libs.versions.*`
 accessor refers to it. For example, the version remains when a plugin still uses it:
 
