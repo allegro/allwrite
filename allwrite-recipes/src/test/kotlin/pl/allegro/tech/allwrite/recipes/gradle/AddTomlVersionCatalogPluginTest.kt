@@ -414,4 +414,221 @@ class AddTomlVersionCatalogPluginTest : RewriteTest {
             ) { path("build.gradle.kts") },
         )
     }
+
+    @Test
+    fun `should add a plugin only to a build file applying the configured plugin`() {
+        rewriteRun(
+            { spec ->
+                spec
+                    .recipe(
+                        AddTomlVersionCatalogPlugin(
+                            pluginName = "example",
+                            pluginId = "com.example.plugin",
+                            pluginVersion = "1.2.3",
+                            applyToModulesWithPluginId = "application",
+                        ),
+                    )
+                    .expectedCyclesThatMakeChanges(1)
+                    .validateRecipeSerialization(false)
+            },
+            toml(
+                before = """
+                    [versions]
+                    example = "1.2.3"
+                """.trimIndent(),
+                after = """
+                    [versions]
+                    example = "1.2.3"
+
+                    [plugins]
+                    example = { id = "com.example.plugin", version.ref = "example" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                before = """
+                    plugins {
+                        application
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        application
+                        alias(libs.plugins.example)
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+            buildGradleKts(
+                beforeAndAfter = """
+                    plugins {
+                        library
+                    }
+                """.trimIndent(),
+            ) { path("lib/build.gradle.kts") },
+        )
+    }
+
+    @Test
+    fun `should apply a gated plugin to every matching module`() {
+        rewriteRun(
+            { spec ->
+                spec
+                    .recipe(
+                        AddTomlVersionCatalogPlugin(
+                            pluginName = "example",
+                            pluginId = "com.example.plugin",
+                            pluginVersion = "1.2.3",
+                            applyToModulesWithPluginId = "application",
+                        ),
+                    )
+                    .expectedCyclesThatMakeChanges(1)
+                    .validateRecipeSerialization(false)
+            },
+            toml(
+                before = """
+                    [versions]
+                    example = "1.2.3"
+                """.trimIndent(),
+                after = """
+                    [versions]
+                    example = "1.2.3"
+
+                    [plugins]
+                    example = { id = "com.example.plugin", version.ref = "example" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                before = """
+                    plugins {
+                        application
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        application
+                        alias(libs.plugins.example)
+                    }
+                """.trimIndent(),
+            ) { path("app/build.gradle.kts") },
+            buildGradleKts(
+                before = """
+                    plugins {
+                        id("application")
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        id("application")
+                        alias(libs.plugins.example)
+                    }
+                """.trimIndent(),
+            ) { path("worker/build.gradle.kts") },
+        )
+    }
+
+    @Test
+    fun `should apply a gated plugin to a Groovy build file`() {
+        rewriteRun(
+            { spec ->
+                spec
+                    .recipe(
+                        AddTomlVersionCatalogPlugin(
+                            pluginName = "example",
+                            pluginId = "com.example.plugin",
+                            pluginVersion = "1.2.3",
+                            applyToModulesWithPluginId = "application",
+                        ),
+                    )
+                    .expectedCyclesThatMakeChanges(1)
+                    .validateRecipeSerialization(false)
+            },
+            toml(
+                before = """
+                    [versions]
+                    example = "1.2.3"
+                """.trimIndent(),
+                after = """
+                    [versions]
+                    example = "1.2.3"
+
+                    [plugins]
+                    example = { id = "com.example.plugin", version.ref = "example" }
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+            buildGradle(
+                before = """
+                    plugins {
+                        id 'application'
+                    }
+                """.trimIndent(),
+                after = """
+                    plugins {
+                        id 'application'
+                        alias(libs.plugins.example)
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle") },
+        )
+    }
+
+    @Test
+    fun `should not create a plugins block for a gated build without one`() {
+        rewriteRun(
+            { spec ->
+                spec
+                    .recipe(
+                        AddTomlVersionCatalogPlugin(
+                            pluginName = "example",
+                            pluginId = "com.example.plugin",
+                            pluginVersion = "1.2.3",
+                            applyToModulesWithPluginId = "application",
+                        ),
+                    )
+                    .expectedCyclesThatMakeChanges(0)
+                    .validateRecipeSerialization(false)
+            },
+            toml(
+                beforeAndAfter = """
+                    [versions]
+                    example = "1.2.3"
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                beforeAndAfter = """
+                    repositories {
+                        mavenCentral()
+                    }
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
+
+    @Test
+    fun `should leave a gated build applying the plugin directly without a plugins block unchanged`() {
+        rewriteRun(
+            { spec ->
+                spec
+                    .recipe(
+                        AddTomlVersionCatalogPlugin(
+                            pluginName = "example",
+                            pluginId = "com.example.plugin",
+                            pluginVersion = "1.2.3",
+                            applyToModulesWithPluginId = "application",
+                        ),
+                    )
+                    .expectedCyclesThatMakeChanges(0)
+                    .validateRecipeSerialization(false)
+            },
+            toml(
+                beforeAndAfter = """
+                    [versions]
+                    example = "1.2.3"
+                """.trimIndent(),
+            ) { path("gradle/libs.versions.toml") },
+            buildGradleKts(
+                beforeAndAfter = """
+                    apply(plugin = "application")
+                """.trimIndent(),
+            ) { path("build.gradle.kts") },
+        )
+    }
 }
