@@ -1,12 +1,5 @@
 package pl.allegro.tech.allwrite.buildlogic
 
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -14,8 +7,13 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Duration
 import kotlin.io.path.exists
 import kotlin.text.format
 
@@ -46,12 +44,17 @@ abstract class FetchJdkTask : DefaultTask() {
     }
 
     private fun fetchFileIfNotExists(url: String, destination: Path) {
-        // the task is reported as not UP-TO-DATE everytime we edit any file in buildSrc
-        // to mitigate this issue, we manaully check whether the file exists
         if (!destination.exists()) {
             logger.lifecycle("Fetching $url -> $destination")
-            Files.newOutputStream(destination).use { out ->
-                runBlocking { client.get(url).bodyAsChannel().copyTo(out) }
+            destination.parent?.let { Files.createDirectories(it) }
+            val request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(Duration.ofMinutes(5))
+                .build()
+            val response = client.send(request, HttpResponse.BodyHandlers.ofFile(destination))
+            if (response.statusCode() !in 200..299) {
+                Files.deleteIfExists(destination)
+                error("Failed to fetch $url: HTTP ${response.statusCode()}")
             }
         }
     }
@@ -63,10 +66,9 @@ abstract class FetchJdkTask : DefaultTask() {
         const val CERT_URL =
             "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3B04D753C9050D9A5D343F39843C48A565F8F04B"
 
-        private val client = HttpClient(CIO) {
-            install(HttpTimeout) {
-                requestTimeoutMillis = 300_000 // 5 minutes
-            }
-        }
+        private val client: HttpClient = HttpClient.newBuilder()
+            .followRedirects(HttpClient.Redirect.ALWAYS)
+            .connectTimeout(Duration.ofMinutes(5))
+            .build()
     }
 }
