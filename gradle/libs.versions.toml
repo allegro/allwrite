@@ -2,7 +2,7 @@
 jvm = "21"
 kotlin = "2.4.21"
 ksp = "2.3.9"
-kotlinx-serialization = "1.11.0"
+kotlinx-serialization = "1.12.0"
 openrewrite = "8.90.4"
 openrewrite-spring = "6.37.1"
 openrewrite-static-analysis = "2.41.1"
